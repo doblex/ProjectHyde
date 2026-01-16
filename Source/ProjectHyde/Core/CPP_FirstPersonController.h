@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class GAUNTLET2_API ACPP_FirstPersonController : public APlayerController
+class PROJECTHYDE_API ACPP_FirstPersonController : public APlayerController
 {
 	GENERATED_BODY()
 	

@@ -10,7 +10,7 @@
 class AArtifact;
 
 UCLASS()
-class GAUNTLET2_API ACPP_FirstPersonCharater : public ACharacter
+class PROJECTHYDE_API ACPP_FirstPersonCharater : public ACharacter
 {
 	GENERATED_BODY()
 
