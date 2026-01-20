@@ -17,18 +17,20 @@ struct FDialogueCommandLine
 	
 	FDialogueCommandLine()
 	{
-		CommandName = "";
-		Args.Empty();
 	}
 
 	FDialogueCommandLine(const FName CommandName)
 		:CommandName(CommandName)
 	{
-		Args.Empty();
+	}
+	
+	FDialogueCommandLine(const FName CommandName, const TArray<UValue*> Args)
+		:CommandName(CommandName), Args(Args)
+	{
 	}
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
-	FName CommandName;
+	FName CommandName = FName("");
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
 	TArray<UValue*> Args;
