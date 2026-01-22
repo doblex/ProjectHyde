@@ -37,6 +37,25 @@ UBaseLineNode::UBaseLineNode(const FName& Name, const FText& Line, const TArray<
 	Type = EDialogueLineType::Selector;
 }
 
+FText UBaseLineNode::GetLineText() const
+{  
+	#define LOCTEXT_NAMESPACE "DialogueSystem"
+
+	// The pattern is compiled once
+	static const FTextFormat DialogueFormat = LOCTEXT("LineText", "{0} : {1}");
+
+	// Convert FName to FText explicitly
+	FText Result = FText::Format(
+		DialogueFormat, 
+		FText::FromName(LineProtagonistName), // Fix: FName -> FText
+		Line                                  // Assuming 'Line' is already FText
+	);
+
+	#undef LOCTEXT_NAMESPACE
+
+	return Result;
+}
+
 UBaseLineNode* UBaseLineNode::GetNextLine(int index)
 {
 	if (NextLines.IsEmpty()) return nullptr;

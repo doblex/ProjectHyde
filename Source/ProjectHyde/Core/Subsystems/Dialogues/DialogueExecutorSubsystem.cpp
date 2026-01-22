@@ -14,7 +14,12 @@ void UDialogueExecutorSubsystem::Initialize(FSubsystemCollectionBase& Collection
 	const UDialogueSubsystemSettings* Settings = GetDefault<UDialogueSubsystemSettings>();
 	if (Settings)
 	{
-		CommandLibrary = Settings->CommandBlueprintFunctionLibrary.Get();
+		CommandLibrary = Settings->CommandExecutorLibrary.GetDefaultObject();
+		
+		if (!CommandLibrary)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to load command executor library"));
+		}
 	}
 	else
 	{
@@ -25,7 +30,21 @@ void UDialogueExecutorSubsystem::Initialize(FSubsystemCollectionBase& Collection
 void UDialogueExecutorSubsystem::ShowDialogue(UBaseLineNode* NextLine)
 {
 	CurrentLineNode = NextLine;
-	//TODO: GET HUD AND SHOW DIALOGUE UI
+	
+	if (CurrentLineNode->IsCommand())
+	{
+		ExecuteCommand(CurrentLineNode->GetCommand());
+		UE_LOG(LogTemp, Warning, TEXT("Command Executed"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *CurrentLineNode->GetLineText().ToString());
+		//TODO: GET HUD AND SHOW DIALOGUE UI
+	}
+	
+	
+	
+	ContinueDialogue();
 }
 
 void UDialogueExecutorSubsystem::StartDialogue(UBaseDialogue* Dialogue)
@@ -50,54 +69,8 @@ void UDialogueExecutorSubsystem::ExecuteCommand(FDialogueCommandLine Command)
 {
 	if (!CommandLibrary) return;
 	
-	UFunction* Function = CommandLibrary->FindFunction(Command.CommandName);
-	
-	if (!Function)
+	if (CommandLibrary->ExecuteCommand(Command))
 	{
-		UE_LOG(LogTemp, Error, TEXT("Cannot Find Command %s"), *Command.CommandName.ToString())
-		return ContinueDialogue();
+		UE_LOG(LogTemp, Warning, TEXT("Command Executed"));
 	}
-	
-	FStructOnScope FuncParams(Function);
-	FBoolProperty* BoolParam;
-	FFloatProperty* FloatParam;
-	FStrProperty* StringParam;
-
-	for (int i = 0; i < Command.Args.Num(); ++i)
-	{
-		UValue* Arg = Command.Args[i];
-		// Set input properties
-		switch (Arg->GetType())
-		{
-		case UValue::EValueType::BOOLEAN:
-			BoolParam = CastField<FBoolProperty>(Function->FindPropertyByOffset(i));
-			if (!BoolParam)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Cannot Find Command %s , Skipping Command"), *Command.CommandName.ToString())
-				return ContinueDialogue();
-			}
-			BoolParam->SetPropertyValue_InContainer(FuncParams.GetStructMemory(), Arg->GetBooleanValue());
-			break;
-		case UValue::EValueType::NUMBER:
-			FloatParam = CastField<FFloatProperty>(Function->FindPropertyByOffset(i));
-			if (!FloatParam)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Cannot Find Command %s , Skipping Command"), *Command.CommandName.ToString())
-				return ContinueDialogue();
-			}
-			FloatParam->SetPropertyValue_InContainer(FuncParams.GetStructMemory(), Arg->GetNumberValue());
-			break;
-		case UValue::EValueType::STRING:
-			StringParam = CastField<FStrProperty>(Function->FindPropertyByOffset(i));
-			if (!StringParam)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Cannot Find Command %s , Skipping Command"), *Command.CommandName.ToString())
-				return ContinueDialogue();
-			}
-			StringParam->SetPropertyValue_InContainer(FuncParams.GetStructMemory(), FString(Arg->GetStringValue().c_str()));
-			break;
-		}
-	}
-	
-	ProcessEvent(Function, FuncParams.GetStructMemory());
 }

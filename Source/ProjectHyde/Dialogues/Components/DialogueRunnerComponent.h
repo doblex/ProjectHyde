@@ -35,7 +35,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	
-	
+	UFUNCTION(BlueprintCallable)
 	void StartDialogue();
 
 	void SetNextDialogue(FName DialogueName);

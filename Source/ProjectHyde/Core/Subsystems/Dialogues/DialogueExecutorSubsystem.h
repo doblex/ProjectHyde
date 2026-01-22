@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ProjectHyde/Dialogues/BaseClasses/BaseDialogue.h"
 #include "ProjectHyde/Dialogues/BaseClasses/BaseLineNode.h"
+#include "ProjectHyde/Dialogues/BaseClasses/CommandExecutorLibrary.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DialogueExecutorSubsystem.generated.h"
 
@@ -18,7 +19,7 @@ class PROJECTHYDE_API UDialogueExecutorSubsystem : public UGameInstanceSubsystem
 	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	
-	UBlueprintFunctionLibrary* CommandLibrary;
+	UCommandExecutorLibrary* CommandLibrary;
 	UBaseDialogue* CurrentDialogue;
 	UBaseLineNode* CurrentLineNode;
 	

@@ -40,11 +40,21 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Dialogue")
 	FDialogueCommandLine Command;
-	
+
+public:
+	FDialogueCommandLine GetCommand() const
+	{
+		return Command;
+	}
+
+protected:
 	UPROPERTY(EditAnywhere, Category = "Dialogue")
 	TArray<UBaseLineNode*> NextLines;
 	
 public:
+	
+	FText GetLineText() const;
+	
 	UBaseLineNode* GetNextLine(int index = 0);
 	
 	bool IsLine();

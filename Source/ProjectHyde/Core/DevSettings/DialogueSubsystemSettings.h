@@ -6,6 +6,7 @@
 #include "Engine/DeveloperSettings.h"
 #include "DialogueSubsystemSettings.generated.h"
 
+class UCommandExecutorLibrary;
 /**
  * 
  */
@@ -16,5 +17,5 @@ class PROJECTHYDE_API UDialogueSubsystemSettings : public UDeveloperSettings
 	
 public:
 	UPROPERTY(Config, EditAnywhere, Category = "Dialogue Subsystem")
-	TSoftObjectPtr<UBlueprintFunctionLibrary> CommandBlueprintFunctionLibrary;
+	TSubclassOf<UCommandExecutorLibrary> CommandExecutorLibrary;
 };
