@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "ProjectHyde/Dialogues/DialogueStructs.h"
 
 #include "BaseLineNode.generated.h"
 
@@ -13,7 +14,7 @@ enum class EDialogueLineType : uint8
 };
 
 UCLASS()
-class PROJECTHYDE_API UBaseLineNode : public UObject
+class PROJECTHYDE_API UBaseLineNode : public UDataAsset
 {
 	GENERATED_BODY()
 
@@ -27,14 +28,28 @@ public:
 	UBaseLineNode(const FName& Name, const FText& Line, FDialogueCommandLine Command  ,UBaseLineNode* NextLine = nullptr);
 
 protected:
-	FName Name;
+	
+	UPROPERTY(EditAnywhere, Category = "Dialogue")
+	FName LineProtagonistName;
+	
+	UPROPERTY(EditAnywhere, Category = "Dialogue")
 	EDialogueLineType Type;
 	
+	UPROPERTY(EditAnywhere, Category = "Dialogue")
 	FText Line;
-	FDialogueCommandLine* Command;
-	TArray<UBaseLineNode*> NextLines;
 	
+	UPROPERTY(EditAnywhere, Category = "Dialogue")
+	FDialogueCommandLine Command;
+	
+	UPROPERTY(EditAnywhere, Category = "Dialogue")
+	TArray<UBaseLineNode*> NextLines;
 	
 public:
 	UBaseLineNode* GetNextLine(int index = 0);
+	
+	bool IsLine();
+	bool IsCommand();
+	bool IsSelector();
+	
+	bool HasNextLine();
 };

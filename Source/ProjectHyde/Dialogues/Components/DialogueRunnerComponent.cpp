@@ -34,3 +34,21 @@ void UDialogueRunnerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
+void UDialogueRunnerComponent::StartDialogue()
+{
+	UDialogueExecutorSubsystem* DialogueSub = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueExecutorSubsystem>();
+		
+	DialogueSub->StartDialogue(CurrentDialogue);
+}
+
+void UDialogueRunnerComponent::SetNextDialogue(FName DialogueName)
+{
+	for (auto Element : DialoguesPool)
+	{
+		if (Element->DialogueName == DialogueName)
+		{
+			CurrentDialogue = Element;
+		}
+	}
+}
+

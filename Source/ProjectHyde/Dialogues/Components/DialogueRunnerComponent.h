@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "ProjectHyde/Core/Subsystems/Dialogues/DialogueExecutorSubsystem.h"
+#include "ProjectHyde/Dialogues/BaseClasses/BaseDialogue.h"
 #include "DialogueRunnerComponent.generated.h"
 
 
@@ -20,14 +23,20 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UBaseDialogue*> DialoguesPool;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UBaseDialogue* CurrentDialogue;
+	
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	
 	
-	void ContinueDialogue()
-	{
-		
-	}
+	void StartDialogue();
+
+	void SetNextDialogue(FName DialogueName);
 };

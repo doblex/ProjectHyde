@@ -9,7 +9,7 @@ UBaseLineNode::UBaseLineNode()
 }
 
 UBaseLineNode::UBaseLineNode(const FName& Name, const FText& Line, UBaseLineNode* NextLine)
-: Name(Name), Line(Line)
+: LineProtagonistName(Name), Line(Line)
 {
 	Type = EDialogueLineType::Line;
 	
@@ -21,7 +21,7 @@ UBaseLineNode::UBaseLineNode(const FName& Name, const FText& Line, UBaseLineNode
 
 UBaseLineNode::UBaseLineNode(const FName& Name, const FText& Line, FDialogueCommandLine Command,
 	UBaseLineNode* NextLine)
-		: Name(Name), Line(Line), Command(&Command)
+		: LineProtagonistName(Name), Line(Line), Command(Command)
 {
 	Type = EDialogueLineType::Command;
 	
@@ -32,7 +32,7 @@ UBaseLineNode::UBaseLineNode(const FName& Name, const FText& Line, FDialogueComm
 }
 
 UBaseLineNode::UBaseLineNode(const FName& Name, const FText& Line, const TArray<UBaseLineNode*> NextLines)
-: Name(Name), Line(Line), NextLines(NextLines)
+: LineProtagonistName(Name), Line(Line), NextLines(NextLines)
 {
 	Type = EDialogueLineType::Selector;
 }
@@ -42,4 +42,24 @@ UBaseLineNode* UBaseLineNode::GetNextLine(int index)
 	if (NextLines.IsEmpty()) return nullptr;
 	
 	return NextLines[index];
+}
+
+bool UBaseLineNode::IsLine()
+{
+	return Type == EDialogueLineType::Line;
+}
+
+bool UBaseLineNode::IsCommand()
+{
+	return Type == EDialogueLineType::Command;
+}
+
+bool UBaseLineNode::IsSelector()
+{
+	return Type == EDialogueLineType::Selector;
+}
+
+bool UBaseLineNode::HasNextLine()
+{
+	return !NextLines.IsEmpty();
 }

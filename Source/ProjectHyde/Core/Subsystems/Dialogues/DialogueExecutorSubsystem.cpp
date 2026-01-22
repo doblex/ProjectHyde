@@ -1,13 +1,13 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "DialogueCommandSubsystem.h"
-
+#include "DialogueExecutorSubsystem.h"
 #include "ProjectHyde/Core/DevSettings/DialogueSubsystemSettings.h"
-#include "ProjectHyde/Dialogues/Components/DialogueRunnerComponent.h"
 #include "ProjectHyde/Dialogues/BaseClasses/Value.h"
+#include "ProjectHyde/Dialogues/DialogueStructs.h"
 
-void UDialogueCommandSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+
+void UDialogueExecutorSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	
@@ -22,7 +22,31 @@ void UDialogueCommandSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	}
 }
 
-void UDialogueCommandSubsystem::ExecuteCommand(FDialogueCommandLine Command, UDialogueRunnerComponent* Performer)
+void UDialogueExecutorSubsystem::ShowDialogue(UBaseLineNode* NextLine)
+{
+	CurrentLineNode = NextLine;
+	//TODO: GET HUD AND SHOW DIALOGUE UI
+}
+
+void UDialogueExecutorSubsystem::StartDialogue(UBaseDialogue* Dialogue)
+{
+	CurrentDialogue = Dialogue;
+	ShowDialogue(CurrentDialogue->RootLine);
+}
+
+void UDialogueExecutorSubsystem::ContinueDialogue(int choice)
+{
+	if(!CurrentLineNode->HasNextLine())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Dialogue Ended"));
+		//TODO: maybe lancio un evento all actor che ha fatto partire il dialogo?
+		return;
+	}
+	
+	ShowDialogue(CurrentLineNode->GetNextLine(choice));
+}
+
+void UDialogueExecutorSubsystem::ExecuteCommand(FDialogueCommandLine Command)
 {
 	if (!CommandLibrary) return;
 	
@@ -31,7 +55,7 @@ void UDialogueCommandSubsystem::ExecuteCommand(FDialogueCommandLine Command, UDi
 	if (!Function)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Cannot Find Command %s"), *Command.CommandName.ToString())
-		return Performer->ContinueDialogue();
+		return ContinueDialogue();
 	}
 	
 	FStructOnScope FuncParams(Function);
@@ -50,7 +74,7 @@ void UDialogueCommandSubsystem::ExecuteCommand(FDialogueCommandLine Command, UDi
 			if (!BoolParam)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Cannot Find Command %s , Skipping Command"), *Command.CommandName.ToString())
-				return Performer->ContinueDialogue();
+				return ContinueDialogue();
 			}
 			BoolParam->SetPropertyValue_InContainer(FuncParams.GetStructMemory(), Arg->GetBooleanValue());
 			break;
@@ -59,7 +83,7 @@ void UDialogueCommandSubsystem::ExecuteCommand(FDialogueCommandLine Command, UDi
 			if (!FloatParam)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Cannot Find Command %s , Skipping Command"), *Command.CommandName.ToString())
-				return Performer->ContinueDialogue();
+				return ContinueDialogue();
 			}
 			FloatParam->SetPropertyValue_InContainer(FuncParams.GetStructMemory(), Arg->GetNumberValue());
 			break;
@@ -68,7 +92,7 @@ void UDialogueCommandSubsystem::ExecuteCommand(FDialogueCommandLine Command, UDi
 			if (!StringParam)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Cannot Find Command %s , Skipping Command"), *Command.CommandName.ToString())
-				return Performer->ContinueDialogue();
+				return ContinueDialogue();
 			}
 			StringParam->SetPropertyValue_InContainer(FuncParams.GetStructMemory(), FString(Arg->GetStringValue().c_str()));
 			break;
