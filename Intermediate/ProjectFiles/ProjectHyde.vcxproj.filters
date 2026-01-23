@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\ProjectHyde.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{F31BBDD1-B3E8-3BCC-9652-680E16935819}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\ProjectHyde.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\ProjectHydeEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\.gitignore" />
+    <None Include="..\..\.vsconfig" />
+    <Filter Include="Config">
+      <UniqueIdentifier>{FA535FFB-25E1-3D20-B416-52F9BE21E06E}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultInput.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Source\ProjectHyde">
+      <UniqueIdentifier>{732B8679-3F96-3FFA-8ABF-98828359D51D}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\ProjectHyde\ProjectHyde.Build.cs">
+      <Filter>Source\ProjectHyde</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\ProjectHyde\ProjectHyde.cpp">
+      <Filter>Source\ProjectHyde</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ProjectHyde\ProjectHyde.h">
+      <Filter>Source\ProjectHyde</Filter>
+    </ClInclude>
+    <Filter Include="Source\ProjectHyde\Core">
+      <UniqueIdentifier>{5AFCB1DF-9F95-3A35-A0AB-17F64FF6FAD6}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\ProjectHyde\Core\CPP_FirstPersonCharater.cpp">
+      <Filter>Source\ProjectHyde\Core</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ProjectHyde\Core\CPP_FirstPersonCharater.h">
+      <Filter>Source\ProjectHyde\Core</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\ProjectHyde\Core\CPP_FirstPersonController.cpp">
+      <Filter>Source\ProjectHyde\Core</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ProjectHyde\Core\CPP_FirstPersonController.h">
+      <Filter>Source\ProjectHyde\Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
