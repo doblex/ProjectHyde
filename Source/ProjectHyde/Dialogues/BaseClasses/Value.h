@@ -3,32 +3,44 @@
 
 #include "Value.generated.h"
 
-UCLASS()
+UENUM(BlueprintType)
+enum EValueType
+{
+	STRING,
+	NUMBER,
+	BOOLEAN,
+};
+
+
+
+UCLASS(BlueprintType, EditInlineNew)
 class PROJECTHYDE_API UValue : public UObject
 {
 	GENERATED_BODY()
 	
 public:
-	enum EValueType
-	{
-		STRING,
-		NUMBER,
-		BOOLEAN,
-	};
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
+	FName ValueName;
 	
-	EValueType Type;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
+	TEnumAsByte<EValueType> Type;
 
-	std::string StringValue;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
+	FString StringValue;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
 	double Number;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
 	bool Boolean;
 	
 	//Default constructor
 	UValue() : Type(NUMBER), Number(0) {}
 	
 	//String constructors
-	UValue(const char *string) : Type(STRING), StringValue(std::string(string)) {}
-	UValue(const std::string &string) : Type(STRING), StringValue(string) {}
+	UValue(const char *string) : Type(STRING), StringValue(string) {}
+	UValue(const FString &string) : Type(STRING), StringValue(string) {}
 	
 	//Number Constructors
 	UValue(float Number) : Type(NUMBER), Number(Number) {}
@@ -55,7 +67,7 @@ public:
 		return GetType() == BOOLEAN;
 	}
 	
-	const std::string GetStringValue()
+	const FString GetStringValue()
 	{
 		if (this->Type == STRING)
 		{
@@ -78,7 +90,7 @@ public:
 	{
 		if (Type == STRING)
 		{
-			return atof(StringValue.c_str());
+			return FCString::Atof(*StringValue);
 		}
 		if (Type == BOOLEAN)
 		{
@@ -97,7 +109,7 @@ public:
 			return false;
 	}
 
-	const std::string ConvertToString()
+	const FString ConvertToString()
 	{
 		switch (Type)
 		{
@@ -106,13 +118,13 @@ public:
 		case BOOLEAN:
 			return Boolean ? "True" : "False";
 		case NUMBER:
-			if (trunc(Number) == Number)
+			if (FMath::IsNearlyEqual(Number, FMath::RoundToFloat(Number)))
 			{
-				return std::to_string((int)Number);
+				return FString::FromInt(FMath::RoundToInt(Number));
 			}
 			else
 			{
-				return std::to_string(Number);
+				return FString::SanitizeFloat(Number);
 			}
 		default:
 			return "<unknown>";

@@ -32,6 +32,6 @@ struct FDialogueCommandLine
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
 	FName CommandName = FName("");
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
+	UPROPERTY(Instanced, EditAnywhere, BlueprintReadWrite, Category = "Command")
 	TArray<UValue*> Args;
 };

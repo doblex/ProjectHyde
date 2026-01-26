@@ -20,13 +20,13 @@ bool UCommandExecutorLibrary::ExecuteCommand(FDialogueCommandLine Command)
 	FFloatProperty* FloatParam;
 	FStrProperty* StringParam;
 
-	for (int i = 0; i < Command.Args.Num(); ++i)
+	for (int32 i = 0; i < Command.Args.Num(); ++i)
 	{
 		UValue* Arg = Command.Args[i];
 		// Set input properties
 		switch (Arg->GetType())
 		{
-		case UValue::EValueType::BOOLEAN:
+		case BOOLEAN:
 			BoolParam = CastField<FBoolProperty>(Function->FindPropertyByOffset(i));
 			if (!BoolParam)
 			{
@@ -35,7 +35,7 @@ bool UCommandExecutorLibrary::ExecuteCommand(FDialogueCommandLine Command)
 			}
 			BoolParam->SetPropertyValue_InContainer(FuncParams.GetStructMemory(), Arg->GetBooleanValue());
 			break;
-		case UValue::EValueType::NUMBER:
+		case NUMBER:
 			FloatParam = CastField<FFloatProperty>(Function->FindPropertyByOffset(i));
 			if (!FloatParam)
 			{
@@ -44,14 +44,14 @@ bool UCommandExecutorLibrary::ExecuteCommand(FDialogueCommandLine Command)
 			}
 			FloatParam->SetPropertyValue_InContainer(FuncParams.GetStructMemory(), Arg->GetNumberValue());
 			break;
-		case UValue::EValueType::STRING:
+		case STRING:
 			StringParam = CastField<FStrProperty>(Function->FindPropertyByOffset(i));
 			if (!StringParam)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Cannot Find Command %s , Skipping Command"), *Command.CommandName.ToString())
 				return false;
 			}
-			StringParam->SetPropertyValue_InContainer(FuncParams.GetStructMemory(), FString(Arg->GetStringValue().c_str()));
+			StringParam->SetPropertyValue_InContainer(FuncParams.GetStructMemory(), FString(Arg->GetStringValue()));
 			break;
 		}
 	}
