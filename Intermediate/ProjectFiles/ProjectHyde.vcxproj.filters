@@ -40,6 +40,15 @@
     <ClInclude Include="..\..\Source\ProjectHyde\ProjectHyde.h">
       <Filter>Source\ProjectHyde</Filter>
     </ClInclude>
+    <Filter Include="Source\ProjectHyde\Actors">
+      <UniqueIdentifier>{05AFA16A-65F5-3056-9677-0B26B0596CBF}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\ProjectHyde\Actors\CPP_Lock.cpp">
+      <Filter>Source\ProjectHyde\Actors</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ProjectHyde\Actors\CPP_Lock.h">
+      <Filter>Source\ProjectHyde\Actors</Filter>
+    </ClInclude>
     <Filter Include="Source\ProjectHyde\Core">
       <UniqueIdentifier>{5AFCB1DF-9F95-3A35-A0AB-17F64FF6FAD6}</UniqueIdentifier>
     </Filter>
