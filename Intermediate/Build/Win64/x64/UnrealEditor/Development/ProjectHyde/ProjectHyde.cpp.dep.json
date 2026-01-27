@@ -1,12 +1,12 @@
 {
     "Version": "1.2",
     "Data": {
-        "Source": "e:\\git eh\\ue5\\projecthyde\\source\\projecthyde\\projecthyde.cpp",
+        "Source": "c:\\users\\diben\\documents\\repo\\projecthyde\\source\\projecthyde\\projecthyde.cpp",
         "ProvidedModule": "",
-        "PCH": "e:\\git eh\\ue5\\projecthyde\\intermediate\\build\\win64\\x64\\projecthydeeditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.h.pch",
+        "PCH": "c:\\users\\diben\\documents\\repo\\projecthyde\\intermediate\\build\\win64\\x64\\projecthydeeditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.h.pch",
         "Includes": [
-            "e:\\git eh\\ue5\\projecthyde\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\projecthyde\\definitions.projecthyde.h",
-            "e:\\git eh\\ue5\\projecthyde\\source\\projecthyde\\projecthyde.h"
+            "c:\\users\\diben\\documents\\repo\\projecthyde\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\projecthyde\\definitions.projecthyde.h",
+            "c:\\users\\diben\\documents\\repo\\projecthyde\\source\\projecthyde\\projecthyde.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []
