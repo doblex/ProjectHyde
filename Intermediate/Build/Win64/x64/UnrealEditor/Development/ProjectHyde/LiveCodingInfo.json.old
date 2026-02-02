@@ -4,6 +4,7 @@
 		"Module.ProjectHyde.gen.cpp.obj": [
 			"CPP_FirstPersonCharater.gen.cpp.obj",
 			"CPP_FirstPersonController.gen.cpp.obj",
+			"CPP_Lock.gen.cpp.obj",
 			"ProjectHyde.init.gen.cpp.obj"
 		]
 	}

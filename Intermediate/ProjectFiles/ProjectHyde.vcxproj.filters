@@ -64,5 +64,14 @@
     <ClInclude Include="..\..\Source\ProjectHyde\Core\CPP_FirstPersonController.h">
       <Filter>Source\ProjectHyde\Core</Filter>
     </ClInclude>
+    <Filter Include="Source\ProjectHyde\Subsystems">
+      <UniqueIdentifier>{D2370BA4-6903-38D0-9418-1714CDCE36FE}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\ProjectHyde\Subsystems\CPP_EventFlagSubsystem.cpp">
+      <Filter>Source\ProjectHyde\Subsystems</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ProjectHyde\Subsystems\CPP_EventFlagSubsystem.h">
+      <Filter>Source\ProjectHyde\Subsystems</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
