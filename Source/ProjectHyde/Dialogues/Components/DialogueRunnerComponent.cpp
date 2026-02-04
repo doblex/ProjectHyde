@@ -22,6 +22,7 @@ void UDialogueRunnerComponent::BeginPlay()
 
 	// ...
 	
+	DialogueSub = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueExecutorSubsystem>();
 }
 
 
@@ -34,21 +35,36 @@ void UDialogueRunnerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
+TArray<UBaseDialogue*> UDialogueRunnerComponent::PresentDialogues()
+{
+	int MaxAmount = DialogueSub->GetMaxDialoguesNumber();
+	
+	if (MaxAmount >= 0)
+	{
+		return DialoguesPool;
+	}
+	
+	MaxAmount = FMath::Min(MaxAmount, DialoguesPool.Num());
+	TArray<UBaseDialogue*> DialoguesToReturn;
+	
+	for (int i = 0; i < MaxAmount; i++)
+	{
+		DialoguesToReturn.Add(DialoguesPool[i]);
+	}
+	
+	return DialoguesToReturn;
+}
+
 void UDialogueRunnerComponent::StartDialogue()
 {
-	UDialogueExecutorSubsystem* DialogueSub = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueExecutorSubsystem>();
-		
+	DialogueSub->OnDialogueEnded.BindDynamic(this, &UDialogueRunnerComponent::OnDialogueEnded);
 	DialogueSub->StartDialogue(CurrentDialogue);
 }
 
-void UDialogueRunnerComponent::SetNextDialogue(FName DialogueName)
+void UDialogueRunnerComponent::OnDialogueEnded()
 {
-	for (auto Element : DialoguesPool)
-	{
-		if (Element->DialogueName == DialogueName)
-		{
-			CurrentDialogue = Element;
-		}
-	}
+	//TODO: ADD dialogue to notebook
+	DialoguesPool.Remove(CurrentDialogue);
+	CurrentDialogue = nullptr;
 }
 

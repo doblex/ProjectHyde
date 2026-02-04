@@ -47,6 +47,11 @@ void ACPP_FirstPersonCharater::SetupPlayerInputComponent(UInputComponent* Player
 		EnhancedInput->BindAction(PauseAction,ETriggerEvent::Triggered, this, &ACPP_FirstPersonCharater::Pause);
 	}
 	
+	if (MoveAction)
+	{
+		EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACPP_FirstPersonCharater::Move);
+	}
+	
 	if (InteractAction)
 	{
 		EnhancedInput->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ACPP_FirstPersonCharater::Interact);
@@ -68,5 +73,13 @@ void ACPP_FirstPersonCharater::Pause(const FInputActionValue& value)
 
 void ACPP_FirstPersonCharater::Interact(const FInputActionValue& Value)
 {
+}
+
+void ACPP_FirstPersonCharater::Move(const FInputActionValue& Value)
+{
+	const FVector2D Input = Value.Get<FVector2D>();
+	
+	AddMovementInput(GetActorForwardVector(), Input.Y);
+	AddMovementInput(GetActorRightVector(), Input.X);
 }
 

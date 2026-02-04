@@ -20,6 +20,8 @@ void UDialogueExecutorSubsystem::Initialize(FSubsystemCollectionBase& Collection
 		{
 			UE_LOG(LogTemp, Error, TEXT("Failed to load command executor library"));
 		}
+		
+		MaxDialoguesNumber = Settings->MaxDialoguesNumber;
 	}
 	else
 	{
@@ -34,15 +36,21 @@ void UDialogueExecutorSubsystem::ShowDialogue(UBaseLineNode* NextLine)
 	if (CurrentLineNode->IsCommand())
 	{
 		ExecuteCommand(CurrentLineNode->GetCommand());
-		UE_LOG(LogTemp, Warning, TEXT("Command Executed"));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *CurrentLineNode->GetLineText().ToString());
-		//TODO: GET HUD AND SHOW DIALOGUE UI
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				5.f,
+				FColor::Cyan,
+				CurrentLineNode->GetLineText().ToString()
+				);
+		}	
 	}
 	
-	
+	//TODO: GET HUD AND SHOW DIALOGUE UI
 	
 	ContinueDialogue();
 }
@@ -57,7 +65,22 @@ void UDialogueExecutorSubsystem::ContinueDialogue(int choice)
 {
 	if(!CurrentLineNode->HasNextLine())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Dialogue Ended"));
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				5.f,
+				FColor::Green,
+				TEXT("Dialogue Ended")
+				);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Dialogue Ended"));
+		}
+		
+		OnDialogueEnded.ExecuteIfBound();
+		OnDialogueEnded.Clear();
 		//TODO: maybe lancio un evento all actor che ha fatto partire il dialogo?
 		return;
 	}
@@ -65,12 +88,46 @@ void UDialogueExecutorSubsystem::ContinueDialogue(int choice)
 	ShowDialogue(CurrentLineNode->GetNextLine(choice));
 }
 
+int UDialogueExecutorSubsystem::GetMaxDialoguesNumber()
+{
+	return MaxDialoguesNumber;
+}
+
 void UDialogueExecutorSubsystem::ExecuteCommand(FDialogueCommandLine Command)
 {
 	if (!CommandLibrary) return;
 	
-	if (CommandLibrary->ExecuteCommand(Command))
+	FDialogueCommandReturn Result;
+	
+	if (CommandLibrary->ExecuteCommand(Command, Result))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Command Executed"));
+		FString Message = FString(TEXT("Command Executed"));
+			
+		if (Result.HasReturn)
+		{
+			Message.Append(TEXT(" With Return of: "));
+			Message.Append(Result.ReturnValue ? TEXT("true") : TEXT("false"));
+		}
+			
+		if (Result.HasOutValue)
+		{
+			Message.Append(TEXT(" Out: "));
+			Message.Append(Result.OutValue ? TEXT("true") : TEXT("false"));
+		}
+		
+		
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				5.f,
+				FColor::Green,
+				Message
+				);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *Message);
+		}
 	}
 }

@@ -12,12 +12,16 @@
 /**
  * 
  */
+DECLARE_DYNAMIC_DELEGATE(FOnDialogueEnded);
+
 UCLASS()
 class PROJECTHYDE_API UDialogueExecutorSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	
+	int MaxDialoguesNumber = 0;
 	
 	UCommandExecutorLibrary* CommandLibrary;
 	UBaseDialogue* CurrentDialogue;
@@ -28,8 +32,12 @@ protected:
 	void ExecuteCommand(FDialogueCommandLine Command);
 	
 public:
+	FOnDialogueEnded OnDialogueEnded;
+	
 	void StartDialogue(UBaseDialogue* Dialogue);
 	
 	UFUNCTION(BlueprintCallable)
 	void ContinueDialogue(int choice = 0);
+	
+	int GetMaxDialoguesNumber();
 };

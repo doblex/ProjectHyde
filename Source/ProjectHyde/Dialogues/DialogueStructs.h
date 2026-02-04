@@ -35,3 +35,34 @@ struct FDialogueCommandLine
 	UPROPERTY(Instanced, EditAnywhere, BlueprintReadWrite, Category = "Command")
 	TArray<UValue*> Args;
 };
+
+USTRUCT()
+struct FDialogueCommandReturn
+{
+	GENERATED_BODY()
+	
+	FDialogueCommandReturn() 
+		: HasReturn(false),
+		ReturnValue(false),
+		HasOutValue(false),
+		OutValue(false)
+	{}
+	
+	bool HasReturn;
+	bool ReturnValue;
+	
+	bool HasOutValue;
+	bool OutValue;
+	
+	void SetReturnValue(bool Value)
+	{
+		this->ReturnValue = Value;
+		this->HasReturn = true;
+	}
+	
+	void SetOutValue(bool Value)
+	{
+		this->OutValue = Value;
+		this->HasOutValue = true;
+	}
+};

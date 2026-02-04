@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectHyde/Dialogues/DialogueStructs.h"
 #include "UObject/Object.h"
 #include "CommandExecutorLibrary.generated.h"
 
@@ -16,5 +17,5 @@ class PROJECTHYDE_API UCommandExecutorLibrary : public UObject
 	GENERATED_BODY()
 	
 public:
-	bool ExecuteCommand(FDialogueCommandLine Command);
+	bool ExecuteCommand(FDialogueCommandLine Command, FDialogueCommandReturn& ReturnValue);
 };

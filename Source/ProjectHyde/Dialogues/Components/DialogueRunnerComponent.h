@@ -22,7 +22,8 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
+	
+	UDialogueExecutorSubsystem* DialogueSub;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UBaseDialogue*> DialoguesPool;
@@ -36,7 +37,13 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	
 	UFUNCTION(BlueprintCallable)
+	TArray<UBaseDialogue*> PresentDialogues();
+	
+	UFUNCTION(BlueprintCallable)
 	void StartDialogue();
+	
+	UFUNCTION()
+	void OnDialogueEnded();
 
 	void SetNextDialogue(FName DialogueName);
 };

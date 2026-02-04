@@ -19,10 +19,6 @@ class PROJECTHYDE_API UValue : public UObject
 	GENERATED_BODY()
 	
 public:
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
-	FName ValueName;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
 	TEnumAsByte<EValueType> Type;
 

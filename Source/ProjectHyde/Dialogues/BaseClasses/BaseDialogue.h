@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class PROJECTHYDE_API UBaseDialogue : public UDataAsset
 {
 	GENERATED_BODY()

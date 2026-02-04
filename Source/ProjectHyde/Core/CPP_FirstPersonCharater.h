@@ -33,6 +33,9 @@ public:
 	TObjectPtr<UInputAction> LookAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Player|Input")
+	TObjectPtr<UInputAction> MoveAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Player|Input")
 	TObjectPtr<UInputAction> PauseAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Player|Input")
@@ -47,4 +50,5 @@ public:
 	void Look(const struct FInputActionValue& Value);
 	void Pause(const struct FInputActionValue& Value);
 	void Interact(const struct FInputActionValue& Value);
+	void Move(const FInputActionValue& Value);
 };
