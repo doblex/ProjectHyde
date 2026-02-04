@@ -40,10 +40,10 @@ public:
 	TArray<UBaseDialogue*> PresentDialogues();
 	
 	UFUNCTION(BlueprintCallable)
-	void StartDialogue();
+	UBaseLineNode* StartDialogue(UBaseDialogue* Dialogue);
 	
 	UFUNCTION()
-	void OnDialogueEnded();
+	void OnDialogueEnded(UBaseDialogue* BaseDialogue);
 
 	void SetNextDialogue(FName DialogueName);
 };

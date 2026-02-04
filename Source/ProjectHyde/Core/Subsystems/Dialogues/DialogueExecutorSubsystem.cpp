@@ -29,39 +29,30 @@ void UDialogueExecutorSubsystem::Initialize(FSubsystemCollectionBase& Collection
 	}
 }
 
-void UDialogueExecutorSubsystem::ShowDialogue(UBaseLineNode* NextLine)
+UBaseLineNode* UDialogueExecutorSubsystem::ShowDialogue(UBaseLineNode* NextLine)
 {
 	CurrentLineNode = NextLine;
 	
-	if (CurrentLineNode->IsCommand())
+	while (CurrentLineNode->IsCommand())
 	{
 		ExecuteCommand(CurrentLineNode->GetCommand());
-	}
-	else
-	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(
-				-1,
-				5.f,
-				FColor::Cyan,
-				CurrentLineNode->GetLineText().ToString()
-				);
-		}	
+		
+		if (!CurrentLineNode->HasNextLine())
+			return nullptr;
+		
+		CurrentLineNode = CurrentLineNode->GetNextLine();
 	}
 	
-	//TODO: GET HUD AND SHOW DIALOGUE UI
-	
-	ContinueDialogue();
+	return CurrentLineNode;
 }
 
-void UDialogueExecutorSubsystem::StartDialogue(UBaseDialogue* Dialogue)
+UBaseLineNode* UDialogueExecutorSubsystem::StartDialogue(UBaseDialogue* Dialogue)
 {
 	CurrentDialogue = Dialogue;
-	ShowDialogue(CurrentDialogue->RootLine);
+	return ShowDialogue(CurrentDialogue->RootLine);
 }
 
-void UDialogueExecutorSubsystem::ContinueDialogue(int choice)
+UBaseLineNode* UDialogueExecutorSubsystem::ContinueDialogue(int choice)
 {
 	if(!CurrentLineNode->HasNextLine())
 	{
@@ -79,13 +70,12 @@ void UDialogueExecutorSubsystem::ContinueDialogue(int choice)
 			UE_LOG(LogTemp, Warning, TEXT("Dialogue Ended"));
 		}
 		
-		OnDialogueEnded.ExecuteIfBound();
+		OnDialogueEnded.ExecuteIfBound(CurrentDialogue);
 		OnDialogueEnded.Clear();
-		//TODO: maybe lancio un evento all actor che ha fatto partire il dialogo?
-		return;
+		return nullptr;
 	}
 	
-	ShowDialogue(CurrentLineNode->GetNextLine(choice));
+	return ShowDialogue(CurrentLineNode->GetNextLine(choice));
 }
 
 int UDialogueExecutorSubsystem::GetMaxDialoguesNumber()

@@ -12,7 +12,7 @@
 /**
  * 
  */
-DECLARE_DYNAMIC_DELEGATE(FOnDialogueEnded);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnDialogueEnded, UBaseDialogue*, BaseDialogue);
 
 UCLASS()
 class PROJECTHYDE_API UDialogueExecutorSubsystem : public UGameInstanceSubsystem
@@ -28,16 +28,17 @@ class PROJECTHYDE_API UDialogueExecutorSubsystem : public UGameInstanceSubsystem
 	UBaseLineNode* CurrentLineNode;
 	
 protected:
-	void ShowDialogue(UBaseLineNode* NextLine);
+	UBaseLineNode* ShowDialogue(UBaseLineNode* NextLine);
 	void ExecuteCommand(FDialogueCommandLine Command);
 	
 public:
 	FOnDialogueEnded OnDialogueEnded;
 	
-	void StartDialogue(UBaseDialogue* Dialogue);
+	UFUNCTION(BlueprintCallable)
+	UBaseLineNode* StartDialogue(UBaseDialogue* Dialogue);
 	
 	UFUNCTION(BlueprintCallable)
-	void ContinueDialogue(int choice = 0);
+	UBaseLineNode* ContinueDialogue(int choice = 0);
 	
 	int GetMaxDialoguesNumber();
 };

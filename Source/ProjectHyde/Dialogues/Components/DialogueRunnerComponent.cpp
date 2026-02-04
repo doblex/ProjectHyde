@@ -55,16 +55,15 @@ TArray<UBaseDialogue*> UDialogueRunnerComponent::PresentDialogues()
 	return DialoguesToReturn;
 }
 
-void UDialogueRunnerComponent::StartDialogue()
+UBaseLineNode* UDialogueRunnerComponent::StartDialogue(UBaseDialogue* Dialogue)
 {
 	DialogueSub->OnDialogueEnded.BindDynamic(this, &UDialogueRunnerComponent::OnDialogueEnded);
-	DialogueSub->StartDialogue(CurrentDialogue);
+	return DialogueSub->StartDialogue(Dialogue);
 }
 
-void UDialogueRunnerComponent::OnDialogueEnded()
+void UDialogueRunnerComponent::OnDialogueEnded(UBaseDialogue* BaseDialogue)
 {
 	//TODO: ADD dialogue to notebook
-	DialoguesPool.Remove(CurrentDialogue);
-	CurrentDialogue = nullptr;
+	DialoguesPool.Remove(BaseDialogue);
 }
 

@@ -13,7 +13,7 @@ enum class EDialogueLineType : uint8
 	Selector
 };
 
-UCLASS()
+UCLASS(BlueprintType)
 class PROJECTHYDE_API UBaseLineNode : public UDataAsset
 {
 	GENERATED_BODY()
@@ -29,13 +29,13 @@ public:
 
 protected:
 	
-	UPROPERTY(EditAnywhere, Category = "Dialogue")
+	UPROPERTY(EditAnywhere ,BlueprintReadOnly ,Category = "Dialogue")
 	FName LineProtagonistName;
 	
 	UPROPERTY(EditAnywhere, Category = "Dialogue")
 	EDialogueLineType Type;
 	
-	UPROPERTY(EditAnywhere, Category = "Dialogue")
+	UPROPERTY(EditAnywhere ,BlueprintReadOnly, Category = "Dialogue")
 	FText Line;
 	
 	UPROPERTY(EditAnywhere, Category = "Dialogue")
