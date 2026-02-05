@@ -38,7 +38,11 @@ UBaseLineNode* UDialogueExecutorSubsystem::ShowDialogue(UBaseLineNode* NextLine)
 		ExecuteCommand(CurrentLineNode->GetCommand());
 		
 		if (!CurrentLineNode->HasNextLine())
+		{
+			OnDialogueEnded.ExecuteIfBound(CurrentDialogue);
+			OnDialogueEnded.Clear();
 			return nullptr;
+		}
 		
 		CurrentLineNode = CurrentLineNode->GetNextLine();
 	}
