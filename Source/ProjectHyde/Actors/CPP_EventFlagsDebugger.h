@@ -7,7 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "GameplayTagsManager.h"
 #include "NativeGameplayTags.h"
-#include "../Subsystems/CPP_EventFlagSubsystem.h"
+#include "../Core/Subsystems/EventFlags/CPP_EventFlagSubsystem.h"
 #include "CPP_EventFlagsDebugger.generated.h"
 
 UCLASS()
