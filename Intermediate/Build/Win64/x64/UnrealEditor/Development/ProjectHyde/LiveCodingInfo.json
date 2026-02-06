@@ -2,9 +2,17 @@
 	"RemapUnityFiles": 
 	{
 		"Module.ProjectHyde.gen.cpp.obj": [
+			"BaseDialogue.gen.cpp.obj",
+			"BaseLineNode.gen.cpp.obj",
+			"CommandExecutorLibrary.gen.cpp.obj",
 			"CPP_FirstPersonCharater.gen.cpp.obj",
 			"CPP_FirstPersonController.gen.cpp.obj",
-			"ProjectHyde.init.gen.cpp.obj"
+			"DialogueExecutorSubsystem.gen.cpp.obj",
+			"DialogueRunnerComponent.gen.cpp.obj",
+			"DialogueStructs.gen.cpp.obj",
+			"DialogueSubsystemSettings.gen.cpp.obj",
+			"ProjectHyde.init.gen.cpp.obj",
+			"Value.gen.cpp.obj"
 		]
 	}
 }

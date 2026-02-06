@@ -65,6 +65,10 @@ struct Z_Construct_UClass_ACPP_FirstPersonCharater_Statics
 		{ "Category", "Player|Input" },
 		{ "ModuleRelativePath", "Core/CPP_FirstPersonCharater.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MoveAction_MetaData[] = {
+		{ "Category", "Player|Input" },
+		{ "ModuleRelativePath", "Core/CPP_FirstPersonCharater.h" },
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PauseAction_MetaData[] = {
 		{ "Category", "Player|Input" },
 		{ "ModuleRelativePath", "Core/CPP_FirstPersonCharater.h" },
@@ -83,6 +87,7 @@ struct Z_Construct_UClass_ACPP_FirstPersonCharater_Statics
 	};
 #endif // WITH_METADATA
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_LookAction;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_MoveAction;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_PauseAction;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_InteractAction;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_InteractRange;
@@ -95,12 +100,14 @@ struct Z_Construct_UClass_ACPP_FirstPersonCharater_Statics
 	static const UECodeGen_Private::FClassParams ClassParams;
 };
 const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ACPP_FirstPersonCharater_Statics::NewProp_LookAction = { "LookAction", nullptr, (EPropertyFlags)0x0114000000000015, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACPP_FirstPersonCharater, LookAction), Z_Construct_UClass_UInputAction_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_LookAction_MetaData), NewProp_LookAction_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ACPP_FirstPersonCharater_Statics::NewProp_MoveAction = { "MoveAction", nullptr, (EPropertyFlags)0x0114000000000015, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACPP_FirstPersonCharater, MoveAction), Z_Construct_UClass_UInputAction_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MoveAction_MetaData), NewProp_MoveAction_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ACPP_FirstPersonCharater_Statics::NewProp_PauseAction = { "PauseAction", nullptr, (EPropertyFlags)0x0114000000000015, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACPP_FirstPersonCharater, PauseAction), Z_Construct_UClass_UInputAction_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PauseAction_MetaData), NewProp_PauseAction_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ACPP_FirstPersonCharater_Statics::NewProp_InteractAction = { "InteractAction", nullptr, (EPropertyFlags)0x0114000000000015, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACPP_FirstPersonCharater, InteractAction), Z_Construct_UClass_UInputAction_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_InteractAction_MetaData), NewProp_InteractAction_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_ACPP_FirstPersonCharater_Statics::NewProp_InteractRange = { "InteractRange", nullptr, (EPropertyFlags)0x0010000000000015, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACPP_FirstPersonCharater, InteractRange), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_InteractRange_MetaData), NewProp_InteractRange_MetaData) };
 const UECodeGen_Private::FBytePropertyParams Z_Construct_UClass_ACPP_FirstPersonCharater_Statics::NewProp_InteractChannel = { "InteractChannel", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Byte, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACPP_FirstPersonCharater, InteractChannel), Z_Construct_UEnum_Engine_ECollisionChannel, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_InteractChannel_MetaData), NewProp_InteractChannel_MetaData) }; // 756624936
 const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_ACPP_FirstPersonCharater_Statics::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACPP_FirstPersonCharater_Statics::NewProp_LookAction,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACPP_FirstPersonCharater_Statics::NewProp_MoveAction,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACPP_FirstPersonCharater_Statics::NewProp_PauseAction,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACPP_FirstPersonCharater_Statics::NewProp_InteractAction,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACPP_FirstPersonCharater_Statics::NewProp_InteractRange,
@@ -143,10 +150,10 @@ ACPP_FirstPersonCharater::~ACPP_FirstPersonCharater() {}
 struct Z_CompiledInDeferFile_FID_Git_EH_UE5_ProjectHyde_Source_ProjectHyde_Core_CPP_FirstPersonCharater_h__Script_ProjectHyde_Statics
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ACPP_FirstPersonCharater, ACPP_FirstPersonCharater::StaticClass, TEXT("ACPP_FirstPersonCharater"), &Z_Registration_Info_UClass_ACPP_FirstPersonCharater, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ACPP_FirstPersonCharater), 1908438788U) },
+		{ Z_Construct_UClass_ACPP_FirstPersonCharater, ACPP_FirstPersonCharater::StaticClass, TEXT("ACPP_FirstPersonCharater"), &Z_Registration_Info_UClass_ACPP_FirstPersonCharater, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ACPP_FirstPersonCharater), 3625074029U) },
 	};
 };
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Git_EH_UE5_ProjectHyde_Source_ProjectHyde_Core_CPP_FirstPersonCharater_h__Script_ProjectHyde_3757928810(TEXT("/Script/ProjectHyde"),
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Git_EH_UE5_ProjectHyde_Source_ProjectHyde_Core_CPP_FirstPersonCharater_h__Script_ProjectHyde_332675086(TEXT("/Script/ProjectHyde"),
 	Z_CompiledInDeferFile_FID_Git_EH_UE5_ProjectHyde_Source_ProjectHyde_Core_CPP_FirstPersonCharater_h__Script_ProjectHyde_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Git_EH_UE5_ProjectHyde_Source_ProjectHyde_Core_CPP_FirstPersonCharater_h__Script_ProjectHyde_Statics::ClassInfo),
 	nullptr, 0,
 	nullptr, 0);
