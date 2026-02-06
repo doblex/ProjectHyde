@@ -75,7 +75,7 @@ Saved/*
 DerivedDataCache/*
 
 # Intermediate folder
-#Intermedate/*
+Intermedate/*
 
 # Plugins
 Plugins/*
