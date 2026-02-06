@@ -20,7 +20,7 @@ class PROJECTHYDE_API UCPP_EventFlagSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 	
-private:
+public:
 	TMap<FGameplayTag, bool> EventFlagMap;
 
 public:

@@ -1,0 +1,23 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\admin\\desktop\\unreal\\projecthyde\\intermediate\\build\\win64\\unrealeditor\\inc\\projecthyde\\uht\\cpp_eventflagsdebugger.gen.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\admin\\desktop\\unreal\\projecthyde\\intermediate\\build\\win64\\x64\\projecthydeeditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.h.pch",
+        "Includes": [
+            "c:\\users\\admin\\desktop\\unreal\\projecthyde\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\projecthyde\\definitions.projecthyde.h",
+            "c:\\users\\admin\\desktop\\unreal\\projecthyde\\source\\projecthyde\\actors\\cpp_eventflagsdebugger.h",
+            "c:\\program files\\epic games\\ue_5.6\\engine\\source\\runtime\\gameplaytags\\classes\\gameplaytagcontainer.h",
+            "c:\\program files\\epic games\\ue_5.6\\engine\\source\\runtime\\core\\public\\misc\\comparisonutility.h",
+            "c:\\program files\\epic games\\ue_5.6\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\gameplaytags\\uht\\gameplaytagcontainer.generated.h",
+            "c:\\program files\\epic games\\ue_5.6\\engine\\source\\runtime\\gameplaytags\\classes\\gameplaytagsmanager.h",
+            "c:\\program files\\epic games\\ue_5.6\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\gameplaytags\\uht\\gameplaytagsmanager.generated.h",
+            "c:\\program files\\epic games\\ue_5.6\\engine\\source\\runtime\\gameplaytags\\public\\nativegameplaytags.h",
+            "c:\\users\\admin\\desktop\\unreal\\projecthyde\\source\\projecthyde\\subsystems\\cpp_eventflagsubsystem.h",
+            "c:\\users\\admin\\desktop\\unreal\\projecthyde\\intermediate\\build\\win64\\unrealeditor\\inc\\projecthyde\\uht\\cpp_eventflagsubsystem.generated.h",
+            "c:\\users\\admin\\desktop\\unreal\\projecthyde\\intermediate\\build\\win64\\unrealeditor\\inc\\projecthyde\\uht\\cpp_eventflagsdebugger.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

@@ -8,7 +8,18 @@ UE_DEFINE_GAMEPLAY_TAG_COMMENT(EventFlags, "EventFlags", "Gameplay Tag namespace
 
 void UCPP_EventFlagSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
-	// TODO Load GameplayTag of namespace EventFlag
+	// Load GameplayTags from EventFlags DataTable
+	const TCHAR* TablePath = TEXT("/Script/Engine.DataTable'/Game/Data/EventFlagsTable.EventFlagsTable'");
+	const UDataTable* EventFlagsData = LoadObject<UDataTable>(nullptr, TablePath);
+	const FString ContextString(TEXT("Context"));
+	TArray<FGameplayTagTableRow*> EventFlagRows;
+	EventFlagsData->GetAllRows(ContextString, OUT EventFlagRows);
+
+	for (FGameplayTagTableRow* Row : EventFlagRows)
+	{
+		UE_LOGFMT(EventFlagSubSystem, Display,  "Loaded Event Flag: {0}", Row->Tag.ToString() );
+		EventFlagMap.Add(FGameplayTag::RequestGameplayTag(Row->Tag), false);
+	}
 
 	Super::Initialize(Collection);
 }

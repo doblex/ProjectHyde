@@ -1,0 +1,15 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\admin\\desktop\\unreal\\projecthyde\\source\\projecthyde\\actors\\cpp_lock.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\admin\\desktop\\unreal\\projecthyde\\intermediate\\build\\win64\\x64\\projecthydeeditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.h.pch",
+        "Includes": [
+            "c:\\users\\admin\\desktop\\unreal\\projecthyde\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\projecthyde\\definitions.projecthyde.h",
+            "c:\\users\\admin\\desktop\\unreal\\projecthyde\\source\\projecthyde\\actors\\cpp_lock.h",
+            "c:\\users\\admin\\desktop\\unreal\\projecthyde\\intermediate\\build\\win64\\unrealeditor\\inc\\projecthyde\\uht\\cpp_lock.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}
