@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ProjectHydeModuleRules")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Development")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b3db18712a2892be4576e6c713a95373ce50101c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9139985ee434a80a06af84f6565321f4863d364e")]
 [assembly: System.Reflection.AssemblyProductAttribute("ProjectHydeModuleRules")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ProjectHydeModuleRules")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
