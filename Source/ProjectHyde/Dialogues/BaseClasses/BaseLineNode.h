@@ -13,19 +13,19 @@ enum class EDialogueLineType : uint8
 	Selector
 };
 
-UCLASS(BlueprintType)
-class PROJECTHYDE_API UBaseLineNode : public UDataAsset
+UCLASS(BlueprintType, EditInlineNew, DefaultToInstanced)
+class PROJECTHYDE_API UBaseLineNode : public UObject
 {
 	GENERATED_BODY()
 
 public:
 	UBaseLineNode();
 	
-	UBaseLineNode(const FName& Name, const FText& Line, UBaseLineNode* NextLine = nullptr);
-
-	UBaseLineNode(const FName& Name, const FText& Line, const  TArray<UBaseLineNode*> NextLines);
-	
-	UBaseLineNode(const FName& Name, const FText& Line, FDialogueCommandLine Command  ,UBaseLineNode* NextLine = nullptr);
+	// UBaseLineNode(const FName& Name, const FText& Line, UBaseLineNode* NextLine = nullptr);
+	//
+	// UBaseLineNode(const FName& Name, const FText& Line, const  TArray<UBaseLineNode*> NextLines);
+	//
+	// UBaseLineNode(const FName& Name, const FText& Line, FDialogueCommandLine Command  ,UBaseLineNode* NextLine = nullptr);
 
 protected:
 	
