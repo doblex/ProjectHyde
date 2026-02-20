@@ -43,8 +43,6 @@ void UCPP_EventFlagSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	}
 	bTagsLoaded = true;
 
-	/*const TCHAR* TablePath = TEXT("/Script/Engine.DataTable'/Game/Data/EventFlagsTable.EventFlagsTable'");*/
-
 	Super::Initialize(Collection);
 }
 
