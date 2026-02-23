@@ -94,3 +94,13 @@ bool UCPP_EventFlagSubsystem::AreTagsLoaded()
 {
 	return bTagsLoaded;
 }
+
+void UCPP_EventFlagSubsystem::Save(UHydeSaveGame* SaveGameInstance)
+{
+	SaveGameInstance->EventFlagMap = this->EventFlagMap;
+}
+
+void UCPP_EventFlagSubsystem::Load(UHydeSaveGame* SaveGameInstance)
+{
+	this->EventFlagMap = SaveGameInstance->EventFlagMap;
+}

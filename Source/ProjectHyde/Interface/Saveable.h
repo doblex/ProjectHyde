@@ -24,8 +24,8 @@ class PROJECTHYDE_API ISaveable
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Save System")
-	void Save();
+	void Save(UHydeSaveGame* SaveGameInstance);
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Save System")
-	void Load();
+	void Load(UHydeSaveGame* SaveGameInstance);
 };

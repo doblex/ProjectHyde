@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "../../DevSettings/EventFlagSubsystemSettings.h"
+#include "../../../Interface/Saveable.h"
+#include "../../../Save/HydeSaveGame.h"
 #include "Engine/StreamableManager.h"
 #include "Engine/AssetManager.h"
 
@@ -20,7 +22,7 @@ UE_DECLARE_GAMEPLAY_TAG_EXTERN(EventFlags);
  * 
  */
 UCLASS()
-class PROJECTHYDE_API UCPP_EventFlagSubsystem : public UGameInstanceSubsystem
+class PROJECTHYDE_API UCPP_EventFlagSubsystem : public UGameInstanceSubsystem, public ISaveable
 {
 	GENERATED_BODY()
 	
@@ -52,4 +54,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool AreTagsLoaded();
+
+	void Save(UHydeSaveGame* SaveGameInstance);
+
+	void Load(UHydeSaveGame* SaveGameInstance);
 };
