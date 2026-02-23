@@ -22,4 +22,8 @@ public:
 	/// It limits the amount of linear dialogues to max n. If 0 then it is limitless
 	UPROPERTY(Config, EditAnywhere, Category = "Dialogue Subsystem")
 	int MaxDialoguesNumber = 3;
+	
+	UPROPERTY(Config, EditAnywhere, Category = "Dialogue Import")
+	FDirectoryPath DialogueImportPath;
+	
 };

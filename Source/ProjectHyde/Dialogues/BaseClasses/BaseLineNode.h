@@ -26,8 +26,6 @@ public:
 	// UBaseLineNode(const FName& Name, const FText& Line, const  TArray<UBaseLineNode*> NextLines);
 	//
 	// UBaseLineNode(const FName& Name, const FText& Line, FDialogueCommandLine Command  ,UBaseLineNode* NextLine = nullptr);
-
-protected:
 	
 	UPROPERTY(EditAnywhere ,BlueprintReadOnly ,Category = "Dialogue")
 	FName LineProtagonistName;
@@ -40,18 +38,17 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Dialogue")
 	FDialogueCommandLine Command;
-
-public:
+	
+	UPROPERTY(EditAnywhere, Category = "Dialogue")
+	TArray<UBaseLineNode*> NextLines;
+	
 	FDialogueCommandLine GetCommand() const
 	{
 		return Command;
 	}
-
-protected:
-	UPROPERTY(EditAnywhere, Category = "Dialogue")
-	TArray<UBaseLineNode*> NextLines;
 	
-public:
+
+	
 	
 	FText GetLineText() const;
 	

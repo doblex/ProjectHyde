@@ -4,11 +4,11 @@
 #include "Value.generated.h"
 
 UENUM(BlueprintType)
-enum EValueType
+enum class EValueType : uint8
 {
-	STRING,
-	NUMBER,
-	BOOLEAN,
+	String,
+	Number,
+	Boolean,
 };
 
 
@@ -20,52 +20,62 @@ class PROJECTHYDE_API UValue : public UObject
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
-	TEnumAsByte<EValueType> Type;
+	EValueType Type = EValueType::String;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
-	FString StringValue;
+	FString StringValue = "";
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
-	double Number;
+	double Number = 0.0;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
-	bool Boolean;
+	bool Boolean = false;
 	
-	//Default constructor
-	UValue() : Type(NUMBER), Number(0) {}
 	
-	//String constructors
-	UValue(const char *string) : Type(STRING), StringValue(string) {}
-	UValue(const FString &string) : Type(STRING), StringValue(string) {}
-	
-	//Number Constructors
-	UValue(float Number) : Type(NUMBER), Number(Number) {}
-	UValue(double Number) : Type(NUMBER), Number(Number) {}
-	UValue(int Number) : Type(NUMBER), Number(Number) {}
-	
-	//Boolean Constructors
-	UValue(bool Boolean) : Type(BOOLEAN), Boolean(Boolean) {}
+	static UValue* MakeString(UObject* Outer, const FString& InString)
+	{
+		UValue* V = NewObject<UValue>(Outer);
+		V->Type = EValueType::String;
+		V->StringValue = InString;
+		return V;
+	}
+
+	static UValue* MakeNumber(UObject* Outer, double InNumber)
+	{
+		UValue* V = NewObject<UValue>(Outer);
+		V->Type = EValueType::Number;
+		V->Number = InNumber;
+		return V;
+	}
+
+	static UValue* MakeBoolean(UObject* Outer, bool bInBoolean)
+	{
+		UValue* V = NewObject<UValue>(Outer);
+		V->Type = EValueType::Boolean;
+		V->Boolean = bInBoolean;
+		return V;
+	}
 	
 	EValueType GetType() const { return Type; }
 	
 	bool IsString() const
 	{
-		return GetType() == STRING;
+		return GetType() == EValueType::String;
 	}
 
 	bool IsNumber() const
 	{
-		return GetType() == NUMBER;
+		return GetType() == EValueType::Number;
 	}
 
 	bool IsBoolean() const
 	{
-		return GetType() == BOOLEAN;
+		return GetType() == EValueType::Boolean;
 	}
 	
 	const FString GetStringValue()
 	{
-		if (this->Type == STRING)
+		if (this->Type == EValueType::String)
 		{
 			return this->StringValue;
 		}
@@ -75,7 +85,7 @@ public:
 
 	float GetNumberValue()
 	{
-		if (this->Type == NUMBER)
+		if (this->Type == EValueType::Number)
 		{
 			return this->Number;
 		}
@@ -84,11 +94,11 @@ public:
 
 	float ConvertToNumber()
 	{
-		if (Type == STRING)
+		if (Type == EValueType::String)
 		{
 			return FCString::Atof(*StringValue);
 		}
-		if (Type == BOOLEAN)
+		if (Type == EValueType::Boolean)
 		{
 			return Boolean ? 1 : 0;
 		}
@@ -97,7 +107,7 @@ public:
 
 	bool GetBooleanValue()
 	{
-		if (this->Type == BOOLEAN)
+		if (this->Type == EValueType::Boolean)
 		{
 			return this->Boolean;
 		}
@@ -109,11 +119,11 @@ public:
 	{
 		switch (Type)
 		{
-		case STRING:
+		case EValueType::String:
 			return StringValue;
-		case BOOLEAN:
+		case EValueType::Boolean:
 			return Boolean ? "True" : "False";
-		case NUMBER:
+		case EValueType::Number:
 			if (FMath::IsNearlyEqual(Number, FMath::RoundToFloat(Number)))
 			{
 				return FString::FromInt(FMath::RoundToInt(Number));
