@@ -26,4 +26,9 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "Dialogue Import")
 	FDirectoryPath DialogueImportPath;
 	
+	UPROPERTY(Config, EditAnywhere, Category = "Dialogue Import")
+	bool bLogsImport;
+	
+	UPROPERTY(Config, EditAnywhere, Category = "Dialogue Import")
+	bool bVerbose;
 };
