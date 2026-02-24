@@ -5,6 +5,7 @@
 
 #include "Factories.h"
 #include "AssetRegistry/AssetRegistryModule.h"
+#include "ProjectHyde/Core/DevSettings/DialogueSubsystemSettings.h"
 #include "ProjectHyde/Dialogues/BaseClasses/BaseDialogue.h"
 
 UDialogueFactory::UDialogueFactory()
@@ -14,6 +15,8 @@ UDialogueFactory::UDialogueFactory()
 	bEditorImport = true;
 	SupportedClass = UBaseDialogue::StaticClass();
 }
+
+
 
 UObject* UDialogueFactory::FactoryCreateFile(
 	UClass* InClass,
@@ -32,7 +35,7 @@ UObject* UDialogueFactory::FactoryCreateFile(
 		UE_LOG(LogEditorFactories, Error, TEXT("UDialogueFactory::FactoryCreateFile: Failed to load file %s"), *Filename);
 	}
 
-	UE_LOG(LogEditorFactories, Warning, TEXT("Yarn Import: Started: %s"), *Filename);
+	UE_LOG(LogEditorFactories, Display, TEXT("Yarn Import: Started: %s"), *Filename);
 	
 	//Text organized in an array for parsing
 	TArray<FString> Lines;
@@ -42,119 +45,75 @@ UObject* UDialogueFactory::FactoryCreateFile(
 	TArray<FDialogueTemp> DialogueTemps = ParseFile(Lines);
 	
 	//Saving objects
-	FString YarnFileName = FPaths::GetBaseFilename(Filename);
-	FString FixedFolder = TEXT("/Game/Dialogues/") + YarnFileName;
-	//TODO:dovrebbe diventare variabile
 	
-	UE_LOG(LogEditorFactories, Warning, TEXT("Yarn Import: Start Saving objects"));
-	
-	bool bFirst = true;
 	UBaseDialogue* FirstDialogue = nullptr;
-	for (auto DialogueTemp : DialogueTemps)
+	
+	if (const UDialogueSubsystemSettings* DialogueSettings = GetDefault<UDialogueSubsystemSettings>())
 	{
-		//saving Path
-		FString AssetName = DialogueTemp.Name.ToString();
-		FString PackageName = FixedFolder + TEXT("/") + AssetName;
-		
-		UPackage* Package = CreatePackage(*PackageName);
-		Package->FullyLoad();
-		
-		UBaseDialogue* Dialogue = NewObject<UBaseDialogue>(
-			Package,
-			UBaseDialogue::StaticClass(),
-			FName(*AssetName),
-			RF_Public | RF_Standalone
-			);
-		
-		FAssetRegistryModule::AssetCreated(Dialogue);
-		Dialogue->MarkPackageDirty();
-		Package->MarkPackageDirty();
-		
-		if (bFirst)
+		if (!DialogueSettings->DialogueImportPath.Path.IsEmpty())
 		{
-			bFirst = false;
-			FirstDialogue = Dialogue;
+			FString YarnFileName = FPaths::GetBaseFilename(Filename);
+			FString FixedFolder = DialogueSettings->DialogueImportPath.Path + YarnFileName;
+			FirstDialogue = SaveObjects(DialogueTemps, FixedFolder);
 		}
-		
-		TMap<FName, UBaseLineNode*> CreatedNodes;
-		bool bFirstLine = true;
-		
-		for (const auto& Pair : DialogueTemp.Lines)
+		else
 		{
-			const FLineTemp& LineTemp = Pair.Value;
-			
-			UBaseLineNode* Node = NewObject<UBaseLineNode>(
-				Dialogue,
-				UBaseLineNode::StaticClass(),
-				Pair.Key,
-				RF_Public | RF_Transactional
-			);
-			
-			if (bFirstLine)
-			{
-				Dialogue->RootLine = Node;
-				bFirstLine = false;
-			}
-			
-			if (LineTemp.bIsCommand)
-			{
-				
-				//function args
-				TArray<UValue*> CommandArgs;
-				for (auto CommandArg : LineTemp.Args)
-				{
-					CommandArgs.Add(CreateValue(CommandArg));
-				}
-
-				Node->Type = EDialogueLineType::Command;
-				
-				if (CommandArgs.Num() > 0)
-				{
-					Node->Command = FDialogueCommandLine(LineTemp.CommandName, CommandArgs);
-				}
-				else
-				{
-					Node->Command = FDialogueCommandLine(LineTemp.CommandName);
-				}
-			}
-			else
-			{
-				Node->Type = EDialogueLineType::Line;
-				Node->LineProtagonistName = LineTemp.Protagonist;
-				Node->Line = FText::FromString(LineTemp.Text);
-			}
-			
-			CreatedNodes.Add(Pair.Key, Node);
+			UE_LOG(LogEditorFactories, Error, TEXT("UDialogueFactory::FactoryCreateFile: DialogueImportPath is empty"));
 		}
-		
-		UE_LOG(LogEditorFactories, Warning, TEXT("Yarn Import: Start Linking %s: %i lines"),*DialogueTemp.Name.ToString(),DialogueTemp.Lines.Num());
-		
-		for (const auto& Pair : DialogueTemp.Lines)
-		{
-			const FName NodeName = Pair.Key;
-			const FLineTemp& LineTemp = Pair.Value;
+	}
+	else
+	{
+		UE_LOG(LogEditorFactories, Error, TEXT("UDialogueFactory::FactoryCreateFile: Failed to load settings from UDialogueSubsystemSettings"));
+	}
+	
+	return FirstDialogue;
+	
+}
 
-			UBaseLineNode* CurrentNode = CreatedNodes[NodeName];
+void UDialogueFactory::LinkDialogue(FDialogueTemp DialogueTemp, TMap<FName, UBaseLineNode*> CreatedNodes)
+{
+	UE_LOG(LogEditorFactories, Display, TEXT("Yarn Import: Start Linking %s: %i lines"), *DialogueTemp.Name.ToString(), DialogueTemp.Lines.Num());
+		
+	for (const auto& Pair : DialogueTemp.Lines)
+	{
+		const FName NodeName = Pair.Key;
+		const FLineTemp& LineTemp = Pair.Value;
+
+		UBaseLineNode* CurrentNode = CreatedNodes[NodeName];
 			
-			for (const FName& NextName : LineTemp.NextLines)
+		for (const FName& NextName : LineTemp.NextLines)
+		{
+			if (UBaseLineNode* NextNode = CreatedNodes.FindRef(NextName))
 			{
-				if (UBaseLineNode* NextNode = CreatedNodes.FindRef(NextName))
-				{
-					CurrentNode->NextLines.Add(NextNode);
-				}
+				CurrentNode->NextLines.Add(NextNode);
 			}
 		}
 	}
+}
+
+UValue* UDialogueFactory::CreateValue(FString ArgString)
+{
+	UValue* Value = nullptr;
 	
-	int ImportNumber = DialogueTemps.Num();
+	if(ArgString.Equals("true") || ArgString.Equals("false"))
+	{
+		 UValue::MakeBoolean(Value,ArgString.ToBool());
+	}
+	else if (ArgString.IsNumeric())
+	{
+		UValue::MakeNumber(Value,FCString::Atod(*ArgString));
+	}
+	else
+	{
+		UValue::MakeString(Value,ArgString);
+	}
 	
-	UE_LOG(LogEditorFactories, Warning, TEXT("Yarn Import: End: %i imported"), ImportNumber);
-	return FirstDialogue;
+	return Value;
 }
 
 TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 {
-	UE_LOG(LogEditorFactories, Warning, TEXT("Yarn Import: Parsing Started"));
+	UE_LOG(LogEditorFactories, Display, TEXT("Yarn Import: Parsing Started"));
 	
 	TArray<FDialogueTemp> DialogueTemps;
 	
@@ -170,7 +129,7 @@ TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 	
 	for (const FString& Line : Lines)
 	{
-		UE_LOG(LogEditorFactories, Warning, TEXT("Yarn Import: %s"), *Line);
+		UE_LOG(LogEditorFactories, VeryVerbose, TEXT("Yarn Import: %s"), *Line);
 		
 		
 		//Titolo dialogo
@@ -189,7 +148,7 @@ TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 		//fine testo
 		else if(Line.StartsWith(TEXT("==="))) 
 		{
-			UE_LOG(LogEditorFactories, Warning, TEXT("Yarn Import: Closing body with %i Lines"), BodyLinesNumber);
+			UE_LOG(LogEditorFactories, Display, TEXT("Yarn Import: Closing body with %i Lines"), BodyLinesNumber);
 			bReadingBody = false;
 			bDialogueReading = false;
 			DialogueTemps.Add(CurrentDialogue);
@@ -283,28 +242,100 @@ TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 		
 	}
 	
-	UE_LOG(LogEditorFactories, Warning, TEXT("Yarn Import: Parsing Ended: found %i dialogues"), DialoguesFound);
+	UE_LOG(LogEditorFactories, Display, TEXT("Yarn Import: Parsing Ended: found %i dialogues"), DialoguesFound);
 	return DialogueTemps;
 }
 
-UValue* UDialogueFactory::CreateValue(FString ArgString)
+UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps, FString FixedFolder)
 {
-	UValue* Value = nullptr;
+	UE_LOG(LogEditorFactories, Display, TEXT("Yarn Import: Start Saving objects"));
 	
-	if(ArgString.Equals("true") || ArgString.Equals("false"))
+	bool bFirst = true;
+	UBaseDialogue* FirstDialogue = nullptr;
+	for (auto DialogueTemp : DialogueTemps)
 	{
-		 UValue::MakeBoolean(Value,ArgString.ToBool());
-	}
-	else if (ArgString.IsNumeric())
-	{
-		UValue::MakeNumber(Value,FCString::Atod(*ArgString));
-	}
-	else
-	{
-		UValue::MakeString(Value,ArgString);
+		//saving Path
+		FString AssetName = DialogueTemp.Name.ToString();
+		FString PackageName = FixedFolder + TEXT("/") + AssetName;
+		
+		UPackage* Package = CreatePackage(*PackageName);
+		Package->FullyLoad();
+		
+		UBaseDialogue* Dialogue = NewObject<UBaseDialogue>(
+			Package,
+			UBaseDialogue::StaticClass(),
+			FName(*AssetName),
+			RF_Public | RF_Standalone
+		);
+		
+		FAssetRegistryModule::AssetCreated(Dialogue);
+		Dialogue->MarkPackageDirty();
+		Package->MarkPackageDirty();
+		
+		if (bFirst)
+		{
+			bFirst = false;
+			FirstDialogue = Dialogue;
+		}
+		
+		TMap<FName, UBaseLineNode*> CreatedNodes;
+		bool bFirstLine = true;
+		
+		for (const auto& Pair : DialogueTemp.Lines)
+		{
+			const FLineTemp& LineTemp = Pair.Value;
+			
+			UBaseLineNode* Node = NewObject<UBaseLineNode>(
+				Dialogue,
+				UBaseLineNode::StaticClass(),
+				Pair.Key,
+				RF_Public | RF_Transactional
+			);
+			
+			if (bFirstLine)
+			{
+				Dialogue->RootLine = Node;
+				bFirstLine = false;
+			}
+			
+			if (LineTemp.bIsCommand)
+			{
+				
+				//function args
+				TArray<UValue*> CommandArgs;
+				for (auto CommandArg : LineTemp.Args)
+				{
+					CommandArgs.Add(CreateValue(CommandArg));
+				}
+
+				Node->Type = EDialogueLineType::Command;
+				
+				if (CommandArgs.Num() > 0)
+				{
+					Node->Command = FDialogueCommandLine(LineTemp.CommandName, CommandArgs);
+				}
+				else
+				{
+					Node->Command = FDialogueCommandLine(LineTemp.CommandName);
+				}
+			}
+			else
+			{
+				Node->Type = EDialogueLineType::Line;
+				Node->LineProtagonistName = LineTemp.Protagonist;
+				Node->Line = FText::FromString(LineTemp.Text);
+			}
+			
+			CreatedNodes.Add(Pair.Key, Node);
+		}
+
+		LinkDialogue(DialogueTemp, CreatedNodes);
 	}
 	
-	return Value;
+	int ImportNumber = DialogueTemps.Num();
+	
+	UE_LOG(LogEditorFactories, Display, TEXT("Yarn Import: End: %i imported"), ImportNumber);
+	return FirstDialogue;
 }
 
 

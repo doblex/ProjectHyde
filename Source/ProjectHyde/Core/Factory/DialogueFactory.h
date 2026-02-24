@@ -11,6 +11,9 @@
  * 
  */
 
+class UBaseDialogue;
+class UBaseLineNode;
+
 struct FLineTemp
 {
 	//Line Params
@@ -51,7 +54,12 @@ public:
 		) override;
 	
 private:
+	
 	TArray<FDialogueTemp> ParseFile(TArray<FString> Lines);
 	
 	UValue* CreateValue(FString ArgString);
+	
+	void LinkDialogue(FDialogueTemp DialogueTemp, TMap<FName, UBaseLineNode*> CreatedNodes);
+	
+	UBaseDialogue* SaveObjects(TArray<FDialogueTemp> DialogueTemps, FString FixedFolder);
 };
