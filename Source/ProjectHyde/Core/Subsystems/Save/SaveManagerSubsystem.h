@@ -13,22 +13,37 @@
 /**
  * 
  */
+
+DECLARE_LOG_CATEGORY_EXTERN(SaveSubsystem, Log, All);
+
 UCLASS()
 class PROJECTHYDE_API USaveManagerSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
+public:
+	// Delegates to know when saving and loading is finished
+	FAsyncSaveGameToSlotDelegate OnSaveCompleted;
+	FAsyncLoadGameFromSlotDelegate OnLoadCompleted;
+
 private:
 	UHydeSaveGame* SaveGameInstance;
 
 public:
+	// Begin USubsystem
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
+	// End USubsystem
+
 	// Asynchronous save and load that are globally accessible from different GameModes/PlayerControllers
 	UFUNCTION(BlueprintCallable)
-	void SaveGame(const FString SaveSlotName, const int32 UserIndex);
+	void SaveGame(const FString& SaveSlotName, const int32 UserIndex);
 
 	UFUNCTION(BlueprintCallable)
-	void LoadGame(const FString SaveSlotName, const int32 UserIndex);
+	void LoadGame(const FString& SaveSlotName, const int32 UserIndex);
 
-	// TODO make delegates to know when saving and loading is finished
+private:
+	void HandleGameSaveCompleted(const FString& SaveSlotName, const int32 UserIndex, bool SaveSucceeded);
+	void HandleGameLoadCompleted(const FString& SaveSlotName, const int32 UserIndex, USaveGame* LoadedSaveFile);
 	
 };
