@@ -3,7 +3,7 @@
 
 #include "CPP_EventFlagSubsystem.h"
 
-DEFINE_LOG_CATEGORY(EventFlagSubSystem);
+DEFINE_LOG_CATEGORY(EventFlagSubsystem);
 UE_DEFINE_GAMEPLAY_TAG_COMMENT(EventFlags, "EventFlags", "Gameplay Tag namespace for game events");
 
 void UCPP_EventFlagSubsystem::OnEventFlagTableLoaded(TSoftObjectPtr<UDataTable> TablePtr)
@@ -18,13 +18,14 @@ void UCPP_EventFlagSubsystem::OnEventFlagTableLoaded(TSoftObjectPtr<UDataTable> 
 
 		for (FGameplayTagTableRow* Row : EventFlagRows)
 		{
-			UE_LOGFMT(EventFlagSubSystem, Display, "Loaded Event Flag: {0}", Row->Tag.ToString());
+			UE_LOGFMT(EventFlagSubsystem, Display, "Loaded Event Flag: {0}", Row->Tag.ToString());
 			EventFlagMap.Add(FGameplayTag::RequestGameplayTag(Row->Tag), false);
 		}
+		bTagsLoaded = true;
 	}
 	else
 	{
-		UE_LOGFMT(LogTemp, Error, "EventFlagSubsystem: Table Load Failed");
+		UE_LOGFMT(EventFlagSubsystem, Error, "EventFlagSubsystem: Table Load Failed");
 	}
 
 }
@@ -40,8 +41,7 @@ void UCPP_EventFlagSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 			Settings->EventFlagsDataTable.ToSoftObjectPath(),
 			FStreamableDelegate::CreateUObject(this, &UCPP_EventFlagSubsystem::OnEventFlagTableLoaded, Settings->EventFlagsDataTable)
 		);
-	}
-	bTagsLoaded = true;
+	};
 
 	Super::Initialize(Collection);
 }
@@ -61,7 +61,7 @@ bool UCPP_EventFlagSubsystem::SetEventFlag(FGameplayTag Flag, bool bValue)
 	}
 
 	// Prints a warning and returns false if not set
-	UE_LOGFMT(EventFlagSubSystem, Warning, "Could not set Event Flag: {0}, Reason: Wrong namespace.", Flag.ToString());
+	UE_LOGFMT(EventFlagSubsystem, Warning, "Could not set Event Flag: {0}, Reason: Wrong namespace.", Flag.ToString());
 	return false;
 }
 
@@ -74,14 +74,14 @@ bool UCPP_EventFlagSubsystem::GetEventFlag(FGameplayTag Flag)
 		else
 		{
 			// Flag not found in map case
-			UE_LOGFMT(EventFlagSubSystem, Warning, "Could not find Event Flag: {0}, Reason: Event Flag not found.", Flag.ToString());
+			UE_LOGFMT(EventFlagSubsystem, Warning, "Could not find Event Flag: {0}, Reason: Event Flag not found.", Flag.ToString());
 			return false;
 		}
 	}
 
 
 	// Defaults to false and prints a Warning
-	UE_LOGFMT(EventFlagSubSystem, Warning, "Could not get Event Flag: {0}, Reason: Wrong namespace.", Flag.ToString());
+	UE_LOGFMT(EventFlagSubsystem, Warning, "Could not get Event Flag: {0}, Reason: Wrong namespace.", Flag.ToString());
 	return false;
 }
 
@@ -95,12 +95,14 @@ bool UCPP_EventFlagSubsystem::AreTagsLoaded()
 	return bTagsLoaded;
 }
 
-void UCPP_EventFlagSubsystem::Save(UHydeSaveGame* SaveGameInstance)
+void UCPP_EventFlagSubsystem::Save_Implementation(UHydeSaveGame* SaveGameInstance)
 {
+	UE_LOGFMT(EventFlagSubsystem, Display, "Event Flag Sybsystem received Save request!");
 	SaveGameInstance->EventFlagMap = this->EventFlagMap;
 }
 
-void UCPP_EventFlagSubsystem::Load(UHydeSaveGame* SaveGameInstance)
+void UCPP_EventFlagSubsystem::Load_Implementation(UHydeSaveGame* SaveGameInstance)
 {
+	UE_LOGFMT(EventFlagSubsystem, Display, "Event Flag Sybsystem received Load request!");
 	this->EventFlagMap = SaveGameInstance->EventFlagMap;
 }

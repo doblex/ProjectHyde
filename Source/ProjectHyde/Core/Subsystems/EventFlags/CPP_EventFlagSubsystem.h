@@ -15,7 +15,7 @@
 #include "NativeGameplayTags.h"
 #include "CPP_EventFlagSubsystem.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(EventFlagSubSystem, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(EventFlagSubsystem, Log, All);
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(EventFlags);
 
 /**
@@ -55,7 +55,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool AreTagsLoaded();
 
-	void Save(UHydeSaveGame* SaveGameInstance);
+	virtual void Save_Implementation(UHydeSaveGame* SaveGameInstance) override;
 
-	void Load(UHydeSaveGame* SaveGameInstance);
+	virtual void Load_Implementation(UHydeSaveGame* SaveGameInstance) override;
 };

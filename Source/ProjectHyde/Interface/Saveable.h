@@ -23,9 +23,9 @@ class PROJECTHYDE_API ISaveable
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Save System")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Save System")
 	void Save(UHydeSaveGame* SaveGameInstance);
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Save System")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Save System")
 	void Load(UHydeSaveGame* SaveGameInstance);
 };
