@@ -91,21 +91,21 @@ void UDialogueFactory::LinkDialogue(FDialogueTemp DialogueTemp, TMap<FName, UBas
 	}
 }
 
-UValue* UDialogueFactory::CreateValue(FString ArgString)
+UValue* UDialogueFactory::CreateValue(UObject* Outer,FString ArgString)
 {
 	UValue* Value = nullptr;
 	
 	if(ArgString.Equals("true") || ArgString.Equals("false"))
 	{
-		 UValue::MakeBoolean(Value,ArgString.ToBool());
+		Value = UValue::MakeBoolean(Outer,ArgString.ToBool());
 	}
 	else if (ArgString.IsNumeric())
 	{
-		UValue::MakeNumber(Value,FCString::Atod(*ArgString));
+		Value = UValue::MakeNumber(Outer,FCString::Atod(*ArgString));
 	}
 	else
 	{
-		UValue::MakeString(Value,ArgString);
+		Value = UValue::MakeString(Outer,ArgString);
 	}
 	
 	return Value;
@@ -193,7 +193,7 @@ TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 				
 				//divido per il carattere spazio nome e argomenti della funzione
 				TArray<FString> CommandTemp;
-				Line.ParseIntoArray(CommandTemp, TEXT(" "));
+				Inner.ParseIntoArray(CommandTemp, TEXT(" "));
 				
 				//mi salvo il tutto nella struct
 				NewLine.CommandName = FName(*CommandTemp[0]);
@@ -224,6 +224,7 @@ TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 				}
 				else
 				{
+					NewLine.Protagonist = FName("");
 					NewLine.Text = Line.TrimStartAndEnd();
 				}
 				
@@ -278,6 +279,8 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 			FirstDialogue = Dialogue;
 		}
 		
+		Dialogue->DialogueName = DialogueTemp.Name;
+		
 		TMap<FName, UBaseLineNode*> CreatedNodes;
 		bool bFirstLine = true;
 		
@@ -305,7 +308,7 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 				TArray<UValue*> CommandArgs;
 				for (auto CommandArg : LineTemp.Args)
 				{
-					CommandArgs.Add(CreateValue(CommandArg));
+					CommandArgs.Add(CreateValue(Node, CommandArg));
 				}
 
 				Node->Type = EDialogueLineType::Command;

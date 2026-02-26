@@ -57,7 +57,7 @@ private:
 	
 	TArray<FDialogueTemp> ParseFile(TArray<FString> Lines);
 	
-	UValue* CreateValue(FString ArgString);
+	UValue* CreateValue(UObject* Outer,FString ArgString);
 	
 	void LinkDialogue(FDialogueTemp DialogueTemp, TMap<FName, UBaseLineNode*> CreatedNodes);
 	
