@@ -13,6 +13,7 @@
  * 
  */
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnDialogueEnded, UBaseDialogue*, BaseDialogue);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnDialogueMakeSound, ELineEmotion, Emotion);
 
 UCLASS()
 class PROJECTHYDE_API UDialogueExecutorSubsystem : public UGameInstanceSubsystem
@@ -33,6 +34,7 @@ protected:
 	
 public:
 	FOnDialogueEnded OnDialogueEnded;
+	FOnDialogueMakeSound OnDialogueMakeSound;
 	
 	UFUNCTION(BlueprintCallable)
 	UBaseLineNode* StartDialogue(UBaseDialogue* Dialogue);
@@ -40,5 +42,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UBaseLineNode* ContinueDialogue(int choice = 0);
 	
+	UFUNCTION(BlueprintCallable)
+	void MakeSound(ELineEmotion Emotion = ELineEmotion::Neutral);
+	
 	int GetMaxDialoguesNumber();
+	
 };

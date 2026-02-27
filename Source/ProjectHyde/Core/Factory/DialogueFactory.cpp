@@ -220,16 +220,27 @@ TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 				NewLine.Name = FName(*FString::Printf(TEXT("Line_%d"), CurrentDialogue.Lines.Num()));
 				
 				FString Speaker, Text;
-				if (Line.Split(TEXT(":"), &Speaker, &Text))
+				int32 ColonIndex, HashIndex;
+
+				bool bHasColon = Line.FindChar(TEXT(':'), ColonIndex);
+				bool bHasHash  = Line.FindChar(TEXT('#'), HashIndex);
+
+				// Valid speaker token only if:
+				// - There is a colon
+				// - AND either no '#' exists OR ':' appears before '#'
+				if (bHasColon && (!bHasHash || ColonIndex < HashIndex))
 				{
-					NewLine.Protagonist = FName(*Speaker.TrimStartAndEnd());
+					Speaker = Line.Left(ColonIndex);
+					Text = Line.Mid(ColonIndex + 1);
 				}
 				else
 				{
-					Speaker = "";
+					Speaker = TEXT("");
 					Text = Line;
-					NewLine.Protagonist = FName("");
 				}
+				
+				NewLine.Protagonist = FName(*Speaker.TrimStartAndEnd());
+				
 				
 				// Emotions
 				int TagIndex = Text.Find("#tone:");

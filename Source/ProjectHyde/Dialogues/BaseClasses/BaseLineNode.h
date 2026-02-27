@@ -32,7 +32,8 @@ enum class ELineEmotion : uint8
 	Tired,
 	Conflicted,
 	Sarcastic,
-	Hopeful
+	Hopeful,
+	MAX UMETA(Hidden)
 };
 
 UCLASS(BlueprintType, EditInlineNew, DefaultToInstanced)
