@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Factories/Factory.h"
+#include "ProjectHyde/Dialogues/BaseClasses/BaseLineNode.h"
 #include "ProjectHyde/Dialogues/BaseClasses/Value.h"
 #include "DialogueFactory.generated.h"
 
@@ -21,6 +22,7 @@ struct FLineTemp
 	FName Protagonist;
 	FString Text;
 	TArray<FName> NextLines;
+	ELineEmotion Emotion;
 	
 	//Command Params
 	bool bIsCommand;

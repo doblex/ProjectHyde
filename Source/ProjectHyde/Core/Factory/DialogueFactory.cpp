@@ -5,6 +5,7 @@
 
 #include "Factories.h"
 #include "AssetRegistry/AssetRegistryModule.h"
+#include "ProjectHyde/Core/CoreLibrary.h"
 #include "ProjectHyde/Core/DevSettings/DialogueSubsystemSettings.h"
 #include "ProjectHyde/Dialogues/BaseClasses/BaseDialogue.h"
 
@@ -110,6 +111,8 @@ UValue* UDialogueFactory::CreateValue(UObject* Outer,FString ArgString)
 	
 	return Value;
 }
+
+
 
 TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 {
@@ -220,14 +223,29 @@ TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 				if (Line.Split(TEXT(":"), &Speaker, &Text))
 				{
 					NewLine.Protagonist = FName(*Speaker.TrimStartAndEnd());
-					NewLine.Text = Text.TrimStartAndEnd();
 				}
 				else
 				{
+					Speaker = "";
+					Text = Line;
 					NewLine.Protagonist = FName("");
-					NewLine.Text = Line.TrimStartAndEnd();
 				}
 				
+				// Emotions
+				int TagIndex = Text.Find("#tone:");
+				
+				if (TagIndex != -1)
+				{
+					FString Emotion = Text.RightChop(TagIndex + 6);
+					NewLine.Emotion = UCoreLibrary::GetEnumFromString<ELineEmotion>(Emotion, ELineEmotion::Neutral);
+					NewLine.Text = Text.LeftChop(Text.Len() - TagIndex).TrimStartAndEnd();
+				}
+				else
+				{
+					NewLine.Emotion = ELineEmotion::Neutral;
+					NewLine.Text = Text.TrimStartAndEnd();
+				}
+
 				NewLine.bIsCommand = false;
 				
 				CurrentDialogue.Lines.Add(NewLine.Name, NewLine);
@@ -327,6 +345,7 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 				Node->Type = EDialogueLineType::Line;
 				Node->LineProtagonistName = LineTemp.Protagonist;
 				Node->Line = FText::FromString(LineTemp.Text);
+				Node->LineEmotion = LineTemp.Emotion;
 			}
 			
 			CreatedNodes.Add(Pair.Key, Node);
@@ -340,5 +359,7 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 	UE_LOG(LogEditorFactories, Display, TEXT("Yarn Import: End: %i imported"), ImportNumber);
 	return FirstDialogue;
 }
+
+
 
 

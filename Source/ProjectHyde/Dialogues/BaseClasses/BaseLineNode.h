@@ -13,6 +13,28 @@ enum class EDialogueLineType : uint8
 	Selector
 };
 
+UENUM(BlueprintType)
+enum class ELineEmotion : uint8
+{
+	Neutral,
+	Question,
+	Nervous,
+	Happy,
+	Distressed,
+	Sad,
+	Haughty,
+	Sigh,
+	Serious,
+	Angry,
+	Thinking,
+	Laugh,
+	Scared,
+	Tired,
+	Conflicted,
+	Sarcastic,
+	Hopeful
+};
+
 UCLASS(BlueprintType, EditInlineNew, DefaultToInstanced)
 class PROJECTHYDE_API UBaseLineNode : public UObject
 {
@@ -31,7 +53,10 @@ public:
 	FName LineProtagonistName;
 	
 	UPROPERTY(EditAnywhere, Category = "Dialogue")
-	EDialogueLineType Type;
+	EDialogueLineType Type = EDialogueLineType::Line;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dialogue")
+	ELineEmotion LineEmotion = ELineEmotion::Neutral;
 	
 	UPROPERTY(EditAnywhere ,BlueprintReadOnly, Category = "Dialogue")
 	FText Line;
@@ -46,9 +71,6 @@ public:
 	{
 		return Command;
 	}
-	
-
-	
 	
 	FText GetLineText() const;
 	
