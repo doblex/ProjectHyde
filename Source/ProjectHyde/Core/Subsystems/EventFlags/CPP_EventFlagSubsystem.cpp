@@ -95,13 +95,13 @@ bool UCPP_EventFlagSubsystem::AreTagsLoaded()
 	return bTagsLoaded;
 }
 
-void UCPP_EventFlagSubsystem::Save_Implementation(UHydeSaveGame* SaveGameInstance)
+void UCPP_EventFlagSubsystem::Save(UHydeSaveGame* SaveGameInstance)
 {
 	UE_LOGFMT(EventFlagSubsystem, Display, "Event Flag Sybsystem received Save request!");
 	SaveGameInstance->EventFlagMap = this->EventFlagMap;
 }
 
-void UCPP_EventFlagSubsystem::Load_Implementation(UHydeSaveGame* SaveGameInstance)
+void UCPP_EventFlagSubsystem::Load(const UHydeSaveGame* SaveGameInstance)
 {
 	UE_LOGFMT(EventFlagSubsystem, Display, "Event Flag Sybsystem received Load request!");
 	this->EventFlagMap = SaveGameInstance->EventFlagMap;

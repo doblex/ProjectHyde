@@ -6,6 +6,10 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "../../../Save/HydeSaveGame.h"
 #include "../../../Interface/Saveable.h"
+#include "../../../Actors/Components/CPP_SaveGameIdComponent.h"
+// Actors to save
+#include "../../../Actors/CPP_Lock.h"
+// Subsystems to save
 #include "../../../Core/Subsystems/EventFlags/CPP_EventFlagSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "SaveManagerSubsystem.generated.h"

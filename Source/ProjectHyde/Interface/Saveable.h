@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "Serialization/Archive.h"
 #include "Saveable.generated.h"
 
 // This class does not need to be modified.
@@ -27,5 +28,8 @@ public:
 	void Save(UHydeSaveGame* SaveGameInstance);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Save System")
-	void Load(UHydeSaveGame* SaveGameInstance);
+	void Load(const UHydeSaveGame* SaveGameInstance, const FGuid GUID);
+
+	// Serialize data to a binary object or deserialize data from a binary object (FArchive can do either if an FWriter or FReader is passed)
+	void SerializeActorData(FArchive& Ar);
 };

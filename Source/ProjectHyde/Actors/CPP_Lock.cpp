@@ -11,6 +11,9 @@ ACPP_Lock::ACPP_Lock()
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
+
+	// Add GUID for saving
+	GUID_Component = CreateDefaultSubobject<UCPP_SaveGameIdComponent>(TEXT("SaveGameIdComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -63,5 +66,45 @@ void ACPP_Lock::TryUnlock()
 bool ACPP_Lock::IsLocked()
 {
 	return bIsLocked;
+}
+
+void ACPP_Lock::Save_Implementation(UHydeSaveGame* SaveGameInstance)
+{
+	if (!SaveGameInstance) return;
+
+	// Create struct
+	FActorSaveData LockSaveData;
+	LockSaveData.Guid = GUID_Component->Guid;
+	LockSaveData.ActorClass = GetClass();
+	LockSaveData.Transform = GetTransform();
+
+	// Serialize Actor specific variables
+	FMemoryWriter Writer(LockSaveData.CustomActorData);
+	SerializeActorData(Writer);
+
+	// Save struct
+	SaveGameInstance->ActorSaveDatas.Add(LockSaveData.Guid, LockSaveData);
+}
+
+void ACPP_Lock::Load_Implementation(const UHydeSaveGame* SaveGameInstance, const FGuid GUID)
+{
+	if (!SaveGameInstance || !SaveGameInstance->ActorSaveDatas.Contains(GUID)) return;
+
+	// Load Struct
+	const FActorSaveData& ThisLockSaveData = SaveGameInstance->ActorSaveDatas[GUID];
+	SetActorTransform(ThisLockSaveData.Transform);
+
+	// Deserialize Actor specific variables
+	FMemoryReader Reader(ThisLockSaveData.CustomActorData);
+	SerializeActorData(Reader);
+
+	if (!bIsLocked) Mesh->SetStaticMesh(OpenLockMesh);
+	else Mesh->SetStaticMesh(ClosedLockMesh);
+}
+
+void ACPP_Lock::SerializeActorData(FArchive& Ar)
+{
+	Ar << CurrentUserCombination;
+	Ar << bIsLocked;
 }
 

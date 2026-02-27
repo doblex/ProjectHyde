@@ -12,6 +12,27 @@
 /**
  * 
  */
+
+USTRUCT(BlueprintType)
+struct FActorSaveData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	TSubclassOf<AActor> ActorClass;
+
+	UPROPERTY()
+	FGuid Guid;
+
+	UPROPERTY()
+	FTransform Transform;
+
+	UPROPERTY()
+	TArray<uint8> CustomActorData;
+};
+
+// Classe che definisce il salvataggio
 UCLASS()
 class PROJECTHYDE_API UHydeSaveGame : public USaveGame
 {
@@ -19,7 +40,6 @@ class PROJECTHYDE_API UHydeSaveGame : public USaveGame
 	
 
 public:
-
 	// Unreal USaveGame default variables
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 	FString PlayerName;
@@ -30,9 +50,12 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 	uint32 UserIndex;
 
-	// LISTARE QUI OGNI VARIABILE CHE SI DESIDERA SALVARE
-	// TODO valutare la separazione dei dati di salvataggio in Struct per ogni tipo di oggetto da salvare/caricare
+	// LISTARE QUI OGNI VARIABILE/STRUCT CHE SI DESIDERA SALVARE
 
 	UPROPERTY(VisibleAnywhere, Category = "Event Flags")
 	TMap<FGameplayTag, bool> EventFlagMap;
+
+	// Lista di attori salvati
+	UPROPERTY(VisibleAnywhere, Category = "Actors")
+	TMap<FGuid, FActorSaveData> ActorSaveDatas;
 };
