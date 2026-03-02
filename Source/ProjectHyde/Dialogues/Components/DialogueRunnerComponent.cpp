@@ -3,6 +3,8 @@
 
 #include "DialogueRunnerComponent.h"
 
+#include "Components/AudioComponent.h"
+
 
 // Sets default values for this component's properties
 UDialogueRunnerComponent::UDialogueRunnerComponent()
@@ -12,8 +14,23 @@ UDialogueRunnerComponent::UDialogueRunnerComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
+	
+	SyncEmotionMap();
 }
 
+void UDialogueRunnerComponent::PostLoad()
+{
+	Super::PostLoad();
+	SyncEmotionMap();
+}
+
+#if WITH_EDITOR
+void UDialogueRunnerComponent::PostEditChangeProperty(FPropertyChangedEvent& Event)
+{
+	Super::PostEditChangeProperty(Event);
+	SyncEmotionMap();
+}
+#endif
 
 // Called when the game starts
 void UDialogueRunnerComponent::BeginPlay()
@@ -23,6 +40,7 @@ void UDialogueRunnerComponent::BeginPlay()
 	// ...
 	
 	DialogueSub = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueExecutorSubsystem>();
+	AudioComponent = Cast<UAudioComponent>(GetOwner()->GetComponentByClass(UAudioComponent::StaticClass()));
 }
 
 
@@ -58,12 +76,58 @@ TArray<UBaseDialogue*> UDialogueRunnerComponent::PresentDialogues()
 UBaseLineNode* UDialogueRunnerComponent::StartDialogue(UBaseDialogue* Dialogue)
 {
 	DialogueSub->OnDialogueEnded.BindDynamic(this, &UDialogueRunnerComponent::OnDialogueEnded);
+	DialogueSub->OnDialogueMakeSound.BindDynamic(this, &UDialogueRunnerComponent::OnDialogueMakeSound);
 	return DialogueSub->StartDialogue(Dialogue);
+}
+
+void UDialogueRunnerComponent::OnDialogueMakeSound(ELineEmotion Emotion)
+{
+	UE_LOG(LogTemp, Warning, TEXT("log Sound!!"));
+	
+	if (AudioComponent)
+	{
+		if (USoundBase* AudioClip = EmotionAudio.FindRef(Emotion))
+		{
+			AudioComponent->Sound = AudioClip ;
+			AudioComponent->Play();
+		}
+	}
 }
 
 void UDialogueRunnerComponent::OnDialogueEnded(UBaseDialogue* BaseDialogue)
 {
 	//TODO: ADD dialogue to notebook
 	DialoguesPool.Remove(BaseDialogue);
+	DialogueSub->OnDialogueMakeSound.Unbind();
 }
 
+void UDialogueRunnerComponent::SyncEmotionMap()
+{
+	UEnum* EnumPtr = StaticEnum<ELineEmotion>();
+	if (!EnumPtr) return;
+
+	TSet<ELineEmotion> ValidKeys;
+
+	// Add missing keys
+	for (int32 i = 0; i < EnumPtr->NumEnums() - 1; ++i) // skip MAX
+	{
+		ELineEmotion Value =
+			static_cast<ELineEmotion>(EnumPtr->GetValueByIndex(i));
+
+		ValidKeys.Add(Value);
+
+		if (!EmotionAudio.Contains(Value))
+		{
+			EmotionAudio.Add(Value, nullptr);
+		}
+	}
+
+	// Remove stale keys (if enum value was deleted)
+	for (auto It = EmotionAudio.CreateIterator(); It; ++It)
+	{
+		if (!ValidKeys.Contains(It.Key()))
+		{
+			It.RemoveCurrent();
+		}
+	}
+}

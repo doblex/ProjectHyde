@@ -8,34 +8,34 @@ UBaseLineNode::UBaseLineNode()
 {
 }
 
-UBaseLineNode::UBaseLineNode(const FName& Name, const FText& Line, UBaseLineNode* NextLine)
-: LineProtagonistName(Name), Line(Line)
-{
-	Type = EDialogueLineType::Line;
-	
-	if (NextLine)
-	{
-		NextLines.Add(NextLine);
-	}
-}
-
-UBaseLineNode::UBaseLineNode(const FName& Name, const FText& Line, FDialogueCommandLine Command,
-	UBaseLineNode* NextLine)
-		: LineProtagonistName(Name), Line(Line), Command(Command)
-{
-	Type = EDialogueLineType::Command;
-	
-	if (NextLine)
-	{
-		NextLines.Add(NextLine);
-	}
-}
-
-UBaseLineNode::UBaseLineNode(const FName& Name, const FText& Line, const TArray<UBaseLineNode*> NextLines)
-: LineProtagonistName(Name), Line(Line), NextLines(NextLines)
-{
-	Type = EDialogueLineType::Selector;
-}
+// UBaseLineNode::UBaseLineNode(const FName& Name, const FText& Line, UBaseLineNode* NextLine)
+// : LineProtagonistName(Name), Line(Line)
+// {
+// 	Type = EDialogueLineType::Line;
+// 	
+// 	if (NextLine)
+// 	{
+// 		NextLines.Add(NextLine);
+// 	}
+// }
+//
+// UBaseLineNode::UBaseLineNode(const FName& Name, const FText& Line, FDialogueCommandLine Command,
+// 	UBaseLineNode* NextLine)
+// 		: LineProtagonistName(Name), Line(Line), Command(Command)
+// {
+// 	Type = EDialogueLineType::Command;
+// 	
+// 	if (NextLine)
+// 	{
+// 		NextLines.Add(NextLine);
+// 	}
+// }
+//
+// UBaseLineNode::UBaseLineNode(const FName& Name, const FText& Line, const TArray<UBaseLineNode*> NextLines)
+// : LineProtagonistName(Name), Line(Line), NextLines(NextLines)
+// {
+// 	Type = EDialogueLineType::Selector;
+// }
 
 FText UBaseLineNode::GetLineText() const
 {  
