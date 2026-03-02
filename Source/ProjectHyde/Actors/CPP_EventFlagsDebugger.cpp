@@ -24,13 +24,13 @@ void ACPP_EventFlagsDebugger::PollSubsystem()
 {
 	if (!IsValid(EventFlagSubsystemRef))
 	{
-		UE_LOGFMT(EventFlagSubSystem, Warning, "Event Flag Subsystem not found!");
+		UE_LOGFMT(EventFlagSubsystem, Warning, "Event Flag Subsystem not found!");
 		return;
 	}
 	GetWorld()->GetTimerManager().ClearTimer(EventFlagDebuggerTimerHandle);
 
 	EventFlagMapMirror = EventFlagSubsystemRef->EventFlagMap;
-	UE_LOGFMT(EventFlagSubSystem, VeryVerbose, "Event Flag Debugger Updated!");
+	UE_LOGFMT(EventFlagSubsystem, VeryVerbose, "Event Flag Debugger Updated!");
 
 	GetWorld()->GetTimerManager().SetTimer(
 		EventFlagDebuggerTimerHandle,

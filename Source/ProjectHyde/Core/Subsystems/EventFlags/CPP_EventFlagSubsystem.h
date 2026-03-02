@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "../../DevSettings/EventFlagSubsystemSettings.h"
+#include "../../../Save/HydeSaveGame.h"
 #include "Engine/StreamableManager.h"
 #include "Engine/AssetManager.h"
 
@@ -13,7 +14,7 @@
 #include "NativeGameplayTags.h"
 #include "CPP_EventFlagSubsystem.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(EventFlagSubSystem, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(EventFlagSubsystem, Log, All);
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(EventFlags);
 
 /**
@@ -52,4 +53,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool AreTagsLoaded();
+
+	// Custom save and load without interface
+	void Save(UHydeSaveGame* SaveGameInstance);
+
+	void Load(const UHydeSaveGame* SaveGameInstance);
 };

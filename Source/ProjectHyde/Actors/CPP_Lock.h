@@ -4,6 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/CPP_SaveGameIdComponent.h"
+#include "../Interface/Saveable.h"
+#include "../Save/HydeSaveGame.h"
+#include "Serialization/Archive.h"
 #include "CPP_Lock.generated.h"
 
 UENUM()
@@ -21,7 +25,7 @@ enum class ELockDigits : uint8 {
 };
 
 UCLASS()
-class PROJECTHYDE_API ACPP_Lock : public AActor
+class PROJECTHYDE_API ACPP_Lock : public AActor, public ISaveable
 {
 	GENERATED_BODY()
 	
@@ -54,6 +58,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Lock")
 	UStaticMesh* OpenLockMesh;
 
+	// GUID component for saving
+	UCPP_SaveGameIdComponent* GUID_Component;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -74,4 +81,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Lock")
 	bool IsLocked();
 
+	// Save system
+	virtual void Save_Implementation(UHydeSaveGame* SaveGameInstance) override;
+
+	virtual void Load_Implementation(const UHydeSaveGame* SaveGameInstance, const FGuid GUID) override;
+
+	void SerializeActorData(FArchive& Ar);
 };
