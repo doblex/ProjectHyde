@@ -19,6 +19,10 @@
  */
 
 DECLARE_LOG_CATEGORY_EXTERN(SaveSubsystem, Log, All);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveInitiated);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveCompleted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLoadInitiated);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLoadCompleted);
 
 UCLASS()
 class PROJECTHYDE_API USaveManagerSubsystem : public UGameInstanceSubsystem
@@ -26,12 +30,18 @@ class PROJECTHYDE_API USaveManagerSubsystem : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 public:
-	// Delegates to know when saving and loading is finished
-	FAsyncSaveGameToSlotDelegate OnSaveCompleted;
-	FAsyncLoadGameFromSlotDelegate OnLoadCompleted;
+	// Delegates to know when saving and loading starts and ends. Add your own functionality here
+	FOnSaveInitiated OnSaveInitiated;
+	FOnSaveCompleted OnSaveCompleted;
+	FOnLoadInitiated OnLoadInitiated;
+	FOnLoadCompleted OnLoadCompleted;
 
 private:
 	UHydeSaveGame* SaveGameInstance;
+
+	// Internal delegates of the async load and save subsystem. These are called when the data is read/written to disk, but not necessarily loaded in RAM
+	FAsyncSaveGameToSlotDelegate OnWriteCompleted;
+	FAsyncLoadGameFromSlotDelegate OnReadCompleted;
 
 public:
 	// Begin USubsystem
@@ -47,7 +57,7 @@ public:
 	void LoadGame(const FString& SaveSlotName, const int32 UserIndex);
 
 private:
-	void HandleGameSaveCompleted(const FString& SaveSlotName, const int32 UserIndex, bool SaveSucceeded);
-	void HandleGameLoadCompleted(const FString& SaveSlotName, const int32 UserIndex, USaveGame* LoadedSaveFile);
+	void HandleGameWriteCompleted(const FString& SaveSlotName, const int32 UserIndex, bool SaveSucceeded);
+	void HandleGameReadCompleted(const FString& SaveSlotName, const int32 UserIndex, USaveGame* LoadedSaveFile);
 	
 };

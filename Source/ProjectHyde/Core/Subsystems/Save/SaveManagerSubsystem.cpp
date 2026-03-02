@@ -7,18 +7,21 @@ DEFINE_LOG_CATEGORY(SaveSubsystem);
 
 void USaveManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
-	OnSaveCompleted.BindUObject(this, &USaveManagerSubsystem::HandleGameSaveCompleted);
-	OnLoadCompleted.BindUObject(this, &USaveManagerSubsystem::HandleGameLoadCompleted);
+	OnWriteCompleted.BindUObject(this, &USaveManagerSubsystem::HandleGameWriteCompleted);
+	OnReadCompleted.BindUObject(this, &USaveManagerSubsystem::HandleGameReadCompleted);
 }
 
 void USaveManagerSubsystem::Deinitialize()
 {
-	OnSaveCompleted.Unbind();
-	OnLoadCompleted.Unbind();
+	OnWriteCompleted.Unbind();
+	OnReadCompleted.Unbind();
 }
 
 void USaveManagerSubsystem::SaveGame(const FString& SaveSlotName, const int32 UserIndex)
 {
+	// Call delegate for save start
+	OnSaveInitiated.Broadcast();
+
 	SaveGameInstance = Cast<UHydeSaveGame>(UGameplayStatics::CreateSaveGameObject(UHydeSaveGame::StaticClass()));
 	if (IsValid(SaveGameInstance))
 	{
@@ -47,27 +50,35 @@ void USaveManagerSubsystem::SaveGame(const FString& SaveSlotName, const int32 Us
 		SaveGameInstance->SaveSlotName = SaveSlotName;
 		SaveGameInstance->UserIndex = UserIndex;
 
-		UGameplayStatics::AsyncSaveGameToSlot(SaveGameInstance, SaveSlotName, UserIndex, OnSaveCompleted);
+		UGameplayStatics::AsyncSaveGameToSlot(SaveGameInstance, SaveSlotName, UserIndex, OnWriteCompleted);
 	}
 }
 
 void USaveManagerSubsystem::LoadGame(const FString& SaveSlotName, const int32 UserIndex)
 {
+	// Call delegate for load start
+	OnLoadInitiated.Broadcast();
+
 	UE_LOGFMT(SaveSubsystem, Display, "Requested Load...");
-	UGameplayStatics::AsyncLoadGameFromSlot(SaveSlotName, 0, OnLoadCompleted);
+	UGameplayStatics::AsyncLoadGameFromSlot(SaveSlotName, 0, OnReadCompleted);
 }
 
 // Delegate that fires when async save is complete
-void USaveManagerSubsystem::HandleGameSaveCompleted(const FString& SaveSlotName, const int32 UserIndex, const bool SaveSucceeded)
+void USaveManagerSubsystem::HandleGameWriteCompleted(const FString& SaveSlotName, const int32 UserIndex, const bool SaveSucceeded)
 {
 	if (SaveSucceeded)
+	{
 		UE_LOGFMT(SaveSubsystem, Display, "Saved game to slot {0}", SaveSlotName);
+
+		// Call delegate for save end 
+		OnSaveCompleted.Broadcast();
+	}
 	else 
 		UE_LOGFMT(SaveSubsystem, Warning, "Could not save game!");
 }
 
 // Delegate that fires when async load is complete
-void USaveManagerSubsystem::HandleGameLoadCompleted(const FString& SaveSlotName, const int32 UserIndex, USaveGame* LoadedSaveFile)
+void USaveManagerSubsystem::HandleGameReadCompleted(const FString& SaveSlotName, const int32 UserIndex, USaveGame* LoadedSaveFile)
 {
 	if (IsValid(LoadedSaveFile))
 	{
@@ -83,7 +94,7 @@ void USaveManagerSubsystem::HandleGameLoadCompleted(const FString& SaveSlotName,
 		TArray<AActor*> AllWorldActors;
 		UGameplayStatics::GetAllActorsWithInterface(GetWorld(), USaveable::StaticClass(), AllWorldActors);
 
-		// Enumerate all actors in the world and test the save fiel agains them
+		// Enumerate all actors in the world and test the save file against them
 		for (AActor* Actor : AllWorldActors)
 		{
 			if (UCPP_SaveGameIdComponent* IDComp = Actor->FindComponentByClass<UCPP_SaveGameIdComponent>())
@@ -130,6 +141,9 @@ void USaveManagerSubsystem::HandleGameLoadCompleted(const FString& SaveSlotName,
 		}
 
 		UE_LOGFMT(SaveSubsystem, Display, "Loaded game from slot {0}", SaveSlotName);
+
+		// Call delegate for load start
+		OnLoadCompleted.Broadcast();
 	}
 	else
 		UE_LOGFMT(SaveSubsystem, Warning, "Could not load game!");
