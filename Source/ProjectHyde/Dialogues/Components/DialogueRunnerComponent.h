@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "ProjectHyde/Core/Subsystems/Dialogues/DialogueExecutorSubsystem.h"
 #include "ProjectHyde/Dialogues/BaseClasses/BaseDialogue.h"
 #include "DialogueRunnerComponent.generated.h"
+
+DECLARE_DYNAMIC_DELEGATE(FOnAfterWelcomeDialogue);
 
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -35,6 +36,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UBaseDialogue*> DialoguesPool;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FOnAfterWelcomeDialogue OnAfterWelcome;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UBaseDialogue* WelcomeDialogue;
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
@@ -43,6 +49,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<UBaseDialogue*> PresentDialogues();
 
+	
+	
+	UFUNCTION(BlueprintCallable)
+	UBaseLineNode* StartWelcomeDialogue();
+	
+	UFUNCTION()
+	void OnWelcomeDialogueEnded(UBaseDialogue* BaseDialogue);
 	
 	UFUNCTION(BlueprintCallable)
 	UBaseLineNode* StartDialogue(UBaseDialogue* Dialogue);

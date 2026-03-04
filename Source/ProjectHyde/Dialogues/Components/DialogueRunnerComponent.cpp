@@ -73,6 +73,19 @@ TArray<UBaseDialogue*> UDialogueRunnerComponent::PresentDialogues()
 	return DialoguesToReturn;
 }
 
+UBaseLineNode* UDialogueRunnerComponent::StartWelcomeDialogue()
+{
+	DialogueSub->OnDialogueEnded.BindDynamic(this, &UDialogueRunnerComponent::OnWelcomeDialogueEnded);
+	DialogueSub->OnDialogueMakeSound.BindDynamic(this, &UDialogueRunnerComponent::OnDialogueMakeSound);
+	return DialogueSub->StartDialogue(WelcomeDialogue);
+}
+
+void UDialogueRunnerComponent::OnWelcomeDialogueEnded(UBaseDialogue* BaseDialogue)
+{
+	OnAfterWelcome.ExecuteIfBound();
+	DialogueSub->OnDialogueMakeSound.Unbind();
+}
+
 UBaseLineNode* UDialogueRunnerComponent::StartDialogue(UBaseDialogue* Dialogue)
 {
 	DialogueSub->OnDialogueEnded.BindDynamic(this, &UDialogueRunnerComponent::OnDialogueEnded);
