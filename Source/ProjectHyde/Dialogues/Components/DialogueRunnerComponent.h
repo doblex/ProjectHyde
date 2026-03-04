@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "ProjectHyde/Core/Subsystems/Dialogues/DialogueExecutorSubsystem.h"
+#include "ProjectHyde/Core/Subsystems/EventFlags/CPP_EventFlagSubsystem.h"
 #include "ProjectHyde/Dialogues/BaseClasses/BaseDialogue.h"
 #include "DialogueRunnerComponent.generated.h"
 
@@ -28,6 +29,7 @@ protected:
 	virtual void PostLoad() override;
 	
 	UDialogueExecutorSubsystem* DialogueSub;
+	UCPP_EventFlagSubsystem* EventFlagSub;
 	UAudioComponent* AudioComponent;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Emotion")

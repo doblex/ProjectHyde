@@ -40,6 +40,7 @@ void UDialogueRunnerComponent::BeginPlay()
 	// ...
 	
 	DialogueSub = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueExecutorSubsystem>();
+	EventFlagSub = GetWorld()->GetGameInstance()->GetSubsystem<UCPP_EventFlagSubsystem>();
 	AudioComponent = Cast<UAudioComponent>(GetOwner()->GetComponentByClass(UAudioComponent::StaticClass()));
 }
 
@@ -57,17 +58,27 @@ TArray<UBaseDialogue*> UDialogueRunnerComponent::PresentDialogues()
 {
 	int MaxAmount = DialogueSub->GetMaxDialoguesNumber();
 	
-	if (MaxAmount >= 0)
+	if (MaxAmount <= 0)
 	{
 		return DialoguesPool;
 	}
 	
-	MaxAmount = FMath::Min(MaxAmount, DialoguesPool.Num());
 	TArray<UBaseDialogue*> DialoguesToReturn;
 	
-	for (int i = 0; i < MaxAmount; i++)
+	for (int i = 0; i < DialoguesPool.Num() && DialoguesToReturn.Num() < MaxAmount + 1; i++)
 	{
-		DialoguesToReturn.Add(DialoguesPool[i]);
+		if (DialoguesPool[i]->Requirement.IsValid())
+		{
+			if (EventFlagSub->GetEventFlag(DialoguesPool[i]->Requirement))
+			{
+				DialoguesToReturn.Add(DialoguesPool[i]);
+			}
+		}
+		else
+		{
+			DialoguesToReturn.Add(DialoguesPool[i]);
+		}
+		
 	}
 	
 	return DialoguesToReturn;

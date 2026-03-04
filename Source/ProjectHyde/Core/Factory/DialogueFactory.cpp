@@ -4,6 +4,7 @@
 #include "DialogueFactory.h"
 
 #include "Factories.h"
+#include "GameplayTagsManager.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "ProjectHyde/Core/CoreLibrary.h"
 #include "ProjectHyde/Core/DevSettings/DialogueSubsystemSettings.h"
@@ -73,7 +74,7 @@ UObject* UDialogueFactory::FactoryCreateFile(
 
 void UDialogueFactory::LinkDialogue(FDialogueTemp DialogueTemp, TMap<FName, UBaseLineNode*> CreatedNodes)
 {
-	UE_LOG(LogEditorFactories, Display, TEXT("Yarn Import: Start Linking %s: %i lines"), *DialogueTemp.Name.ToString(), DialogueTemp.Lines.Num());
+	UE_LOG(LogEditorFactories, Display, TEXT("Yarn Import: Start Linking %s: %i lines"), *DialogueTemp.InternalName.ToString(), DialogueTemp.Lines.Num());
 		
 	for (const auto& Pair : DialogueTemp.Lines)
 	{
@@ -138,10 +139,19 @@ TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 		//Titolo dialogo
 		if(Line.StartsWith(TEXT("title:"))) 
 		{
-			CurrentDialogue.Name = FName(*Line.RightChop(6).TrimStart());
+			CurrentDialogue.InternalName = FName(*Line.RightChop(6).TrimStart());
 			bDialogueReading = true;
 			DialoguesFound++;
 		}
+		if(Line.StartsWith(TEXT("name:"))) 
+		{
+			CurrentDialogue.Name = FName(*Line.RightChop(5).TrimStart());
+		}
+		if(Line.StartsWith(TEXT("tag:"))) 
+		{
+			CurrentDialogue.Tag = FName(*Line.RightChop(4).TrimStart());
+		}
+		
 		//inizio testo
 		else if(Line.StartsWith(TEXT("---"))) 
 		{
@@ -156,6 +166,7 @@ TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 			bDialogueReading = false;
 			DialogueTemps.Add(CurrentDialogue);
 			CurrentDialogue = FDialogueTemp();
+			PreviousLine = FLineTemp();
 		}
 		// Linee di testo
 		else if (bReadingBody && bDialogueReading) 
@@ -285,7 +296,7 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 	for (auto DialogueTemp : DialogueTemps)
 	{
 		//saving Path
-		FString AssetName = DialogueTemp.Name.ToString();
+		FString AssetName = DialogueTemp.InternalName.ToString();
 		FString PackageName = FixedFolder + TEXT("/") + AssetName;
 		
 		UPackage* Package = CreatePackage(*PackageName);
@@ -309,6 +320,10 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 		}
 		
 		Dialogue->DialogueName = DialogueTemp.Name;
+		
+		FGameplayTag Tag = UGameplayTagsManager::Get().RequestGameplayTag(DialogueTemp.Tag, /*ErrorIfNotFound=*/false);
+		
+		Dialogue->Requirement = Tag;
 		
 		TMap<FName, UBaseLineNode*> CreatedNodes;
 		bool bFirstLine = true;

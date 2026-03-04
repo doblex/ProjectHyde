@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseLineNode.h"
+#include "GameplayTagContainer.h"
 #include "Engine/DataAsset.h"
 #include "BaseDialogue.generated.h"
 
@@ -21,6 +22,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
 	FString Description;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
+	FGameplayTag Requirement;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
 	UBaseLineNode* RootLine;
