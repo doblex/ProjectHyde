@@ -24,7 +24,7 @@ public:
 	FString Description;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
-	FGameplayTag Requirement;
+	FGameplayTagContainer Requirements;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
 	UBaseLineNode* RootLine;

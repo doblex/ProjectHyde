@@ -5,6 +5,7 @@
 
 #include "Factories.h"
 #include "GameplayTagsManager.h"
+#include "ShaderPrintParameters.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "ProjectHyde/Core/CoreLibrary.h"
 #include "ProjectHyde/Core/DevSettings/DialogueSubsystemSettings.h"
@@ -149,7 +150,13 @@ TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 		}
 		if(Line.StartsWith(TEXT("tag:"))) 
 		{
-			CurrentDialogue.Tag = FName(*Line.RightChop(4).TrimStart());
+			TArray<FString> Tags;
+			Line.RightChop(4).ParseIntoArray(Tags, TEXT(","),true);
+
+			for (FString Tag : Tags)
+			{
+				CurrentDialogue.Tags.Add(FName(*Tag.TrimStartAndEnd()));
+			}
 		}
 		
 		//inizio testo
@@ -320,10 +327,15 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 		}
 		
 		Dialogue->DialogueName = DialogueTemp.Name;
-		
-		FGameplayTag Tag = UGameplayTagsManager::Get().RequestGameplayTag(DialogueTemp.Tag, /*ErrorIfNotFound=*/false);
-		
-		Dialogue->Requirement = Tag;
+
+		for (FName TagStr : DialogueTemp.Tags)
+		{
+			FGameplayTag Tag = UGameplayTagsManager::Get().RequestGameplayTag(TagStr, /*ErrorIfNotFound=*/false);
+			if (Tag.IsValid())
+			{
+				Dialogue->Requirements.AddTag(Tag);
+			}
+		}
 		
 		TMap<FName, UBaseLineNode*> CreatedNodes;
 		bool bFirstLine = true;

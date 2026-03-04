@@ -67,9 +67,18 @@ TArray<UBaseDialogue*> UDialogueRunnerComponent::PresentDialogues()
 	
 	for (int i = 0; i < DialoguesPool.Num() && DialoguesToReturn.Num() < MaxAmount + 1; i++)
 	{
-		if (DialoguesPool[i]->Requirement.IsValid())
+		if (DialoguesPool[i]->Requirements.IsValid())
 		{
-			if (EventFlagSub->GetEventFlag(DialoguesPool[i]->Requirement))
+			bool bCanShow = true;
+			for (const FGameplayTag Tag : DialoguesPool[i]->Requirements)
+			{
+				if (!EventFlagSub->GetEventFlag(Tag))
+				{
+					bCanShow = false;
+				}
+			}
+			
+			if (bCanShow)
 			{
 				DialoguesToReturn.Add(DialoguesPool[i]);
 			}

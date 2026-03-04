@@ -32,7 +32,7 @@ struct FLineTemp
 
 struct FDialogueTemp
 {
-	FName Tag;
+	TArray<FName> Tags;
 	FName InternalName;
 	FName Name;
 	TMap<FName, FLineTemp> Lines;
