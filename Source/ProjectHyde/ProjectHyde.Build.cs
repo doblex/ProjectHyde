@@ -8,9 +8,9 @@ public class ProjectHyde : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "GameplayTags", "DeveloperSettings" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "GameplayTags", "DeveloperSettings","UMG" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "UnrealEd"  });
+		PrivateDependencyModuleNames.AddRange(new string[] { "UnrealEd","Slate", "SlateCore"   });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
