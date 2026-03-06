@@ -43,11 +43,11 @@ void UCPP_GameInstance::UpdateLoadingScreen(float Percent)
 
 void UCPP_GameInstance::CheckLoadingProgress()
 {
-	float percentage = GetAsyncLoadPercentage(*WorldLoadingPackageName);
+	float Percentage = GetAsyncLoadPercentage(*WorldLoadingPackageName);
 	
-	if (percentage >= 0.0f)
+	if (Percentage >= 0.0f)
 	{
-		UpdateLoadingScreen(percentage/100.0f);
+		UpdateLoadingScreen(Percentage/100.0f);
 	}
 }
 
@@ -60,12 +60,10 @@ void UCPP_GameInstance::OnPackageLoaded(const FName& Name, UPackage* Package, EA
 	if (Arg == EAsyncLoadingResult::Succeeded)
 	{
 		
-		
-		UpdateLoadingScreen(1.f);
-		
 		FTimerHandle DelayHandle;
 		GetWorld()->GetTimerManager().SetTimer(DelayHandle, [this]()
 		{
+			UpdateLoadingScreen(1.f);
 			UGameplayStatics::OpenLevel(GetWorld(), FName(*WorldLoadingPackageName));
 		}, 1.5f, false);
 	}
@@ -76,9 +74,9 @@ void UCPP_GameInstance::OnPackageLoaded(const FName& Name, UPackage* Package, EA
 	}
 }
 
-void UCPP_GameInstance::ShowLoadingScreen()
+void UCPP_GameInstance::ShowLoadingScreen(bool bForce)
 {
-	if (LoadingScreenClass && !LoadingScreenInstance.IsValid())
+	if (LoadingScreenClass && (!LoadingScreenInstance.IsValid() || bForce))
 	{
 		LoadingScreenInstance = CreateWidget<UUserWidget>(this, LoadingScreenClass);
 		if (LoadingScreenInstance.IsValid())

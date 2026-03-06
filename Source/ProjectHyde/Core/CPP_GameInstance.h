@@ -24,7 +24,7 @@ private:
 	void UpdateLoadingScreen(float Percent);
 	void OnPackageLoaded(const FName& Name, UPackage* Package, EAsyncLoadingResult::Type Arg);
 	
-	void ShowLoadingScreen();
+	void ShowLoadingScreen(bool bForce = false);
 	
 	
 public:

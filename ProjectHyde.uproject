@@ -12,6 +12,11 @@
 				"DeveloperSettings",
 				"Engine"
 			]
+		},
+		{
+			"Name": "ProjectHydeEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
