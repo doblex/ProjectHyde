@@ -21,6 +21,7 @@ void UCPP_NotebookComponent::BeginPlay()
 
 	// ...
 	
+	PuzzleNumber = PuzzleEntries.Num();
 }
 
 
@@ -60,13 +61,69 @@ void UCPP_NotebookComponent::AddBookmark(UNotebookItemData* NewData)
 void UCPP_NotebookComponent::UpdatePlayerNote(UNotebookItemData* ForData, FString NewNote)
 {
 	// Update player notes, call this when the player is done writing (Save note from UI)
-	for (FBookmarkEntry& Entry : UnlockedBookmarks)
+	for (FBookmarkEntry Entry : UnlockedBookmarks)
 	{
 		if (Entry.StaticData == ForData)
 		{
 			Entry.PlayerNotes = NewNote;
 			break;
 		}
+	}
+}
+
+TArray<FBookmarkEntry> UCPP_NotebookComponent::GetPeopleBookmarksFromPlayer()
+{
+	TArray<FBookmarkEntry> Output;
+	for (FBookmarkEntry Bookmark : UnlockedBookmarks)
+	{
+		if (Bookmark.StaticData->NotebookItemType == ENotebookItemType::Person) Output.Add(Bookmark);
+	}
+	return Output;
+}
+
+TArray<FBookmarkEntry> UCPP_NotebookComponent::GetOtherBookmarksFromPlayer()
+{
+	TArray<FBookmarkEntry> Output;
+	for (FBookmarkEntry Bookmark : UnlockedBookmarks)
+	{
+		if (Bookmark.StaticData->NotebookItemType != ENotebookItemType::Person) Output.Add(Bookmark);
+	}
+	return Output;
+}
+
+void UCPP_NotebookComponent::SetUserCulpritForIndex(int index, FBookmarkEntry NewUserCulprit)
+{
+	if (PuzzleEntries[index].bSolved) return;
+	PuzzleEntries[index].UserCulprit = NewUserCulprit.StaticData;
+}
+
+void UCPP_NotebookComponent::SetUserWeaponForIndex(int index, FBookmarkEntry NewUserWeapon)
+{
+	if (PuzzleEntries[index].bSolved) return;
+	PuzzleEntries[index].UserWeapon = NewUserWeapon.StaticData;
+}
+
+void UCPP_NotebookComponent::SetUserMotiveForIndex(int index, FBookmarkEntry NewUserMotive)
+{
+	if (PuzzleEntries[index].bSolved) return;
+	PuzzleEntries[index].UserMotive = NewUserMotive.StaticData;
+}
+
+bool UCPP_NotebookComponent::CheckNotebookSolution(int index)
+{
+	FNotebookPuzzleItem Entry = PuzzleEntries[index];
+	if (
+		// Compare asset paths to determine correctness
+		FSoftObjectPath(Entry.CorrectCulprit) == FSoftObjectPath(Entry.UserCulprit)&&
+		FSoftObjectPath(Entry.CorrectWeapon) == FSoftObjectPath(Entry.UserWeapon) &&
+		FSoftObjectPath(Entry.CorrectMotive) == FSoftObjectPath(Entry.UserMotive)
+	){
+		Entry.bSolved = true;
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
@@ -78,6 +135,18 @@ void UCPP_NotebookComponent::SaveNotebookComponentData(FActorSaveData* SaveGameD
 	for (FBookmarkEntry Bookmark : UnlockedBookmarks) {
 		Writer << Bookmark.AssetPath;
 		Writer << Bookmark.PlayerNotes;
+	}
+	Writer << PuzzleNumber;
+	for (FNotebookPuzzleItem PuzzleEntry : PuzzleEntries) {
+		Writer << PuzzleEntry.bSolved;
+
+		Writer << PuzzleEntry.CorrectCulprit;
+		Writer << PuzzleEntry.CorrectWeapon;
+		Writer << PuzzleEntry.CorrectMotive;
+
+		Writer << PuzzleEntry.UserCulprit;
+		Writer << PuzzleEntry.UserWeapon;
+		Writer << PuzzleEntry.UserMotive;
 	}
 }
 
@@ -92,6 +161,19 @@ void UCPP_NotebookComponent::LoadNotebookComponentData(FActorSaveData* SaveGameD
 		Reader << LoadedEntry.PlayerNotes;
 		LoadedEntry.StaticData = Cast<UNotebookItemData>(LoadedEntry.AssetPath.TryLoad());
 		UnlockedBookmarks.Add(LoadedEntry);
+	}
+	Reader << PuzzleNumber;
+	for (int i = 0; i < PuzzleNumber; i++) {
+		FNotebookPuzzleItem LoadedEntry;
+		Reader << LoadedEntry.bSolved;
+				  
+		Reader << LoadedEntry.CorrectCulprit;
+		Reader << LoadedEntry.CorrectWeapon;
+		Reader << LoadedEntry.CorrectMotive;
+				  
+		Reader << LoadedEntry.UserCulprit;
+		Reader << LoadedEntry.UserWeapon;
+		Reader << LoadedEntry.UserMotive;
 	}
 }
 
