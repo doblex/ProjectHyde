@@ -10,6 +10,7 @@
 #include "BaseDialogueRunnerComponent.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE(FOnAfterWelcomeDialogue);
+DECLARE_DYNAMIC_DELEGATE(FOnDialogueFinished);
 
 UENUM(BlueprintType)
 enum class ERunnerType : uint8
@@ -50,6 +51,10 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	ERunnerType RunnerType;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FOnDialogueFinished OnDialogueFinished;
+	
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
