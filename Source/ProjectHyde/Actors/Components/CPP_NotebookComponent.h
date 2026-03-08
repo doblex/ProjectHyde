@@ -1,0 +1,125 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Components/ActorComponent.h"
+#include "../../Data/NotebookItemData.h"
+#include "../../Save/HydeSaveGame.h"
+
+#include "CPP_NotebookComponent.generated.h"
+
+// Struct that represents an entry in the bookmark menu
+USTRUCT(BlueprintType)
+struct FBookmarkEntry
+{
+	GENERATED_BODY()
+
+	// The static data (Icon, Title, etc.)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	UNotebookItemData* StaticData = nullptr;
+
+	// The dynamic data (Player's custom notes)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	FString PlayerNotes;
+
+	// Helper for Save/Load
+	UPROPERTY(BlueprintReadOnly)
+	FSoftObjectPath AssetPath;
+};
+
+// Struct that represents a solution to a notebook puzzle
+USTRUCT(BlueprintType)
+struct FNotebookPuzzleItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	bool bSolved = false;
+
+	// The correct solutions to the puzzle
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	UNotebookItemData* CorrectCulprit = nullptr;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	UNotebookItemData* CorrectWeapon = nullptr;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	UNotebookItemData* CorrectMotive = nullptr;
+
+	// The user inputted solutions
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	UNotebookItemData* UserCulprit = nullptr;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	UNotebookItemData* UserWeapon = nullptr;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	UNotebookItemData* UserMotive = nullptr;
+};
+
+
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class PROJECTHYDE_API UCPP_NotebookComponent : public UActorComponent
+{
+	GENERATED_BODY()
+
+public:	
+	// Sets default values for this component's properties
+	UCPP_NotebookComponent();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	TArray<FBookmarkEntry> UnlockedBookmarks;
+
+	// Entries of Notebook puzzles
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	TArray<FNotebookPuzzleItem> PuzzleEntries;
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
+	int BookmarkNumber = 0;
+
+	int PuzzleNumber = 0;
+
+public:	
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	void AddBookmark(UNotebookItemData* NewData);
+
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	void UpdatePlayerNote(UNotebookItemData* ForData, FString NewNote);
+
+	// Ritorna un array che contiene tutti i bookmark di Persone scoperti dal giocatore
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	TArray<FBookmarkEntry> GetPeopleBookmarksFromPlayer();
+
+	// Ritorna un array che contiene tutti i bookmark di NON Persone scoperti dal giocatore
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	TArray<FBookmarkEntry> GetOtherBookmarksFromPlayer();
+
+	// Setta il bookmark scelto dall'utente come Colpevole per il puzzle all'indice i dell'array PuzzleEntries
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	void SetUserCulpritForIndex(int index, FBookmarkEntry NewUserCulprit);
+
+	// Setta il bookmark scelto dall'utente come Arma per il puzzle all'indice i dell'array PuzzleEntries
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	void SetUserWeaponForIndex(int index, FBookmarkEntry NewUserWeapon);
+
+	// Setta il bookmark scelto dall'utente come Motivo per il puzzle all'indice i dell'array PuzzleEntries
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	void SetUserMotiveForIndex(int index, FBookmarkEntry NewUserMotive);
+
+	// Controlla se la soluzione dell'utente salvata al momento corrisponde con quella corretta
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	bool CheckNotebookSolution(int index);
+
+	// Save helper for when player is saved
+	void SaveNotebookComponentData(FActorSaveData* SaveGameData);
+
+	// Load helper for when player is loaded
+	void LoadNotebookComponentData(FActorSaveData* SaveGameData);
+};
