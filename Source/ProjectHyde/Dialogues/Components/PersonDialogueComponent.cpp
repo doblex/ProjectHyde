@@ -35,11 +35,12 @@ void UPersonDialogueComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
-UBaseLineNode* UPersonDialogueComponent::StartDialogue(UBaseDialogue* Dialogue)
+bool UPersonDialogueComponent::StartDialogue(UBaseDialogue* Dialogue, UBaseLineNode*& OutDialogue)
 {
 	DialogueSub->OnDialogueEnded.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueEnded);
 	DialogueSub->OnDialogueMakeSound.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueMakeSound);
-	return DialogueSub->StartDialogue(Dialogue);
+	OutDialogue = DialogueSub->StartDialogue(Dialogue);
+	return OutDialogue != nullptr;
 }
 
 TArray<UBaseDialogue*> UPersonDialogueComponent::PresentDialogues()
@@ -81,11 +82,12 @@ TArray<UBaseDialogue*> UPersonDialogueComponent::PresentDialogues()
 	return DialoguesToReturn;
 }
 
-UBaseLineNode* UPersonDialogueComponent::StartWelcomeDialogue()
+bool UPersonDialogueComponent::StartWelcomeDialogue(UBaseLineNode*& OutDialogue)
 {
 	DialogueSub->OnDialogueEnded.BindDynamic(this, &UPersonDialogueComponent::OnWelcomeDialogueEnded);
 	DialogueSub->OnDialogueMakeSound.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueMakeSound);
-	return DialogueSub->StartDialogue(WelcomeDialogue);
+	OutDialogue = DialogueSub->StartDialogue(WelcomeDialogue);
+	return OutDialogue != nullptr;
 }
 
 void UPersonDialogueComponent::OnWelcomeDialogueEnded(UBaseDialogue* BaseDialogue)

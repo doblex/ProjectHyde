@@ -39,6 +39,6 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	
 	UFUNCTION(BlueprintCallable, Category="Dialogues")
-	UBaseLineNode* StartDialogue(EInteractablePointState InteractionState);
+	bool StartDialogue(EInteractablePointState InteractionState, UBaseLineNode*& OutDialogue);
 	
 };

@@ -35,10 +35,11 @@ void UObservationDialogueComponent::TickComponent(float DeltaTime, ELevelTick Ti
 	// ...
 }
 
-UBaseLineNode* UObservationDialogueComponent::StartDialogue()
+bool UObservationDialogueComponent::StartDialogue(UBaseLineNode*& OutDialogue)
 {
 	DialogueSub->OnDialogueEnded.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueEnded);
 	DialogueSub->OnDialogueMakeSound.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueMakeSound);
-	return DialogueSub->StartDialogue(Dialogue);
+	OutDialogue = DialogueSub->StartDialogue(Dialogue);
+	return OutDialogue != nullptr;
 }
 

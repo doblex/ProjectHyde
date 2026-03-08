@@ -39,5 +39,5 @@ public:
 	TMap<EObjectPointState, UBaseDialogue*> ObjectState;
 	
 	UFUNCTION(BlueprintCallable, Category="Dialogues")
-	UBaseLineNode* StartDialogue(EObjectPointState State);
+	bool StartDialogue(EObjectPointState State, UBaseLineNode*& OutDialogue);
 };

@@ -35,10 +35,11 @@ void UZoomDialogueComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
-UBaseLineNode* UZoomDialogueComponent::StartDialogue()
+bool UZoomDialogueComponent::StartDialogue(UBaseLineNode*& OutDialogue)
 {
 	DialogueSub->OnDialogueEnded.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueEnded);
 	DialogueSub->OnDialogueMakeSound.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueMakeSound);
-	return DialogueSub->StartDialogue(Dialogue);
+	OutDialogue = DialogueSub->StartDialogue(Dialogue);
+	return OutDialogue != nullptr;
 }
 

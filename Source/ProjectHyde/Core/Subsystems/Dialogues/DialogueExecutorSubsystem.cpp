@@ -52,6 +52,8 @@ UBaseLineNode* UDialogueExecutorSubsystem::ShowDialogue(UBaseLineNode* NextLine)
 
 UBaseLineNode* UDialogueExecutorSubsystem::StartDialogue(UBaseDialogue* Dialogue)
 {
+	if (!Dialogue) return nullptr;
+	
 	CurrentDialogue = Dialogue;
 	return ShowDialogue(CurrentDialogue->RootLine);
 }

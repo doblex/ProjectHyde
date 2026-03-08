@@ -52,10 +52,11 @@ void UObjectDialogueComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
-UBaseLineNode* UObjectDialogueComponent::StartDialogue(EObjectPointState State)
+bool UObjectDialogueComponent::StartDialogue(EObjectPointState State, UBaseLineNode*& OutDialogue)
 {
 	DialogueSub->OnDialogueEnded.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueEnded);
 	DialogueSub->OnDialogueMakeSound.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueMakeSound);
-	return DialogueSub->StartDialogue(ObjectState[State]);
+	OutDialogue = DialogueSub->StartDialogue(ObjectState[State]);
+	return OutDialogue != nullptr;
 }
 

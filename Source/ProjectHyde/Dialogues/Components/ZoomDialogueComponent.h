@@ -26,7 +26,7 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	
 	UFUNCTION(BlueprintCallable, Category="Dialogues")
-	UBaseLineNode*  StartDialogue();
+	bool StartDialogue(UBaseLineNode*& OutDialogue);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dialogues")
 	UBaseDialogue* Dialogue;

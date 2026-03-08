@@ -37,13 +37,13 @@ public:
 	UBaseDialogue* WelcomeDialogue;
 
 	UFUNCTION(BlueprintCallable)
-	UBaseLineNode* StartDialogue(UBaseDialogue* Dialogue);
+	bool StartDialogue(UBaseDialogue* Dialogue, UBaseLineNode*& OutDialogue);
 	
 	UFUNCTION(BlueprintCallable, Category="Dialogues")
 	TArray<UBaseDialogue*> PresentDialogues();
 	
 	UFUNCTION(BlueprintCallable, Category="Dialogues")
-	UBaseLineNode* StartWelcomeDialogue();
+	bool StartWelcomeDialogue(UBaseLineNode*& OutDialogue);
 	
 	UFUNCTION()
 	void OnWelcomeDialogueEnded(UBaseDialogue* BaseDialogue);

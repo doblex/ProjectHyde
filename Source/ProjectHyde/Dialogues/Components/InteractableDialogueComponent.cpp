@@ -52,10 +52,11 @@ void UInteractableDialogueComponent::TickComponent(float DeltaTime, ELevelTick T
 	// ...
 }
 
-UBaseLineNode* UInteractableDialogueComponent::StartDialogue(EInteractablePointState InteractionState)
+bool UInteractableDialogueComponent::StartDialogue(EInteractablePointState InteractionState, UBaseLineNode*& OutDialogue)
 {
 	DialogueSub->OnDialogueEnded.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueEnded);
 	DialogueSub->OnDialogueMakeSound.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueMakeSound);
-	return DialogueSub->StartDialogue(InteractableDialogue[InteractionState]);
+	OutDialogue = DialogueSub->StartDialogue(InteractableDialogue[InteractionState]);
+	return OutDialogue != nullptr;
 }
 
