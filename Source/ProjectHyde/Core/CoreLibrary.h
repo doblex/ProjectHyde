@@ -33,4 +33,36 @@ static TEnum GetEnumFromString(const FString& String, TEnum DefaultValue)
 			? static_cast<TEnum>(Value)
 			: DefaultValue;
 	}
+	
+	template<typename TEnum, typename TObject>
+	static void SyncMap(TMap<TEnum, TObject> &Map)
+	{
+		UEnum* EnumPtr = StaticEnum<TEnum>();
+		if (!EnumPtr) return;
+
+		TSet<TEnum> ValidKeys;
+
+		// Add missing keys
+		for (int32 i = 0; i < EnumPtr->NumEnums() - 1; ++i) // skip MAX
+		{
+			TEnum Value =
+				static_cast<TEnum>(EnumPtr->GetValueByIndex(i));
+
+			ValidKeys.Add(Value);
+
+			if (!Map.Contains(Value))
+			{
+				Map.Add(Value, nullptr);
+			}
+		}
+
+		// Remove stale keys (if enum value was deleted)
+		for (auto It = Map.CreateIterator(); It; ++It)
+		{
+			if (!ValidKeys.Contains(It.Key()))
+			{
+				It.RemoveCurrent();
+			}
+		}
+	}
 };

@@ -7,19 +7,29 @@
 #include "ProjectHyde/Core/Subsystems/Dialogues/DialogueExecutorSubsystem.h"
 #include "ProjectHyde/Core/Subsystems/EventFlags/CPP_EventFlagSubsystem.h"
 #include "ProjectHyde/Dialogues/BaseClasses/BaseDialogue.h"
-#include "DialogueRunnerComponent.generated.h"
+#include "BaseDialogueRunnerComponent.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE(FOnAfterWelcomeDialogue);
 
+UENUM(BlueprintType)
+enum class ERunnerType : uint8
+{
+	Person,
+	Interactable,
+	Object,
+	Observation,
+	Zoom
+};
+
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class PROJECTHYDE_API UDialogueRunnerComponent : public UActorComponent
+class PROJECTHYDE_API UBaseDialogueRunnerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this component's properties
-	UDialogueRunnerComponent();
+	UBaseDialogueRunnerComponent();
 
 protected:
 	// Called when the game starts
@@ -35,40 +45,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Emotion")
 	TMap<ELineEmotion, USoundBase*> EmotionAudio;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<UBaseDialogue*> DialoguesPool;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FOnAfterWelcomeDialogue OnAfterWelcome;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UBaseDialogue* WelcomeDialogue;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	ERunnerType RunnerType;
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	
-	UFUNCTION(BlueprintCallable)
-	TArray<UBaseDialogue*> PresentDialogues();
-
 	
 	
-	UFUNCTION(BlueprintCallable)
-	UBaseLineNode* StartWelcomeDialogue();
-	
-	UFUNCTION()
-	void OnWelcomeDialogueEnded(UBaseDialogue* BaseDialogue);
-	
-	UFUNCTION(BlueprintCallable)
-	UBaseLineNode* StartDialogue(UBaseDialogue* Dialogue);
 	
 	UFUNCTION()
 	void OnDialogueMakeSound(ELineEmotion Emotion);
 	
 	UFUNCTION()
-	void OnDialogueEnded(UBaseDialogue* BaseDialogue);
-	
-	void SetNextDialogue(FName DialogueName);
-	
-	void SyncEmotionMap();
+	virtual void OnDialogueEnded(UBaseDialogue* BaseDialogue);
 };
