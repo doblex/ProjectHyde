@@ -33,6 +33,7 @@ void UCPP_NotebookComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
+// Add the given DataAsset as a Bookmark for the player
 void UCPP_NotebookComponent::AddBookmark(UNotebookItemData* NewData)
 {
 	if (!NewData) return;
@@ -58,10 +59,11 @@ void UCPP_NotebookComponent::AddBookmark(UNotebookItemData* NewData)
 	}
 }
 
-// Trova la UNotebookItemData della persona interessata (Da chiamare per aggiungerci dialoghi con AddDialogueToBookmark)
-UNotebookItemData* UCPP_NotebookComponent::FindNotebookItemFor(FString& PersonName)
+// Trova la UNotebookItemData della persona interessata (Match del campo "Title" del DataAsset) 
+// Da chiamare per aggiungerci dialoghi con AddDialogueToBookmark
+UNotebookItemData* UCPP_NotebookComponent::FindNotebookItemFor(FString PersonName)
 {
-	for (FBookmarkEntry Entry : UnlockedBookmarks)
+	for (FBookmarkEntry& Entry : UnlockedBookmarks)
 	{
 		if (Entry.StaticData->Title == PersonName)
 		{
@@ -72,32 +74,33 @@ UNotebookItemData* UCPP_NotebookComponent::FindNotebookItemFor(FString& PersonNa
 	return nullptr;
 }
 
+// Update dialogues for People bookmarks, call this when the player is done writing (Save note from UI)
 void UCPP_NotebookComponent::AddDialogueToBookmark(UNotebookItemData* ForData, FText DialogueToAdd)
 {
-	// Update dialogues for People bookmarks, call this when the player is done writing (Save note from UI)
-	for (FBookmarkEntry Entry : UnlockedBookmarks)
+	for (FBookmarkEntry& Entry : UnlockedBookmarks)
 	{
 		if (Entry.StaticData == ForData)
 		{
 			Entry.Dialogues.Add(DialogueToAdd);
-			break;
+			return;
 		}
 	}
 }
 
+// Update player notes, call this when the player is done writing (Save note from UI)
 void UCPP_NotebookComponent::UpdatePlayerNote(UNotebookItemData* ForData, FText NewNote)
 {
-	// Update player notes, call this when the player is done writing (Save note from UI)
-	for (FBookmarkEntry Entry : UnlockedBookmarks)
+	for (FBookmarkEntry& Entry : UnlockedBookmarks)
 	{
 		if (Entry.StaticData == ForData)
 		{
 			Entry.PlayerNotes = NewNote;
-			break;
+			return;
 		}
 	}
 }
 
+// Returns all the bookmarks in the player's possesion of type "Person"
 TArray<FBookmarkEntry> UCPP_NotebookComponent::GetPeopleBookmarksFromPlayer()
 {
 	TArray<FBookmarkEntry> Output;
@@ -108,6 +111,7 @@ TArray<FBookmarkEntry> UCPP_NotebookComponent::GetPeopleBookmarksFromPlayer()
 	return Output;
 }
 
+// Returns all the bookmarks i nthe player's possession fo type "Not Person"
 TArray<FBookmarkEntry> UCPP_NotebookComponent::GetOtherBookmarksFromPlayer()
 {
 	TArray<FBookmarkEntry> Output;
@@ -118,24 +122,28 @@ TArray<FBookmarkEntry> UCPP_NotebookComponent::GetOtherBookmarksFromPlayer()
 	return Output;
 }
 
+// Sets the User submitted culprit for puzzle at the given index
 void UCPP_NotebookComponent::SetUserCulpritForIndex(int index, FBookmarkEntry NewUserCulprit)
 {
 	if (PuzzleEntries[index].bSolved) return;
 	PuzzleEntries[index].UserCulprit = NewUserCulprit.StaticData;
 }
 
+// Sets the User submitted weapon for puzzle at the given index
 void UCPP_NotebookComponent::SetUserWeaponForIndex(int index, FBookmarkEntry NewUserWeapon)
 {
 	if (PuzzleEntries[index].bSolved) return;
 	PuzzleEntries[index].UserWeapon = NewUserWeapon.StaticData;
 }
 
+// Sets the User submitted culprit for puzzle at the given index
 void UCPP_NotebookComponent::SetUserMotiveForIndex(int index, FBookmarkEntry NewUserMotive)
 {
 	if (PuzzleEntries[index].bSolved) return;
 	PuzzleEntries[index].UserMotive = NewUserMotive.StaticData;
 }
 
+// Returns true if the currently submitted User solution matches the correct solution of puzzle at the given index
 bool UCPP_NotebookComponent::CheckNotebookSolution(int index)
 {
 	FNotebookPuzzleItem Entry = PuzzleEntries[index];

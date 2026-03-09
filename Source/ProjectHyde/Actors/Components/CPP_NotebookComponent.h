@@ -24,7 +24,7 @@ struct FBookmarkEntry
 	FText PlayerNotes;
 
 	// The dialogue the player has seen from this Person if the bookmark is of Person Type.
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook", meta = (EditCondition = "StaticData.NotebookItemType == ENotebookItemType::Person"))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
 	TArray<FText> Dialogues;
 
 	// Helper for Save/Load
@@ -95,7 +95,7 @@ public:
 	void AddBookmark(UNotebookItemData* NewData);
 
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
-	UNotebookItemData* FindNotebookItemFor(FString& PersonName);
+	UNotebookItemData* FindNotebookItemFor(FString PersonName);
 
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	void AddDialogueToBookmark(UNotebookItemData* ForData, FText DialogueToAdd);

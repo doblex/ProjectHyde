@@ -31,7 +31,4 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
 	TSoftObjectPtr<UTexture2D> Thumbnail;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook", meta=(EditCondition = "NotebookItemType == ENotebookItemType::Person"))
-	TArray<FText> Dialogue;
 };
