@@ -48,7 +48,7 @@ void UCPP_NotebookComponent::AddBookmark(UNotebookItemData* NewData)
 		FBookmarkEntry NewEntry;
 		NewEntry.StaticData = NewData;
 		NewEntry.AssetPath = FSoftObjectPath(NewData);
-		NewEntry.PlayerNotes = TEXT(""); // start empty
+		NewEntry.PlayerNotes = FText::FromString(""); // start empty
 		UnlockedBookmarks.Add(NewEntry);
 		BookmarkNumber = UnlockedBookmarks.Num();
 	}
@@ -58,7 +58,34 @@ void UCPP_NotebookComponent::AddBookmark(UNotebookItemData* NewData)
 	}
 }
 
-void UCPP_NotebookComponent::UpdatePlayerNote(UNotebookItemData* ForData, FString NewNote)
+// Trova la UNotebookItemData della persona interessata (Da chiamare per aggiungerci dialoghi con AddDialogueToBookmark)
+UNotebookItemData* UCPP_NotebookComponent::FindNotebookItemFor(FString& PersonName)
+{
+	for (FBookmarkEntry Entry : UnlockedBookmarks)
+	{
+		if (Entry.StaticData->Title == PersonName)
+		{
+			return Entry.StaticData;
+		}
+	}
+
+	return nullptr;
+}
+
+void UCPP_NotebookComponent::AddDialogueToBookmark(UNotebookItemData* ForData, FText DialogueToAdd)
+{
+	// Update dialogues for People bookmarks, call this when the player is done writing (Save note from UI)
+	for (FBookmarkEntry Entry : UnlockedBookmarks)
+	{
+		if (Entry.StaticData == ForData)
+		{
+			Entry.Dialogues.Add(DialogueToAdd);
+			break;
+		}
+	}
+}
+
+void UCPP_NotebookComponent::UpdatePlayerNote(UNotebookItemData* ForData, FText NewNote)
 {
 	// Update player notes, call this when the player is done writing (Save note from UI)
 	for (FBookmarkEntry Entry : UnlockedBookmarks)
@@ -134,6 +161,7 @@ void UCPP_NotebookComponent::SaveNotebookComponentData(FActorSaveData* SaveGameD
 	Writer << BookmarkNumber;
 	for (FBookmarkEntry Bookmark : UnlockedBookmarks) {
 		Writer << Bookmark.AssetPath;
+		Writer << Bookmark.Dialogues;
 		Writer << Bookmark.PlayerNotes;
 	}
 	Writer << PuzzleNumber;
@@ -158,6 +186,7 @@ void UCPP_NotebookComponent::LoadNotebookComponentData(FActorSaveData* SaveGameD
 	for (int i = 0; i < BookmarkNumber; i++) {
 		FBookmarkEntry LoadedEntry;
 		Reader << LoadedEntry.AssetPath;
+		Reader << LoadedEntry.Dialogues;
 		Reader << LoadedEntry.PlayerNotes;
 		LoadedEntry.StaticData = Cast<UNotebookItemData>(LoadedEntry.AssetPath.TryLoad());
 		UnlockedBookmarks.Add(LoadedEntry);
