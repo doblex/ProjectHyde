@@ -13,6 +13,9 @@ public:
 	FName Name = FName();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	FText Description = FText();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	UTexture2D* Icon = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
