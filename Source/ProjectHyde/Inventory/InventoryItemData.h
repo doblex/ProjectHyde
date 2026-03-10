@@ -1,16 +1,14 @@
 ﻿#pragma once
 
-#include "ItemData.generated.h"
+#include "InventoryItemData.generated.h"
 
-USTRUCT(BlueprintType)
-struct FItemData
+
+UCLASS(BlueprintType)
+class PROJECTHYDE_API UInventoryItemData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
-	
-	FItemData()
-	{
-	}
-	
+
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	FName Name = FName();
 	
@@ -24,8 +22,8 @@ struct FItemData
 	bool bCanCombine = false;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	FName CombineWith = NAME_None;
+	UInventoryItemData* CombineWith = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	FName ResultItem = NAME_None;
+	UInventoryItemData* ResultItem = nullptr;
 };
