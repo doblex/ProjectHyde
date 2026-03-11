@@ -21,7 +21,11 @@ struct FBookmarkEntry
 
 	// The dynamic data (Player's custom notes)
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
-	FString PlayerNotes;
+	FText PlayerNotes;
+
+	// The dialogue the player has seen from this Person if the bookmark is of Person Type.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	TArray<FText> Dialogues;
 
 	// Helper for Save/Load
 	UPROPERTY(BlueprintReadOnly)
@@ -91,7 +95,13 @@ public:
 	void AddBookmark(UNotebookItemData* NewData);
 
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
-	void UpdatePlayerNote(UNotebookItemData* ForData, FString NewNote);
+	UNotebookItemData* FindNotebookItemFor(FString PersonName);
+
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	void AddDialogueToBookmark(UNotebookItemData* ForData, FText DialogueToAdd);
+
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	void UpdatePlayerNote(UNotebookItemData* ForData, FText NewNote);
 
 	// Ritorna un array che contiene tutti i bookmark di Persone scoperti dal giocatore
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
