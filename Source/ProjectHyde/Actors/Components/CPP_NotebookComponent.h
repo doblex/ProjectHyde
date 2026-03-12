@@ -9,6 +9,26 @@
 
 #include "CPP_NotebookComponent.generated.h"
 
+USTRUCT(BlueprintType)
+struct FDialogueEntry
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
+	FText Dialogue;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
+	FText Description;
+
+	// custom serialization that I just found out about now oops
+	friend FArchive& operator<<(FArchive& Ar, FDialogueEntry& MyStruct)
+	{
+		Ar << MyStruct.Dialogue;
+		Ar << MyStruct.Description;
+		return Ar;
+	}
+};
+
 // Struct that represents an entry in the bookmark menu
 USTRUCT(BlueprintType)
 struct FBookmarkEntry
@@ -25,7 +45,7 @@ struct FBookmarkEntry
 
 	// The dialogue the player has seen from this Person if the bookmark is of Person Type.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
-	TArray<FText> Dialogues;
+	TArray<FDialogueEntry> DialogueEntries;
 
 	// Helper for Save/Load
 	UPROPERTY(BlueprintReadOnly)
@@ -98,7 +118,7 @@ public:
 	UNotebookItemData* FindNotebookItemFor(FString PersonName);
 
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
-	void AddDialogueToBookmark(UNotebookItemData* ForData, FText DialogueToAdd);
+	void AddDialogueEntryToBookmark(UNotebookItemData* ForData, FDialogueEntry DialogueEntryToAdd);
 
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	void UpdatePlayerNote(UNotebookItemData* ForData, FText NewNote);

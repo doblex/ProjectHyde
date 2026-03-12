@@ -75,13 +75,13 @@ UNotebookItemData* UCPP_NotebookComponent::FindNotebookItemFor(FString PersonNam
 }
 
 // Update dialogues for People bookmarks, call this when the player is done writing (Save note from UI)
-void UCPP_NotebookComponent::AddDialogueToBookmark(UNotebookItemData* ForData, FText DialogueToAdd)
+void UCPP_NotebookComponent::AddDialogueEntryToBookmark(UNotebookItemData* ForData, FDialogueEntry DialogueEntryToAdd)
 {
 	for (FBookmarkEntry& Entry : UnlockedBookmarks)
 	{
 		if (Entry.StaticData == ForData)
 		{
-			Entry.Dialogues.Add(DialogueToAdd);
+			Entry.DialogueEntries.Add(DialogueEntryToAdd);
 			return;
 		}
 	}
@@ -169,7 +169,7 @@ void UCPP_NotebookComponent::SaveNotebookComponentData(FActorSaveData* SaveGameD
 	Writer << BookmarkNumber;
 	for (FBookmarkEntry Bookmark : UnlockedBookmarks) {
 		Writer << Bookmark.AssetPath;
-		Writer << Bookmark.Dialogues;
+		Writer << Bookmark.DialogueEntries;
 		Writer << Bookmark.PlayerNotes;
 	}
 	Writer << PuzzleNumber;
@@ -194,7 +194,7 @@ void UCPP_NotebookComponent::LoadNotebookComponentData(FActorSaveData* SaveGameD
 	for (int i = 0; i < BookmarkNumber; i++) {
 		FBookmarkEntry LoadedEntry;
 		Reader << LoadedEntry.AssetPath;
-		Reader << LoadedEntry.Dialogues;
+		Reader << LoadedEntry.DialogueEntries;
 		Reader << LoadedEntry.PlayerNotes;
 		LoadedEntry.StaticData = Cast<UNotebookItemData>(LoadedEntry.AssetPath.TryLoad());
 		UnlockedBookmarks.Add(LoadedEntry);
