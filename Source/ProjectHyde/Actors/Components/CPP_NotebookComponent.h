@@ -9,6 +9,24 @@
 
 #include "CPP_NotebookComponent.generated.h"
 
+// Enum that represent The query type for the Case Puzzle
+UENUM(BlueprintType)
+enum class EBookMarkPuzzleCategorySelection : uint8
+{
+	People = 0,
+	Objects = 1,
+	All = 2
+};
+
+// Enum that represent The button type for the Case Puzzle
+UENUM(BlueprintType)
+enum class EBookMarkPuzzleCategory : uint8
+{
+	Culprit = 0,
+	Weapon = 1,
+	Motive = 2
+};
+
 USTRUCT(BlueprintType)
 struct FDialogueEntry
 {
