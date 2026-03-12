@@ -9,6 +9,44 @@
 
 #include "CPP_NotebookComponent.generated.h"
 
+// Enum that represent The query type for the Case Puzzle
+UENUM(BlueprintType)
+enum class EBookMarkPuzzleCategorySelection : uint8
+{
+	People = 0,
+	Objects = 1,
+	All = 2
+};
+
+// Enum that represent The button type for the Case Puzzle
+UENUM(BlueprintType)
+enum class EBookMarkPuzzleCategory : uint8
+{
+	Culprit = 0,
+	Weapon = 1,
+	Motive = 2
+};
+
+USTRUCT(BlueprintType)
+struct FDialogueEntry
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
+	FText Dialogue;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
+	FText Description;
+
+	// custom serialization that I just found out about now oops
+	friend FArchive& operator<<(FArchive& Ar, FDialogueEntry& MyStruct)
+	{
+		Ar << MyStruct.Dialogue;
+		Ar << MyStruct.Description;
+		return Ar;
+	}
+};
+
 // Struct that represents an entry in the bookmark menu
 USTRUCT(BlueprintType)
 struct FBookmarkEntry
@@ -21,7 +59,11 @@ struct FBookmarkEntry
 
 	// The dynamic data (Player's custom notes)
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
-	FString PlayerNotes;
+	FText PlayerNotes;
+
+	// The dialogue the player has seen from this Person if the bookmark is of Person Type.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	TArray<FDialogueEntry> DialogueEntries;
 
 	// Helper for Save/Load
 	UPROPERTY(BlueprintReadOnly)
@@ -91,7 +133,13 @@ public:
 	void AddBookmark(UNotebookItemData* NewData);
 
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
-	void UpdatePlayerNote(UNotebookItemData* ForData, FString NewNote);
+	UNotebookItemData* FindNotebookItemFor(FString PersonName);
+
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	void AddDialogueEntryToBookmark(UNotebookItemData* ForData, FDialogueEntry DialogueEntryToAdd);
+
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	void UpdatePlayerNote(UNotebookItemData* ForData, FText NewNote);
 
 	// Ritorna un array che contiene tutti i bookmark di Persone scoperti dal giocatore
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
