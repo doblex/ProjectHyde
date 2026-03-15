@@ -45,17 +45,19 @@ void UCPP_NotebookComponent::AddBookmark(UNotebookItemData* NewData)
 
 	if (!bAlreadyExists)
 	{
-		// Caso bookmark nuovo
+		// Caso bookmark nuovo (TODO Aggiungi UI)
 		FBookmarkEntry NewEntry;
 		NewEntry.StaticData = NewData;
 		NewEntry.AssetPath = FSoftObjectPath(NewData);
 		NewEntry.PlayerNotes = FText::FromString(""); // start empty
 		UnlockedBookmarks.Add(NewEntry);
 		BookmarkNumber = UnlockedBookmarks.Num();
+		UE_LOGFMT(LogTemp, Display, "Added new Bookmark to Notebook!");
 	}
 	else
 	{
-		// caso bookmark esistente
+		// caso bookmark esistente (TODO Aggiungi UI)
+		UE_LOGFMT(LogTemp, Display, "Bookmark already present in Notebook!");
 	}
 }
 

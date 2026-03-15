@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "../Data/NotebookItemData.h" 
 #include "InventoryItemData.generated.h"
 
 
@@ -29,4 +30,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	UInventoryItemData* ResultItem = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	UNotebookItemData* NotebookDataAsset = nullptr;
 };
