@@ -146,7 +146,7 @@ void UCPP_NotebookComponent::SetUserMotiveForIndex(int index, FBookmarkEntry New
 // Returns true if the currently submitted User solution matches the correct solution of puzzle at the given index
 bool UCPP_NotebookComponent::CheckNotebookSolution(int index)
 {
-	FNotebookPuzzleItem Entry = PuzzleEntries[index];
+	FNotebookPuzzleItem& Entry = PuzzleEntries[index];
 	if (
 		// Compare asset paths to determine correctness
 		FSoftObjectPath(Entry.CorrectCulprit) == FSoftObjectPath(Entry.UserCulprit)&&
