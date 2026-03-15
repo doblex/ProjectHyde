@@ -27,6 +27,15 @@ enum class EBookMarkPuzzleCategory : uint8
 	Motive = 2
 };
 
+// Enum that represent the presence oa a bookmark
+UENUM(BlueprintType)
+enum class EBookmarkPresence : uint8
+{
+	None,
+	New,
+	AlreadyPresent
+};
+
 USTRUCT(BlueprintType)
 struct FDialogueEntry
 {
@@ -130,7 +139,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
-	void AddBookmark(UNotebookItemData* NewData);
+	EBookmarkPresence AddBookmark(UNotebookItemData* NewData);
 
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	UNotebookItemData* FindNotebookItemFor(FString PersonName);

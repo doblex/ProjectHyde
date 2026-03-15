@@ -34,9 +34,9 @@ void UCPP_NotebookComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 }
 
 // Add the given DataAsset as a Bookmark for the player
-void UCPP_NotebookComponent::AddBookmark(UNotebookItemData* NewData)
+EBookmarkPresence UCPP_NotebookComponent::AddBookmark(UNotebookItemData* NewData)
 {
-	if (!NewData) return;
+	if (!NewData) return EBookmarkPresence::None;
 
 	// Check if we already have an entry for this asset (lambda expression)
 	bool bAlreadyExists = UnlockedBookmarks.ContainsByPredicate([NewData](const FBookmarkEntry& Entry) {
@@ -59,6 +59,8 @@ void UCPP_NotebookComponent::AddBookmark(UNotebookItemData* NewData)
 		// caso bookmark esistente (TODO Aggiungi UI)
 		UE_LOGFMT(LogTemp, Display, "Bookmark already present in Notebook!");
 	}
+	
+	return bAlreadyExists ? EBookmarkPresence::AlreadyPresent : EBookmarkPresence::New;
 }
 
 // Trova la UNotebookItemData della persona interessata (Match del campo "Title" del DataAsset) 
