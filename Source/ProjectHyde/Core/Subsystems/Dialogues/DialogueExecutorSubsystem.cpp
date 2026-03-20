@@ -14,13 +14,6 @@ void UDialogueExecutorSubsystem::Initialize(FSubsystemCollectionBase& Collection
 	const UDialogueSubsystemSettings* Settings = GetDefault<UDialogueSubsystemSettings>();
 	if (Settings)
 	{
-		CommandLibrary = Settings->CommandExecutorLibrary.GetDefaultObject();
-		
-		if (!CommandLibrary)
-		{
-			UE_LOG(LogTemp, Error, TEXT("Failed to load command executor library"));
-		}
-		
 		MaxDialoguesNumber = Settings->MaxDialoguesNumber;
 	}
 	else
@@ -35,7 +28,7 @@ UBaseLineNode* UDialogueExecutorSubsystem::ShowDialogue(UBaseLineNode* NextLine)
 	
 	while (CurrentLineNode->IsCommand())
 	{
-		ExecuteCommand(CurrentLineNode->GetCommand());
+ 		ExecuteCommand(CurrentLineNode->GetCommand());
 		
 		if (!CurrentLineNode->HasNextLine())
 		{
@@ -50,11 +43,12 @@ UBaseLineNode* UDialogueExecutorSubsystem::ShowDialogue(UBaseLineNode* NextLine)
 	return CurrentLineNode;
 }
 
-UBaseLineNode* UDialogueExecutorSubsystem::StartDialogue(UBaseDialogue* Dialogue)
+UBaseLineNode* UDialogueExecutorSubsystem::StartDialogue(UObject* Executor,UBaseDialogue* Dialogue)
 {
 	if (!Dialogue) return nullptr;
 	
 	CurrentDialogue = Dialogue;
+	CurrentDialogueOwner = Executor;
 	return ShowDialogue(CurrentDialogue->RootLine);
 }
 
@@ -96,11 +90,9 @@ void UDialogueExecutorSubsystem::MakeSound(ELineEmotion Emotion)
 
 void UDialogueExecutorSubsystem::ExecuteCommand(FDialogueCommandLine Command)
 {
-	if (!CommandLibrary) return;
-	
 	FDialogueCommandReturn Result;
 	
-	if (CommandLibrary->ExecuteCommand(Command, Result))
+	if (ExecuteCommand(CurrentDialogueOwner,Command, Result))
 	{
 		FString Message = FString(TEXT("Command Executed"));
 			
@@ -131,4 +123,96 @@ void UDialogueExecutorSubsystem::ExecuteCommand(FDialogueCommandLine Command)
 			UE_LOG(LogTemp, Warning, TEXT("%s"), *Message);
 		}
 	}
+}
+
+bool UDialogueExecutorSubsystem::ExecuteCommand(UObject* CurrentExecutor, FDialogueCommandLine Command, FDialogueCommandReturn& CommandReturnParams)
+{
+    UFunction* Function = CurrentExecutor->FindFunction(Command.CommandName);
+
+    if (!Function)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Cannot find command %s"), *Command.CommandName.ToString());
+        return false;
+    }
+
+    FStructOnScope FuncParams(Function);
+
+    int32 ArgIndex = 0;
+
+    for (TFieldIterator<FProperty> It(Function); It && ArgIndex < Command.Args.Num(); ++It)
+    {
+        FProperty* Property = *It;
+
+        // Skip return value
+        if (Property->HasAnyPropertyFlags(CPF_ReturnParm))
+        {
+            continue;
+        }
+
+        // Skip non-input params
+        if (!Property->HasAnyPropertyFlags(CPF_Parm))
+        {
+            continue;
+        }
+
+        UValue* Arg = Command.Args[ArgIndex];
+
+        if (FBoolProperty* BoolProp = CastField<FBoolProperty>(Property))
+        {
+            BoolProp->SetPropertyValue_InContainer(
+                FuncParams.GetStructMemory(),
+                Arg->GetBooleanValue()
+            );
+        }
+        else if (FFloatProperty* FloatProp = CastField<FFloatProperty>(Property))
+        {
+            FloatProp->SetPropertyValue_InContainer(
+                FuncParams.GetStructMemory(),
+                Arg->GetNumberValue()
+            );
+        }
+        else if (FStrProperty* StrProp = CastField<FStrProperty>(Property))
+        {
+            StrProp->SetPropertyValue_InContainer(
+                FuncParams.GetStructMemory(),
+                Arg->GetStringValue()
+            );
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Unsupported parameter type in %s"), *Command.CommandName.ToString());
+            return false;
+        }
+
+        ++ArgIndex;
+    }
+
+    //Exec Function
+	CurrentExecutor->ProcessEvent(Function, FuncParams.GetStructMemory());
+    
+    //Check for OutParams and Return Values
+    for (TFieldIterator<FProperty> It(Function); It; ++It)
+    {
+        FProperty* Property = *It;
+        
+        if (Property->HasAnyPropertyFlags(CPF_ReturnParm))
+        {
+            if (FBoolProperty* BoolReturn = CastField<FBoolProperty>(Property))
+            {
+                bool ReturnValue = BoolReturn->GetPropertyValue_InContainer(FuncParams.GetStructMemory());
+                CommandReturnParams.SetReturnValue(ReturnValue);
+            }
+        }
+        
+        if (Property->HasAnyPropertyFlags(CPF_OutParm))
+        {
+            if (FBoolProperty* BoolReturn = CastField<FBoolProperty>(Property))
+            {
+                bool OutValue = BoolReturn->GetPropertyValue_InContainer(FuncParams.GetStructMemory());
+                CommandReturnParams.SetOutValue(OutValue);
+            }
+        }
+    }
+    
+    return true;
 }

@@ -72,4 +72,5 @@ void UBaseDialogueRunnerComponent::OnDialogueMakeSound(ELineEmotion Emotion)
 void UBaseDialogueRunnerComponent::OnDialogueEnded(UBaseDialogue* BaseDialogue)
 {
 	DialogueSub->OnDialogueMakeSound.Unbind();
+	OnDialogueFinished.ExecuteIfBound();
 }

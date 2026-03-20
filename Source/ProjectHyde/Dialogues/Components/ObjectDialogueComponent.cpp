@@ -56,7 +56,7 @@ bool UObjectDialogueComponent::StartDialogue(EObjectPointState State, UBaseLineN
 {
 	DialogueSub->OnDialogueEnded.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueEnded);
 	DialogueSub->OnDialogueMakeSound.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueMakeSound);
-	OutDialogue = DialogueSub->StartDialogue(ObjectState[State]);
+	OutDialogue = DialogueSub->StartDialogue(GetOwner(), ObjectState[State]);
 	return OutDialogue != nullptr;
 }
 

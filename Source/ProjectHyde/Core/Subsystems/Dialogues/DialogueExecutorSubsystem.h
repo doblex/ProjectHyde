@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "ProjectHyde/Dialogues/BaseClasses/BaseDialogue.h"
 #include "ProjectHyde/Dialogues/BaseClasses/BaseLineNode.h"
-#include "ProjectHyde/Dialogues/BaseClasses/CommandExecutorLibrary.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DialogueExecutorSubsystem.generated.h"
 
@@ -24,20 +23,23 @@ class PROJECTHYDE_API UDialogueExecutorSubsystem : public UGameInstanceSubsystem
 	
 	int MaxDialoguesNumber = 0;
 	
-	UCommandExecutorLibrary* CommandLibrary;
 	UBaseDialogue* CurrentDialogue;
 	UBaseLineNode* CurrentLineNode;
+	
+	UObject* CurrentDialogueOwner;
 	
 protected:
 	UBaseLineNode* ShowDialogue(UBaseLineNode* NextLine);
 	void ExecuteCommand(FDialogueCommandLine Command);
+	
+	bool ExecuteCommand(UObject* CurrentExecutor, FDialogueCommandLine Command, FDialogueCommandReturn& ReturnValue);
 	
 public:
 	FOnDialogueEnded OnDialogueEnded;
 	FOnDialogueMakeSound OnDialogueMakeSound;
 	
 	UFUNCTION(BlueprintCallable)
-	UBaseLineNode* StartDialogue(UBaseDialogue* Dialogue);
+	UBaseLineNode* StartDialogue(UObject* Executor,UBaseDialogue* Dialogue);
 	
 	UFUNCTION(BlueprintCallable)
 	UBaseLineNode* ContinueDialogue(int choice = 0);
@@ -46,5 +48,7 @@ public:
 	void MakeSound(ELineEmotion Emotion = ELineEmotion::Neutral);
 	
 	int GetMaxDialoguesNumber();
+	
+	
 	
 };

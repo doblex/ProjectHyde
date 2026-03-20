@@ -56,7 +56,7 @@ bool UInteractableDialogueComponent::StartDialogue(EInteractablePointState Inter
 {
 	DialogueSub->OnDialogueEnded.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueEnded);
 	DialogueSub->OnDialogueMakeSound.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueMakeSound);
-	OutDialogue = DialogueSub->StartDialogue(InteractableDialogue[InteractionState]);
+	OutDialogue = DialogueSub->StartDialogue(GetOwner(), InteractableDialogue[InteractionState]);
 	return OutDialogue != nullptr;
 }
 

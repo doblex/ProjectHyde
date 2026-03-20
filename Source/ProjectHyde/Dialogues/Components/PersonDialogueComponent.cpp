@@ -39,7 +39,7 @@ bool UPersonDialogueComponent::StartDialogue(UBaseDialogue* Dialogue, UBaseLineN
 {
 	DialogueSub->OnDialogueEnded.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueEnded);
 	DialogueSub->OnDialogueMakeSound.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueMakeSound);
-	OutDialogue = DialogueSub->StartDialogue(Dialogue);
+	OutDialogue = DialogueSub->StartDialogue(GetOwner(),Dialogue);
 	return OutDialogue != nullptr;
 }
 
@@ -86,7 +86,7 @@ bool UPersonDialogueComponent::StartWelcomeDialogue(UBaseLineNode*& OutDialogue)
 {
 	DialogueSub->OnDialogueEnded.BindDynamic(this, &UPersonDialogueComponent::OnWelcomeDialogueEnded);
 	DialogueSub->OnDialogueMakeSound.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueMakeSound);
-	OutDialogue = DialogueSub->StartDialogue(WelcomeDialogue);
+	OutDialogue = DialogueSub->StartDialogue(GetOwner(),WelcomeDialogue);
 	return OutDialogue != nullptr;
 }
 

@@ -3,6 +3,8 @@
 
 #include "CPP_EventFlagSubsystem.h"
 
+#include "IPropertyTable.h"
+
 DEFINE_LOG_CATEGORY(EventFlagSubsystem);
 UE_DEFINE_GAMEPLAY_TAG_COMMENT(EventFlags, "EventFlags", "Gameplay Tag namespace for game events");
 
@@ -88,6 +90,15 @@ bool UCPP_EventFlagSubsystem::GetEventFlag(FGameplayTag Flag)
 TMap<FGameplayTag, bool> UCPP_EventFlagSubsystem::GetEventFlagMap()
 {
 	return EventFlagMap;
+}
+
+bool UCPP_EventFlagSubsystem::GetTagFromString(FString TagString, FGameplayTag& OutTag)
+{
+	FName TagName = FName(*TagString);
+	
+	OutTag = FGameplayTag::RequestGameplayTag(TagName);
+	
+	return OutTag.IsValid();
 }
 
 bool UCPP_EventFlagSubsystem::AreTagsLoaded()

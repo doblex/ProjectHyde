@@ -54,6 +54,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TMap<FGameplayTag, bool> GetEventFlagMap();
 
+	UFUNCTION(BlueprintCallable)
+	bool GetTagFromString(FString TagString, FGameplayTag& OutTag);
+	
 	// Returns true if event flag tags have been loaded from table
 	UFUNCTION(BlueprintCallable)
 	bool AreTagsLoaded();

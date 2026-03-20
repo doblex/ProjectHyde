@@ -39,7 +39,7 @@ bool UZoomDialogueComponent::StartDialogue(UBaseLineNode*& OutDialogue)
 {
 	DialogueSub->OnDialogueEnded.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueEnded);
 	DialogueSub->OnDialogueMakeSound.BindDynamic(this, &UBaseDialogueRunnerComponent::OnDialogueMakeSound);
-	OutDialogue = DialogueSub->StartDialogue(Dialogue);
+	OutDialogue = DialogueSub->StartDialogue(GetOwner(),Dialogue);
 	return OutDialogue != nullptr;
 }
 
