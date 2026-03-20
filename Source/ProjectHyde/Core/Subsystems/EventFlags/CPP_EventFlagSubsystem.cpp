@@ -95,6 +95,14 @@ bool UCPP_EventFlagSubsystem::AreTagsLoaded()
 	return bTagsLoaded;
 }
 
+void UCPP_EventFlagSubsystem::ResetAllFlags()
+{
+	for (TPair<FGameplayTag, bool>& flag : EventFlagMap)
+	{
+		flag.Value = false;
+	}
+}
+
 void UCPP_EventFlagSubsystem::Save(UHydeSaveGame* SaveGameInstance)
 {
 	UE_LOGFMT(EventFlagSubsystem, Display, "Event Flag Subsystem received Save request!");

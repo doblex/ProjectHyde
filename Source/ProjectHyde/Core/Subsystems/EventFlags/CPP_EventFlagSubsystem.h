@@ -42,17 +42,25 @@ public:
 	virtual void Deinitialize() override;
 	// End USubsystem
 
+	// Sets the boolean value of the given flag
 	UFUNCTION(BlueprintCallable)
 	bool SetEventFlag(FGameplayTag Flag, bool bValue);
 
+	// Gets the boolean value of the given flag
 	UFUNCTION(BlueprintCallable)
 	bool GetEventFlag(FGameplayTag Flag);
 
+	// Gets a reference to the map pf event flags and their boolean values
 	UFUNCTION(BlueprintCallable)
 	TMap<FGameplayTag, bool> GetEventFlagMap();
 
+	// Returns true if event flag tags have been loaded from table
 	UFUNCTION(BlueprintCallable)
 	bool AreTagsLoaded();
+
+	// Sets all flags to false
+	UFUNCTION(BlueprintCallable)
+	void ResetAllFlags();
 
 	// Custom save and load without interface
 	void Save(UHydeSaveGame* SaveGameInstance);
