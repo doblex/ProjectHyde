@@ -9,8 +9,21 @@ ACPP_Lock::ACPP_Lock()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	RootComponent = Mesh;
+	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	RootComponent = RootSceneComponent;
+
+	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
+	Mesh->SetupAttachment(RootComponent);
+
+	// Add wheel collisions
+	Wheel1Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Wheel1"));
+	Wheel1Collision->SetupAttachment(RootComponent);
+	Wheel2Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Wheel2"));
+	Wheel2Collision->SetupAttachment(RootComponent);
+	Wheel3Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Wheel3"));
+	Wheel3Collision->SetupAttachment(RootComponent);
+	Wheel4Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Wheel4"));
+	Wheel4Collision->SetupAttachment(RootComponent);
 
 	// Add GUID for saving
 	GUID_Component = CreateDefaultSubobject<UCPP_SaveGameIdComponent>(TEXT("SaveGameIdComponent"));
@@ -23,7 +36,7 @@ void ACPP_Lock::BeginPlay()
 
 	// initialize values
 	LockDigitCount = LockCombination.Num();
-	Mesh->SetStaticMesh(ClosedLockMesh);
+	//Mesh->SetStaticMesh(ClosedLockMesh);
 	CurrentUserCombination.SetNumZeroed(LockDigitCount);
 }
 
@@ -32,6 +45,94 @@ void ACPP_Lock::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+ELockDigits ACPP_Lock::GetDigit(int Position)
+{
+	if (Position >= LockDigitCount || Position < 0)
+	{
+		// out of bounds case
+		check(GEngine); GEngine->AddOnScreenDebugMessage(101, 5.f, FColor::Red, FString::Printf(TEXT("Digit out of bounds at position %d"), Position));
+		return ELockDigits::NaN;
+	}
+	return CurrentUserCombination[Position];
+}
+
+void ACPP_Lock::IncrementDigit(int Position)
+{
+	if (Position >= LockDigitCount || Position < 0)
+	{
+		// out of bounds case
+		check(GEngine); GEngine->AddOnScreenDebugMessage(101, 5.f, FColor::Red, FString::Printf(TEXT("Digit out of bounds at position %d"), Position));
+		return;
+	}
+
+	UAnimInstance* AnimInst = Mesh->GetAnimInstance();
+
+	// Correctness check
+	if (!AnimInst || !LockMontage) return;
+
+	// Do nothing until montage is finished
+	if (AnimInst->Montage_IsPlaying(LockMontage)) return;
+
+	ELockDigits OldDigit = CurrentUserCombination[Position];
+
+	switch (CurrentUserCombination[Position])
+	{
+	case ELockDigits::One:
+		CurrentUserCombination[Position] = ELockDigits::Two;
+		break;
+	case ELockDigits::Two:
+		CurrentUserCombination[Position] = ELockDigits::Three;
+		break;
+	case ELockDigits::Three:
+		CurrentUserCombination[Position] = ELockDigits::Four;
+		break;
+	case ELockDigits::Four:
+		CurrentUserCombination[Position] = ELockDigits::Five;
+		break;
+	case ELockDigits::Five:
+		CurrentUserCombination[Position] = ELockDigits::Six;
+		break;
+	case ELockDigits::Six:
+		CurrentUserCombination[Position] = ELockDigits::Seven;
+		break;
+	case ELockDigits::Seven:
+		CurrentUserCombination[Position] = ELockDigits::Eight;
+		break;
+	case ELockDigits::Eight:
+		CurrentUserCombination[Position] = ELockDigits::Nine;
+		break;
+	case ELockDigits::Nine:
+		CurrentUserCombination[Position] = ELockDigits::One;
+		break;
+	default:
+		break;
+	}
+
+	int32 FromVal = (int32)OldDigit;
+	int32 ToVal = (int32)CurrentUserCombination[Position];
+
+	FString SectionString = FString::Printf(TEXT("Wheel%d_%dto%d"), Position + 1, FromVal+1, ToVal);
+	FName TargetSection = FName(*SectionString);
+
+	if (AnimInst)
+	{
+		FProperty* Prop = AnimInst->GetClass()->FindPropertyByName(TEXT("ActiveWheelIndex"));
+		if (Prop)
+		{
+			int32* IntPtr = Prop->ContainerPtrToValuePtr<int32>(AnimInst);
+			if (IntPtr) *IntPtr = Position;
+		}
+	}
+
+	UE_LOGFMT(LogTemp, Display, "Current Anim Selection string: {0}", SectionString);
+
+	AnimInst->Montage_Play(LockMontage);
+	AnimInst->Montage_JumpToSection(TargetSection, LockMontage);
+
+	// Check for Win Condition
+	TryUnlock();
 }
 
 void ACPP_Lock::InsertDigit(ELockDigits Digit, int Position)
@@ -60,7 +161,9 @@ void ACPP_Lock::TryUnlock()
 	// Correct combination
 	check(GEngine); GEngine->AddOnScreenDebugMessage(102, 5.f, FColor::Red, TEXT("Correct combination!"));
 	bIsLocked = false;
-	Mesh->SetStaticMesh(OpenLockMesh);
+
+	// TODO play unlock montage when other montages are finished
+	//Mesh->SetStaticMesh(OpenLockMesh);
 }
 
 bool ACPP_Lock::IsLocked()
@@ -98,8 +201,9 @@ void ACPP_Lock::Load_Implementation(const UHydeSaveGame* SaveGameInstance, const
 	FMemoryReader Reader(ThisLockSaveData.CustomActorData);
 	SerializeActorData(Reader);
 
-	if (!bIsLocked) Mesh->SetStaticMesh(OpenLockMesh);
-	else Mesh->SetStaticMesh(ClosedLockMesh);
+	// TODO load unlocked pose if unlocked
+	//if (!bIsLocked) Mesh->SetStaticMesh(OpenLockMesh);
+	//else Mesh->SetStaticMesh(ClosedLockMesh);
 }
 
 void ACPP_Lock::SerializeActorData(FArchive& Ar)

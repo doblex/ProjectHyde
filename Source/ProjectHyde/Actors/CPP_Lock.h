@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/SceneComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/CPP_SaveGameIdComponent.h"
 #include "../Interface/Saveable.h"
 #include "../Save/HydeSaveGame.h"
@@ -12,7 +14,6 @@
 
 UENUM()
 enum class ELockDigits : uint8 {
-   Zero		UMETA(DisplayName = "0"),
    One		UMETA(DisplayName = "1"),
    Two		UMETA(DisplayName = "2"),
    Three	UMETA(DisplayName = "3"),
@@ -21,7 +22,8 @@ enum class ELockDigits : uint8 {
    Six		UMETA(DisplayName = "6"),
    Seven	UMETA(DisplayName = "7"),
    Eight	UMETA(DisplayName = "8"),
-   Nine		UMETA(DisplayName = "9")
+   Nine		UMETA(DisplayName = "9"),
+   NaN		UMETA(DisplayName = "Not a Number")
 };
 
 UCLASS()
@@ -32,6 +34,19 @@ class PROJECTHYDE_API ACPP_Lock : public AActor, public ISaveable
 public:	
 	// Sets default values for this actor's properties
 	ACPP_Lock();
+
+	// Lock wheel collisions
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lock")
+	UBoxComponent* Wheel1Collision;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lock")
+	UBoxComponent* Wheel2Collision;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lock")
+	UBoxComponent* Wheel3Collision;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lock")
+	UBoxComponent* Wheel4Collision;
 
 private:
 	// Lock combination to insert in inspector
@@ -47,16 +62,16 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Lock")
 	bool bIsLocked = true;
 
-	// Mesh component for the lock
-	UStaticMeshComponent* Mesh;
+	UPROPERTY(VisibleAnywhere, Category = "Lock")
+	class USceneComponent* RootSceneComponent;
 
-	// Mesh to use when the lock is closed
+	// Mesh for the lock
 	UPROPERTY(EditAnywhere, Category = "Lock")
-	UStaticMesh* ClosedLockMesh;
+	USkeletalMeshComponent* Mesh;
 
-	// Mesh to use when the lock is open
+	// Animation montage
 	UPROPERTY(EditAnywhere, Category = "Lock")
-	UStaticMesh* OpenLockMesh;
+	UAnimMontage* LockMontage;
 
 	// GUID component for saving
 	UCPP_SaveGameIdComponent* GUID_Component;
@@ -69,7 +84,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Insert a digit into the user combination at the specified position (starting from 0)
+	// Get digit at the specified position
+	UFUNCTION(BlueprintCallable, Category = "Lock")
+	ELockDigits GetDigit(int Position);
+
+	UFUNCTION(BlueprintCallable, Category = "Lock")
+	void IncrementDigit(int Position);
+
+	// Insert a digit into the user combination at the specified position (starting from 1)
 	UFUNCTION(BlueprintCallable, Category = "Lock")
 	void InsertDigit(ELockDigits Digit, int Position);
 
