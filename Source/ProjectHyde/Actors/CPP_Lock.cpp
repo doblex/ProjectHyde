@@ -110,10 +110,10 @@ void ACPP_Lock::IncrementDigit(int Position)
 		break;
 	}
 
-	int32 FromVal = (int32)OldDigit;
-	int32 ToVal = (int32)CurrentUserCombination[Position];
+	int32 FromVal = (int32)OldDigit+1;
+	int32 ToVal = ((int32)CurrentUserCombination[Position] % 9) + 1;
 
-	FString SectionString = FString::Printf(TEXT("Wheel%d_%dto%d"), Position + 1, FromVal+1, ToVal);
+	FString SectionString = FString::Printf(TEXT("%dto%d"), FromVal, ToVal);
 	FName TargetSection = FName(*SectionString);
 
 	if (AnimInst)
