@@ -38,6 +38,12 @@ void ACPP_Lock::BeginPlay()
 	LockDigitCount = LockCombination.Num();
 	//Mesh->SetStaticMesh(ClosedLockMesh);
 	CurrentUserCombination.SetNumZeroed(LockDigitCount);
+	WheelRotations.SetNumZeroed(LockDigitCount);
+
+	if (UAnimInstance* AnimInst = Mesh->GetAnimInstance())
+	{
+		AnimInst->OnPlayMontageNotifyBegin.AddDynamic(this, &ACPP_Lock::OnEndRotationNotify);
+	}
 }
 
 // Called every frame
@@ -116,6 +122,9 @@ void ACPP_Lock::IncrementDigit(int Position)
 	FString SectionString = FString::Printf(TEXT("%dto%d"), FromVal, ToVal);
 	FName TargetSection = FName(*SectionString);
 
+	float TargetAngle = FromVal * -40.0f;
+	WheelRotations[Position] = FRotator(TargetAngle, 0.f, 0.f);
+
 	if (AnimInst)
 	{
 		FProperty* Prop = AnimInst->GetClass()->FindPropertyByName(TEXT("ActiveWheelIndex"));
@@ -123,6 +132,16 @@ void ACPP_Lock::IncrementDigit(int Position)
 		{
 			int32* IntPtr = Prop->ContainerPtrToValuePtr<int32>(AnimInst);
 			if (IntPtr) *IntPtr = Position;
+		}
+		FProperty* AlphaProp = AnimInst->GetClass()->FindPropertyByName(TEXT("BoneAlpha"));
+		if (AlphaProp)
+		{
+			int32* AlphaPtr = AlphaProp->ContainerPtrToValuePtr<int32>(AnimInst);
+			if (AlphaPtr) *AlphaPtr = 0;
+			UE_LOG(LogTemp, Warning, TEXT("Successfully set BoneAlpha to 0"));
+		}
+		else {
+			UE_LOG(LogTemp, Error, TEXT("BoneAlpha pointer is NULL!"));
 		}
 	}
 
@@ -169,6 +188,34 @@ void ACPP_Lock::TryUnlock()
 bool ACPP_Lock::IsLocked()
 {
 	return bIsLocked;
+}
+
+void ACPP_Lock::OnEndRotationNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
+{
+	if (NotifyName != "EndRotation") return;
+
+	UE_LOGFMT(LogTemp, Display, "Ended montage play, Updating rotations");
+
+	UAnimInstance* AnimInst = Mesh->GetAnimInstance();
+	if (AnimInst)
+	{
+		FProperty* AlphaProp = AnimInst->GetClass()->FindPropertyByName(TEXT("BoneAlpha"));
+		if (AlphaProp)
+		{
+			int32* AlphaPtr = AlphaProp->ContainerPtrToValuePtr<int32>(AnimInst);
+			if (AlphaPtr) *AlphaPtr = 1;
+			UE_LOG(LogTemp, Warning, TEXT("Successfully set BoneAlpha to 1"));
+		}
+		else {
+			UE_LOG(LogTemp, Error, TEXT("BoneAlpha pointer is NULL!"));
+		}
+		FProperty* RotProp = AnimInst->GetClass()->FindPropertyByName(TEXT("WheelRotations"));
+		if (RotProp)
+		{
+			TArray<FRotator>* RotPtr = RotProp->ContainerPtrToValuePtr<TArray<FRotator>>(AnimInst);
+			if (RotPtr) *RotPtr = WheelRotations;
+		}
+	}
 }
 
 void ACPP_Lock::Save_Implementation(UHydeSaveGame* SaveGameInstance)

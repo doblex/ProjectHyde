@@ -48,6 +48,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lock")
 	UBoxComponent* Wheel4Collision;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = "Lock")
+	TArray<FRotator> WheelRotations;
+
 private:
 	// Lock combination to insert in inspector
 	UPROPERTY(EditAnywhere, Category = "Lock")
@@ -102,6 +105,9 @@ public:
 	// Check if lock is locked
 	UFUNCTION(BlueprintCallable, Category = "Lock")
 	bool IsLocked();
+
+	UFUNCTION()
+	void OnEndRotationNotify(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 
 	// Save system
 	virtual void Save_Implementation(UHydeSaveGame* SaveGameInstance) override;
