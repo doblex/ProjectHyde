@@ -51,6 +51,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = "Lock")
 	TArray<FRotator> WheelRotations;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = "Lock")
+	TArray<int32> WheelAlphas;
+
 private:
 	// Lock combination to insert in inspector
 	UPROPERTY(EditAnywhere, Category = "Lock")

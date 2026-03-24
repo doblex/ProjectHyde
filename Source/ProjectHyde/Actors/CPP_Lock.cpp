@@ -39,6 +39,8 @@ void ACPP_Lock::BeginPlay()
 	//Mesh->SetStaticMesh(ClosedLockMesh);
 	CurrentUserCombination.SetNumZeroed(LockDigitCount);
 	WheelRotations.SetNumZeroed(LockDigitCount);
+	WheelAlphas.SetNumZeroed(LockDigitCount);
+	//for (int i = 0; i < WheelAlphas.Num(); i++) WheelAlphas[i] = 1;
 
 	if (UAnimInstance* AnimInst = Mesh->GetAnimInstance())
 	{
@@ -124,6 +126,7 @@ void ACPP_Lock::IncrementDigit(int Position)
 
 	float TargetAngle = FromVal * -40.0f;
 	WheelRotations[Position] = FRotator(TargetAngle, 0.f, 0.f);
+	WheelAlphas[Position] = 1;
 
 	if (AnimInst)
 	{
@@ -133,15 +136,15 @@ void ACPP_Lock::IncrementDigit(int Position)
 			int32* IntPtr = Prop->ContainerPtrToValuePtr<int32>(AnimInst);
 			if (IntPtr) *IntPtr = Position;
 		}
-		FProperty* AlphaProp = AnimInst->GetClass()->FindPropertyByName(TEXT("BoneAlpha"));
+		FProperty* AlphaProp = AnimInst->GetClass()->FindPropertyByName(TEXT("BoneAlphas"));
 		if (AlphaProp)
 		{
-			int32* AlphaPtr = AlphaProp->ContainerPtrToValuePtr<int32>(AnimInst);
-			if (AlphaPtr) *AlphaPtr = 0;
-			UE_LOG(LogTemp, Warning, TEXT("Successfully set BoneAlpha to 0"));
+			TArray<int32>* AlphaPtr = AlphaProp->ContainerPtrToValuePtr<TArray<int32>>(AnimInst);
+			if (AlphaPtr) *AlphaPtr = WheelAlphas;
+			UE_LOGFMT(LogTemp, Warning, "Successfully set BoneAlphas[{0}] to 1", Position);
 		}
 		else {
-			UE_LOG(LogTemp, Error, TEXT("BoneAlpha pointer is NULL!"));
+			UE_LOGFMT(LogTemp, Error, "BoneAlpha pointer is NULL!");
 		}
 	}
 
@@ -149,9 +152,6 @@ void ACPP_Lock::IncrementDigit(int Position)
 
 	AnimInst->Montage_Play(LockMontage);
 	AnimInst->Montage_JumpToSection(TargetSection, LockMontage);
-
-	// Check for Win Condition
-	TryUnlock();
 }
 
 void ACPP_Lock::InsertDigit(ELockDigits Digit, int Position)
@@ -183,6 +183,17 @@ void ACPP_Lock::TryUnlock()
 
 	// TODO play unlock montage when other montages are finished
 	//Mesh->SetStaticMesh(OpenLockMesh);
+	Wheel1Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Wheel2Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Wheel3Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Wheel4Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	UAnimInstance* AnimInst = Mesh->GetAnimInstance();
+	if (AnimInst)
+	{
+		AnimInst->StopAllMontages(0.f);
+		AnimInst->Montage_Play(LockMontage);
+		AnimInst->Montage_JumpToSection("Opening", LockMontage);
+	}
 }
 
 bool ACPP_Lock::IsLocked()
@@ -199,12 +210,13 @@ void ACPP_Lock::OnEndRotationNotify(FName NotifyName, const FBranchingPointNotif
 	UAnimInstance* AnimInst = Mesh->GetAnimInstance();
 	if (AnimInst)
 	{
-		FProperty* AlphaProp = AnimInst->GetClass()->FindPropertyByName(TEXT("BoneAlpha"));
+		FProperty* AlphaProp = AnimInst->GetClass()->FindPropertyByName(TEXT("BoneAlphas"));
 		if (AlphaProp)
 		{
-			int32* AlphaPtr = AlphaProp->ContainerPtrToValuePtr<int32>(AnimInst);
-			if (AlphaPtr) *AlphaPtr = 1;
-			UE_LOG(LogTemp, Warning, TEXT("Successfully set BoneAlpha to 1"));
+			TArray<int32> Zeroes = { 0, 0, 0, 0 };
+			TArray<int32>* AlphaPtr = AlphaProp->ContainerPtrToValuePtr<TArray<int32>>(AnimInst);
+			if (AlphaPtr) *AlphaPtr = Zeroes;
+			UE_LOG(LogTemp, Warning, TEXT("Successfully set BoneAlphas to 0"));
 		}
 		else {
 			UE_LOG(LogTemp, Error, TEXT("BoneAlpha pointer is NULL!"));
@@ -215,6 +227,9 @@ void ACPP_Lock::OnEndRotationNotify(FName NotifyName, const FBranchingPointNotif
 			TArray<FRotator>* RotPtr = RotProp->ContainerPtrToValuePtr<TArray<FRotator>>(AnimInst);
 			if (RotPtr) *RotPtr = WheelRotations;
 		}
+
+		// Check for Win Condition
+		TryUnlock();
 	}
 }
 
