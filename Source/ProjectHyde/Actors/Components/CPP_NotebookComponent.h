@@ -9,6 +9,8 @@
 
 #include "CPP_NotebookComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBookmarkReload);
+
 // Enum that represent The query type for the Case Puzzle
 UENUM(BlueprintType)
 enum class EBookMarkPuzzleCategorySelection : uint8
@@ -61,7 +63,7 @@ USTRUCT(BlueprintType)
 struct FBookmarkEntry
 {
 	GENERATED_BODY()
-
+	
 	// The static data (Icon, Title, etc.)
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
 	UNotebookItemData* StaticData = nullptr;
@@ -109,7 +111,6 @@ struct FNotebookPuzzleItem
 	UNotebookItemData* UserMotive = nullptr;
 };
 
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTHYDE_API UCPP_NotebookComponent : public UActorComponent
 {
@@ -119,6 +120,10 @@ public:
 	// Sets default values for this component's properties
 	UCPP_NotebookComponent();
 
+	// Delegate for reloading Bookmarks
+	UPROPERTY(BlueprintAssignable, Category = "Notebook")
+	FOnBookmarkReload OnBookmarksReloaded;
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
 	TArray<FBookmarkEntry> UnlockedBookmarks;
 
@@ -137,7 +142,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	EBookmarkPresence AddBookmark(UNotebookItemData* NewData);
 

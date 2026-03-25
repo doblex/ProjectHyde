@@ -52,6 +52,7 @@ EBookmarkPresence UCPP_NotebookComponent::AddBookmark(UNotebookItemData* NewData
 		NewEntry.PlayerNotes = FText::FromString(""); // start empty
 		UnlockedBookmarks.Add(NewEntry);
 		BookmarkNumber = UnlockedBookmarks.Num();
+		OnBookmarksReloaded.Broadcast();
 		UE_LOGFMT(LogTemp, Display, "Added new Bookmark to Notebook!");
 	}
 	else
