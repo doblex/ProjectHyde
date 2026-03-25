@@ -3,7 +3,9 @@
 
 #include "CPP_EventFlagSubsystem.h"
 
-#include "IPropertyTable.h"
+#include "Engine/AssetManager.h"
+#include "Engine/StreamableManager.h"
+#include "ProjectHyde/Core/DevSettings/EventFlagSubsystemSettings.h"
 
 DEFINE_LOG_CATEGORY(EventFlagSubsystem);
 UE_DEFINE_GAMEPLAY_TAG_COMMENT(EventFlags, "EventFlags", "Gameplay Tag namespace for game events");

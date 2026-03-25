@@ -4,13 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-#include "../../DevSettings/EventFlagSubsystemSettings.h"
 #include "../../../Save/HydeSaveGame.h"
-#include "Engine/StreamableManager.h"
-#include "Engine/AssetManager.h"
-
 #include "GameplayTagContainer.h"
-#include "GameplayTagsManager.h"
 #include "NativeGameplayTags.h"
 #include "CPP_EventFlagSubsystem.generated.h"
 
