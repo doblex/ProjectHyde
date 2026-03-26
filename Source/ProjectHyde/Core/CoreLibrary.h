@@ -3,6 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputAction.h"
+#include "GameFramework/PlayerInput.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "CoreLibrary.generated.h"
 
