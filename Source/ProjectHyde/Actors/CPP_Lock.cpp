@@ -181,18 +181,22 @@ void ACPP_Lock::TryUnlock()
 	check(GEngine); GEngine->AddOnScreenDebugMessage(102, 5.f, FColor::Red, TEXT("Correct combination!"));
 	bIsLocked = false;
 
-	// TODO play unlock montage when other montages are finished
-	//Mesh->SetStaticMesh(OpenLockMesh);
+	// Play unlock montage when other montages are finished
 	Wheel1Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Wheel2Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Wheel3Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Wheel4Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	UAnimInstance* AnimInst = Mesh->GetAnimInstance();
-	if (AnimInst)
-	{
-		AnimInst->StopAllMontages(0.f);
-		AnimInst->Montage_Play(LockMontage);
-		AnimInst->Montage_JumpToSection("Opening", LockMontage);
+
+	if (AnimInst) {
+		FProperty* OpenProp = AnimInst->GetClass()->FindPropertyByName(TEXT("bIsOpen"));
+		if (OpenProp)
+		{
+			int32* OpenPtr = OpenProp->ContainerPtrToValuePtr<int32>(AnimInst);
+			if (OpenPtr) *OpenPtr = 1;
+			UE_LOG(LogTemp, Warning, TEXT("Successfully set bIsOpen to true"));
+		}
 	}
 }
 
