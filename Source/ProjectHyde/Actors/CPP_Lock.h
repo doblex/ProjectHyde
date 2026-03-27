@@ -12,6 +12,8 @@
 #include "Serialization/Archive.h"
 #include "CPP_Lock.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLockOpened);
+
 UENUM()
 enum class ELockDigits : uint8 {
    One		UMETA(DisplayName = "1"),
@@ -53,7 +55,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = "Lock")
 	TArray<int32> WheelAlphas;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintAssignable)
+	FOnLockOpened OnLockOpened;
+	
 private:
 	// Lock combination to insert in inspector
 	UPROPERTY(EditAnywhere, Category = "Lock")

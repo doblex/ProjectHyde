@@ -198,6 +198,8 @@ void ACPP_Lock::TryUnlock()
 			UE_LOG(LogTemp, Warning, TEXT("Successfully set bIsOpen to true"));
 		}
 	}
+	
+	OnLockOpened.Broadcast();
 }
 
 bool ACPP_Lock::IsLocked()
