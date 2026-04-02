@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include "../Data/NotebookItemData.h" 
 #include "InventoryItemData.generated.h"
 
+class UNotebookItemData;
 
 UCLASS(BlueprintType)
 class PROJECTHYDE_API UInventoryItemData : public UPrimaryDataAsset
