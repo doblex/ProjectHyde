@@ -57,4 +57,11 @@ public:
 	/// @return Return true if removed, false otherwise
 	UFUNCTION(BlueprintCallable)
 	bool RemoveItemFromInventory(UInventoryItemData* ItemDataToRemove);
+	
+	/// Called when an update on position happened
+	/// @param FromIndex Index of the object to swap
+	/// @param ToIndex Index of the target slot
+	/// @return Return true if succes, false otherwise
+	UFUNCTION(BlueprintCallable)
+	bool SwapItems(int FromIndex, int ToIndex);
 };

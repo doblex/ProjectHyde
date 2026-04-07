@@ -55,3 +55,9 @@ bool UInventorySubsystem::RemoveItemFromInventory(UInventoryItemData* ItemDataTo
 	
 	return false;
 }
+
+bool UInventorySubsystem::SwapItems(int FromIndex, int ToIndex)
+{
+	InventoryItemData.Swap(InventorySlotNumber, ToIndex);
+	return true;
+}
