@@ -30,7 +30,7 @@ void UInventorySubsystem::GetHotBarItems(TArray<UInventoryItemData*>& OutHotBarI
 
 bool UInventorySubsystem::AddItemToInventory(UInventoryItemData* ItemDataToAdd)
 {
-	for (UInventoryItemData* Item : InventoryItemData)
+	for (UInventoryItemData*& Item : InventoryItemData)
 	{
 		if(Item == nullptr)
 		{
@@ -58,6 +58,6 @@ bool UInventorySubsystem::RemoveItemFromInventory(UInventoryItemData* ItemDataTo
 
 bool UInventorySubsystem::SwapItems(int FromIndex, int ToIndex)
 {
-	InventoryItemData.Swap(InventorySlotNumber, ToIndex);
+	InventoryItemData.Swap(FromIndex, ToIndex);
 	return true;
 }
