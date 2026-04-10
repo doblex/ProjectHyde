@@ -306,15 +306,34 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 		FString AssetName = DialogueTemp.InternalName.ToString();
 		FString PackageName = FixedFolder + TEXT("/") + AssetName;
 		
+		
 		UPackage* Package = CreatePackage(*PackageName);
 		Package->FullyLoad();
 		
-		UBaseDialogue* Dialogue = NewObject<UBaseDialogue>(
+		UBaseDialogue* Dialogue = FindObject<UBaseDialogue>(Package, *AssetName);
+		
+		if (Dialogue != nullptr)
+		{
+			Dialogue = NewObject<UBaseDialogue>(
 			Package,
 			UBaseDialogue::StaticClass(),
 			FName(*AssetName),
 			RF_Public | RF_Standalone
-		);
+			);
+		}
+		else
+		{
+			Dialogue->Modify();
+			Dialogue->Description = "";
+			Dialogue->DialogueName = "";
+			Dialogue->Requirements.Reset();
+			Dialogue->RootLine = nullptr;
+			
+			ForEachObjectWithOuter(Dialogue, [](UObject* Obj)
+			{
+				Obj->MarkAsGarbage();
+			});
+		}
 		
 		FAssetRegistryModule::AssetCreated(Dialogue);
 		Dialogue->MarkPackageDirty();
