@@ -312,7 +312,7 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 		
 		UBaseDialogue* Dialogue = FindObject<UBaseDialogue>(Package, *AssetName);
 		
-		if (Dialogue != nullptr)
+		if (Dialogue == nullptr)
 		{
 			Dialogue = NewObject<UBaseDialogue>(
 			Package,
