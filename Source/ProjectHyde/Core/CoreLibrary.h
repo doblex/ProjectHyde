@@ -19,6 +19,10 @@ class PROJECTHYDE_API UCoreLibrary : public UBlueprintFunctionLibrary
 	
 public:
 	
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "Get App Version"), Category = "Game Config")
+	static FString GetAppVersion();
+	
+	
 	template<typename TEnum>
 static TEnum GetEnumFromString(const FString& String, TEnum DefaultValue)
 	{
