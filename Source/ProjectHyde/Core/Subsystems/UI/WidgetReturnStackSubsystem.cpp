@@ -4,7 +4,20 @@
 #include "WidgetReturnStackSubsystem.h"
 
 #include "Blueprint/UserWidget.h"
+#include "ProjectHyde/Core/DevSettings/WidgetSettings.h"
 #include "ProjectHyde/Interface/Widget/WidgetBackAction.h"
+
+void UWidgetReturnStackSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+	Super::Initialize(Collection);
+	
+	const UWidgetSettings* Settings = GetDefault<UWidgetSettings>();
+	
+	if (Settings)
+	{
+		bDebugLogs = Settings->bDebugLogs;
+	}
+}
 
 void UWidgetReturnStackSubsystem::AddToStack(UUserWidget* WidgetToAdd)
 {
@@ -12,7 +25,7 @@ void UWidgetReturnStackSubsystem::AddToStack(UUserWidget* WidgetToAdd)
 	{
 		WidgetStack.Push(WidgetToAdd);
 		
-		if (GEngine)
+		if (bDebugLogs && GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(
 				-1,
@@ -28,7 +41,7 @@ void UWidgetReturnStackSubsystem::RemoveFromStack(UUserWidget* WidgetToRemove)
 {
 	WidgetStack.Remove(WidgetToRemove);
 	
-	if (GEngine)
+	if (bDebugLogs && GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(
 			-1,
@@ -49,7 +62,7 @@ void UWidgetReturnStackSubsystem::CloseLastElement()
 	{
 		WidgetStack.Pop();
 		
-		if (GEngine)
+		if (bDebugLogs && GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(
 				-1,

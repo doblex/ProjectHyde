@@ -3,9 +3,19 @@
 
 #include "InventorySubsystem.h"
 
+#include "ProjectHyde/Core/DevSettings/PlayerSettings.h"
+
 void UInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
+	
+	const UPlayerSettings* Settings = GetDefault<UPlayerSettings>();
+	
+	if (Settings)
+	{
+		InventorySlotNumber = Settings->InventorySlotNumber;
+		HotBarSlotNumber = Settings->HotBarSlotNumber;
+	}
 	
 	InventoryItemData.SetNum(InventorySlotNumber);
 }

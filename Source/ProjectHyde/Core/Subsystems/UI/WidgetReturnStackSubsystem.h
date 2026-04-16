@@ -18,6 +18,10 @@ class PROJECTHYDE_API UWidgetReturnStackSubsystem : public ULocalPlayerSubsystem
 	GENERATED_BODY()
 	
 	TArray<UUserWidget*> WidgetStack;
+	bool bDebugLogs = false;
+	
+	protected:
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	
 public:
 	UFUNCTION(BlueprintCallable, Meta=(DefaultToSelf="WidgetToAdd"))
