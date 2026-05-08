@@ -17,15 +17,18 @@ class PROJECTHYDE_API UBaseDialogue : public UDataAsset
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Line")
 	FName DialogueName;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Line")
 	FString Description;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Line")
 	FGameplayTagContainer Requirements;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Command")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Line")
 	UBaseLineNode* RootLine;
+	
+	FDialogueEntry GetDialogueEntry();
+	
 };

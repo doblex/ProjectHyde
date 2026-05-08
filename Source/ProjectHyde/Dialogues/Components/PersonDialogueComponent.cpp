@@ -3,6 +3,9 @@
 
 #include "PersonDialogueComponent.h"
 
+#include "GameFramework/Character.h"
+#include "ProjectHyde/Interface/NotebookLoggable.h"
+
 
 // Sets default values for this component's properties
 UPersonDialogueComponent::UPersonDialogueComponent()
@@ -98,9 +101,29 @@ void UPersonDialogueComponent::OnWelcomeDialogueEnded(UBaseDialogue* BaseDialogu
 
 void UPersonDialogueComponent::OnDialogueEnded(UBaseDialogue* BaseDialogue)
 {
-	//TODO: ADD dialogue to notebook
-	DialoguesPool.Remove(BaseDialogue);
+	 FDialogueEntry Entry = BaseDialogue->GetDialogueEntry();
 	
+	if (UWorld*  World = GetWorld())
+	{
+		UCPP_NotebookComponent* NotebookComponent = World->GetFirstPlayerController()->GetCharacter()->GetComponentByClass<UCPP_NotebookComponent>();
+		if (NotebookComponent != nullptr)
+		{
+			UNotebookItemData* ItemData = INotebookLoggable::Execute_GetBookmarkData(GetOwner());
+			NotebookComponent->AddDialogueEntryToBookmark(ItemData,Entry);
+			
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(
+					-1,
+					5.f,
+					FColor::Green,
+					TEXT("Dialogue entry Added")
+					);
+			}
+		}
+	}
+	
+	DialoguesPool.Remove(BaseDialogue);
 	Super::OnDialogueEnded(BaseDialogue);
 }
 

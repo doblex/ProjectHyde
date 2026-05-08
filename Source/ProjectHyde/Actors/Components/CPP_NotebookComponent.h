@@ -64,7 +64,7 @@ struct FDialogueEntry
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
-	FText DialogueTitle;
+	FName DialogueTitle;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
 	FText Description;
