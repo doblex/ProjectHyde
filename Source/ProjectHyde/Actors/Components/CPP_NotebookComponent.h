@@ -39,21 +39,45 @@ enum class EBookmarkPresence : uint8
 };
 
 USTRUCT(BlueprintType)
+struct FLineLog
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
+	FName LineProtagonist;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
+	FText Line;
+
+	friend FArchive& operator<<(FArchive& Ar, FLineLog& MyStruct)
+	{
+		Ar << MyStruct.LineProtagonist;
+		Ar << MyStruct.Line;
+		return Ar;
+	}
+};
+
+
+USTRUCT(BlueprintType)
 struct FDialogueEntry
 {
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
-	FText Dialogue;
+	FText DialogueTitle;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
 	FText Description;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
+	TArray<FLineLog> Lines;
+
 	// custom serialization that I just found out about now oops
 	friend FArchive& operator<<(FArchive& Ar, FDialogueEntry& MyStruct)
 	{
-		Ar << MyStruct.Dialogue;
+		Ar << MyStruct.DialogueTitle;
 		Ar << MyStruct.Description;
+		Ar << MyStruct.Lines;
 		return Ar;
 	}
 };
