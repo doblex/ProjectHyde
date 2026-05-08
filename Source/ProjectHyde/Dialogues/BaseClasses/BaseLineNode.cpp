@@ -1,6 +1,5 @@
 ﻿
 #include "BaseLineNode.h"
-
 #include "ProjectHyde/Dialogues/DialogueStructs.h"
 
 UBaseLineNode::UBaseLineNode()
@@ -61,6 +60,16 @@ UBaseLineNode* UBaseLineNode::GetNextLine(int index)
 	if (NextLines.IsEmpty()) return nullptr;
 	
 	return NextLines[index];
+}
+
+FLineLog UBaseLineNode::GetLineLog() const
+{
+	FLineLog LineLog = FLineLog();
+	
+	LineLog.LineProtagonist = LineProtagonistName;
+	LineLog.Line = Line;
+	
+	return LineLog;
 }
 
 bool UBaseLineNode::IsLine()

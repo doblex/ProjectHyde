@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "ProjectHyde/Actors/Components/CPP_NotebookComponent.h"
 #include "ProjectHyde/Dialogues/DialogueStructs.h"
 
 #include "BaseLineNode.generated.h"
@@ -76,6 +77,8 @@ public:
 	FText GetLineText() const;
 	
 	UBaseLineNode* GetNextLine(int index = 0);
+	
+	FLineLog GetLineLog() const;
 	
 	bool IsLine();
 	bool IsCommand();
