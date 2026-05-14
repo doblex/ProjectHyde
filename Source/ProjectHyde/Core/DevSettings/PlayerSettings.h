@@ -20,4 +20,7 @@ public:
 	
 	UPROPERTY(Config, EditAnywhere, Category = "Inventory settings")
 	int HotBarSlotNumber = 6;
+	
+	UPROPERTY(Config, EditAnywhere, Category = "Inventory settings")
+	TSoftObjectPtr<UDataTable> ItemCombinationTable;
 };

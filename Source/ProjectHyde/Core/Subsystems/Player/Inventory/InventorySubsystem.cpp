@@ -4,6 +4,7 @@
 #include "InventorySubsystem.h"
 
 #include "ProjectHyde/Core/DevSettings/PlayerSettings.h"
+#include "ProjectHyde/Data/Inventory/InventoryCombinationDataRow.h"
 
 void UInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -15,6 +16,7 @@ void UInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	{
 		InventorySlotNumber = Settings->InventorySlotNumber;
 		HotBarSlotNumber = Settings->HotBarSlotNumber;
+		ItemCombinationTable = Settings->ItemCombinationTable.Get();
 	}
 	
 	InventoryItemData.SetNum(InventorySlotNumber);
@@ -70,4 +72,45 @@ bool UInventorySubsystem::SwapItems(int FromIndex, int ToIndex)
 {
 	InventoryItemData.Swap(FromIndex, ToIndex);
 	return true;
+}
+
+bool UInventorySubsystem::TryCombineItems(int FirstItemIndex, int SecondItemIndex, UInventoryItemData*& OutItemCombined)
+{
+	OutItemCombined = nullptr;
+	
+	if (!IsValid(ItemCombinationTable))
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				5.0f,
+				FColor::Red,
+				"ItemCombinationTable is not valid"
+				);
+		}
+		
+		return false;
+	}
+	
+	UInventoryItemData* Firstitem = InventoryItemData[FirstItemIndex];
+	UInventoryItemData* Seconditem = InventoryItemData[SecondItemIndex];
+	
+	const FString ContextString(TEXT("Context"));
+	TArray<FInventoryCombinationDataRow*> ItemCombinationDataRows; 
+	
+	ItemCombinationTable->GetAllRows<FInventoryCombinationDataRow>(ContextString, ItemCombinationDataRows);
+
+	for (FInventoryCombinationDataRow* Row : ItemCombinationDataRows)
+	{
+		if (Row->Equal(Firstitem, Seconditem))
+		{
+			InventoryItemData[FirstItemIndex] = nullptr;
+			InventoryItemData[SecondItemIndex] = Row->Result.Get();
+			OutItemCombined = Row->Result.Get();
+			return true;
+		}
+	}
+	
+	return false;
 }

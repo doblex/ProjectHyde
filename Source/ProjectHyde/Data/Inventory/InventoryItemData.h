@@ -21,15 +21,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	UStaticMesh* StaticMesh = nullptr;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	bool bCanCombine = false;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	UInventoryItemData* CombineWith = nullptr;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	UInventoryItemData* ResultItem = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	UNotebookItemData* NotebookDataAsset = nullptr;

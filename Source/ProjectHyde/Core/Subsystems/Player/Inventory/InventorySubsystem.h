@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InventoryItemData.h"
+#include "ProjectHyde/Data/Inventory/InventoryItemData.h"
 #include "Subsystems/LocalPlayerSubsystem.h"
 #include "InventorySubsystem.generated.h"
 
@@ -18,7 +18,8 @@ class PROJECTHYDE_API UInventorySubsystem : public ULocalPlayerSubsystem
 private:
 	TArray<UInventoryItemData*> InventoryItemData;
 	
-	//TODO: Parametrize
+	UDataTable* ItemCombinationTable;
+	
 	int InventorySlotNumber = 24;
 	int HotBarSlotNumber = 6;
 	
@@ -64,4 +65,12 @@ public:
 	/// @return Return true if succes, false otherwise
 	UFUNCTION(BlueprintCallable)
 	bool SwapItems(int FromIndex, int ToIndex);
+	
+	/// Called when trying to Combine two items, if the combined item exist it substitute 
+	/// the Second item
+	/// @param FirstItemIndex Index of the first item (the one dragged)
+	/// @param SecondItemIndex Index of the second item (the one dropped on)
+	/// @return Return true if succes, false otherwise
+	UFUNCTION(BlueprintCallable)
+	bool TryCombineItems(int FirstItemIndex, int SecondItemIndex, UInventoryItemData*& OutItemCombined);
 };
