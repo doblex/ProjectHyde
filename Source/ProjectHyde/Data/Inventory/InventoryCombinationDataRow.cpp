@@ -5,6 +5,16 @@
 
 #include "Misc/DataValidation.h"
 
+bool FInventoryCombinationDataRow::Equal(UInventoryItemData* Itm1, UInventoryItemData* Itm2)
+{
+	bool bResult =
+		(Item1 == Itm1 && Item2 == Itm2) ||
+			(Item1 == Itm1 && Item2 == Itm1);
+	
+	return bResult;
+}
+
+#if WITH_EDITOR
 EDataValidationResult FInventoryCombinationDataRow::IsDataValid(FDataValidationContext& Context) const
 {
 	EDataValidationResult ValResult = FTableRowBase::IsDataValid(Context);
@@ -16,7 +26,7 @@ EDataValidationResult FInventoryCombinationDataRow::IsDataValid(FDataValidationC
 		ValResult = EDataValidationResult::Invalid;
 	}
 	
-	if (Item1 == Item2 || Item2 == Result || Item1 == Result)
+	if (Item1.Get() == Item2.Get() || Item2.Get() == Result.Get() || Item1.Get() == Result.Get())
 	{
 		const FText Error = FText::FromString("Items or result cannot be the same on a row");
 		Context.AddError(Error);
@@ -25,12 +35,5 @@ EDataValidationResult FInventoryCombinationDataRow::IsDataValid(FDataValidationC
 	
 	return ValResult;
 }
+#endif
 
-bool FInventoryCombinationDataRow::Equal(UInventoryItemData* Itm1, UInventoryItemData* Itm2)
-{
-	bool bResult =
-		(Item1 == Itm1 && Item2 == Itm2) ||
-			(Item1 == Itm1 && Item2 == Itm1);
-	
-	return bResult;
-}
