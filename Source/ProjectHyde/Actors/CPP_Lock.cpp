@@ -154,6 +154,95 @@ void ACPP_Lock::IncrementDigit(int Position)
 	AnimInst->Montage_JumpToSection(TargetSection, LockMontage);
 }
 
+void ACPP_Lock::DecrementDigit(int Position)
+{
+	if (Position >= LockDigitCount || Position < 0)
+	{
+		// out of bounds case
+		check(GEngine); GEngine->AddOnScreenDebugMessage(101, 5.f, FColor::Red, FString::Printf(TEXT("Digit out of bounds at position %d"), Position));
+		return;
+	}
+
+	UAnimInstance* AnimInst = Mesh->GetAnimInstance();
+
+	// Correctness check
+	if (!AnimInst || !LockMontage) return;
+
+	// Do nothing until montage is finished
+	if (AnimInst->Montage_IsPlaying(LockMontage)) return;
+
+	ELockDigits OldDigit = CurrentUserCombination[Position];
+
+	switch (CurrentUserCombination[Position])
+	{
+	case ELockDigits::One:
+		CurrentUserCombination[Position] = ELockDigits::Nine;
+		break;
+	case ELockDigits::Two:
+		CurrentUserCombination[Position] = ELockDigits::One;
+		break;
+	case ELockDigits::Three:
+		CurrentUserCombination[Position] = ELockDigits::Two;
+		break;
+	case ELockDigits::Four:
+		CurrentUserCombination[Position] = ELockDigits::Three;
+		break;
+	case ELockDigits::Five:
+		CurrentUserCombination[Position] = ELockDigits::Four;
+		break;
+	case ELockDigits::Six:
+		CurrentUserCombination[Position] = ELockDigits::Five;
+		break;
+	case ELockDigits::Seven:
+		CurrentUserCombination[Position] = ELockDigits::Six;
+		break;
+	case ELockDigits::Eight:
+		CurrentUserCombination[Position] = ELockDigits::Seven;
+		break;
+	case ELockDigits::Nine:
+		CurrentUserCombination[Position] = ELockDigits::Eight;
+		break;
+	default:
+		break;
+	}
+
+	int32 FromVal = (int32)OldDigit + 1;
+	int32 ToVal = ((int32)CurrentUserCombination[Position] % 9) + 1;
+
+	FString SectionString = FString::Printf(TEXT("%dto%d"), ToVal, FromVal);
+	FName TargetSection = FName(*SectionString);
+
+	// TODO figure the math out dumbass
+	float TargetAngle = (ToVal - 1) * -40.0f;
+	WheelRotations[Position] = FRotator(TargetAngle, 0.f, 0.f);
+	WheelAlphas[Position] = 1;
+
+	if (AnimInst)
+	{
+		FProperty* Prop = AnimInst->GetClass()->FindPropertyByName(TEXT("ActiveWheelIndex"));
+		if (Prop)
+		{
+			int32* IntPtr = Prop->ContainerPtrToValuePtr<int32>(AnimInst);
+			if (IntPtr) *IntPtr = Position;
+		}
+		FProperty* AlphaProp = AnimInst->GetClass()->FindPropertyByName(TEXT("BoneAlphas"));
+		if (AlphaProp)
+		{
+			TArray<int32>* AlphaPtr = AlphaProp->ContainerPtrToValuePtr<TArray<int32>>(AnimInst);
+			if (AlphaPtr) *AlphaPtr = WheelAlphas;
+			UE_LOGFMT(LogTemp, Warning, "Successfully set BoneAlphas[{0}] to 1", Position);
+		}
+		else {
+			UE_LOGFMT(LogTemp, Error, "BoneAlpha pointer is NULL!");
+		}
+	}
+
+	UE_LOGFMT(LogTemp, Display, "Current Anim Selection string: {0}", SectionString);
+
+	AnimInst->Montage_Play(ReverseLockMontage, -1.f, EMontagePlayReturnType::MontageLength, 1.f);
+	AnimInst->Montage_JumpToSection(TargetSection, ReverseLockMontage);
+}
+
 void ACPP_Lock::InsertDigit(ELockDigits Digit, int Position)
 {
 	if (Position >= LockDigitCount || Position < 0)

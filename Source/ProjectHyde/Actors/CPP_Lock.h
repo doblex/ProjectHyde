@@ -84,6 +84,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Lock")
 	UAnimMontage* LockMontage;
 
+	UPROPERTY(EditAnywhere, Category = "Lock")
+	UAnimMontage* ReverseLockMontage;
+
 	// GUID component for saving
 	UCPP_SaveGameIdComponent* GUID_Component;
 
@@ -101,6 +104,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Lock")
 	void IncrementDigit(int Position);
+
+	UFUNCTION(BlueprintCallable, Category = "Lock")
+	void DecrementDigit(int Position);
 
 	// Insert a digit into the user combination at the specified position (starting from 1)
 	UFUNCTION(BlueprintCallable, Category = "Lock")
