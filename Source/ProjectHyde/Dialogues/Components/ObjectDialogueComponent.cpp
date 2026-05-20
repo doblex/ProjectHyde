@@ -14,23 +14,7 @@ UObjectDialogueComponent::UObjectDialogueComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
-	
-	UCoreLibrary::SyncMap(ObjectState);
 	RunnerType = ERunnerType::Object;
-}
-
-#if WITH_EDITOR
-void UObjectDialogueComponent::PostEditChangeProperty(FPropertyChangedEvent& Event)
-{
-	Super::PostEditChangeProperty(Event);
-	UCoreLibrary::SyncMap(ObjectState);
-}
-#endif
-
-void UObjectDialogueComponent::PostLoad()
-{
-	Super::PostLoad();
-	UCoreLibrary::SyncMap(ObjectState);
 }
 
 // Called when the game starts

@@ -83,9 +83,9 @@ int UDialogueExecutorSubsystem::GetMaxDialoguesNumber()
 	return MaxDialoguesNumber;
 }
 
-void UDialogueExecutorSubsystem::MakeSound(ELineEmotion Emotion)
+void UDialogueExecutorSubsystem::MakeSound(FName CharacterName, ELineEmotion Emotion)
 {
-	OnDialogueMakeSound.ExecuteIfBound(Emotion);
+	OnDialogueMakeSound.ExecuteIfBound(CharacterName,Emotion);
 }
 
 void UDialogueExecutorSubsystem::ExecuteCommand(FDialogueCommandLine Command)
