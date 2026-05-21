@@ -26,8 +26,8 @@ struct PROJECTHYDE_API FInventoryCombinationDataRow : public FTableRowBase
 	
 	bool Equal(UInventoryItemData* Itm1, UInventoryItemData* Itm2);
 	
-#if WITH_EDITOR
-	virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
-#endif
+// #if WITH_EDITOR
+// 	virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
+// #endif
 	
 };
