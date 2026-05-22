@@ -4,7 +4,7 @@
 #include "DialogueEmotionSubsystem.h"
 
 #include "ProjectHyde/Core/DevSettings/DialogueSubsystemSettings.h"
-#include "ProjectHyde/Data/Sound/CharacterEmotionSoundDataRow.h"
+#include "ProjectHyde/Data/Sound/CharacterDataRow.h"
 
 void UDialogueEmotionSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -28,20 +28,18 @@ bool UDialogueEmotionSubsystem::GetEmotionSound(FName CharacterName, ELineEmotio
 	OutSoundAsset = nullptr;
 	if (!CharacterEmotionSoundTable) return false;
 	
-	TArray<FCharacterEmotionSoundDataRow*> CharacterEmotions;
+	TArray<FCharacterDataRow*> CharactersData;
 	const FString ContextString(TEXT("Context"));
 	
-	CharacterEmotionSoundTable->GetAllRows(ContextString,CharacterEmotions);
+	CharacterEmotionSoundTable->GetAllRows(ContextString,CharactersData);
 	
-	if (CharacterEmotions.IsEmpty()) return false;
+	if (CharactersData.IsEmpty()) return false;
 
-	for (FCharacterEmotionSoundDataRow* Row : CharacterEmotions)
+	for (FCharacterDataRow* Row : CharactersData)
 	{
-		if (Row->Character == CharacterName && Row->EmotionType == EmotionToGet)
+		if (Row->Character == CharacterName)
 		{
-			OutSoundAsset = Row->SoundAsset;
-			
-			return OutSoundAsset != nullptr;
+			return Row->GetEmotion(EmotionToGet, OutSoundAsset);
 		}
 	}
 	

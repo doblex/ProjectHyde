@@ -41,6 +41,12 @@ static TEnum GetEnumFromString(const FString& String, TEnum DefaultValue)
 			: DefaultValue;
 	}
 	
+	template<typename T>
+static FString EnumToString(T Value)
+	{
+		return StaticEnum<T>()->GetNameStringByValue((int64)Value);
+	}
+	
 	template<typename TEnum, typename TObject>
 	static void SyncMap(TMap<TEnum, TObject> &Map)
 	{
