@@ -14,6 +14,7 @@ class PROJECTHYDE_API UMousePointerSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
 
+public:
 	UPROPERTY(Config, EditAnywhere, Category = "Mouse Pointer")
 	TSoftObjectPtr<UTexture2D> NeutralMousePointer;
 
