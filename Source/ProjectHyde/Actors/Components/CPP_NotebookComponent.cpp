@@ -33,15 +33,23 @@ void UCPP_NotebookComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
+bool UCPP_NotebookComponent::IsAlreadyNoted(UNotebookItemData* Data)
+{
+	// Check by predicate with lambda expression to see if bookmark is already saved
+	return UnlockedBookmarks.ContainsByPredicate(
+		[Data](const FBookmarkEntry& Entry) {
+			return Entry.StaticData == Data;
+		}
+	);
+}
+
 // Add the given DataAsset as a Bookmark for the player
 EBookmarkPresence UCPP_NotebookComponent::AddBookmark(UNotebookItemData* NewData)
 {
 	if (!NewData) return EBookmarkPresence::None;
 
 	// Check if we already have an entry for this asset (lambda expression)
-	bool bAlreadyExists = UnlockedBookmarks.ContainsByPredicate([NewData](const FBookmarkEntry& Entry) {
-		return Entry.StaticData == NewData;
-	});
+	bool bAlreadyExists = IsAlreadyNoted(NewData);
 
 	if (!bAlreadyExists)
 	{

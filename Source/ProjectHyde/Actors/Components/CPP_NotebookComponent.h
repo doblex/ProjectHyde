@@ -11,7 +11,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBookmarkReload);
 
-// Enum that represent The query type for the Case Puzzle
+// Enum that represents the query type for the Case Puzzle
 UENUM(BlueprintType)
 enum class EBookMarkPuzzleCategorySelection : uint8
 {
@@ -20,7 +20,7 @@ enum class EBookMarkPuzzleCategorySelection : uint8
 	All = 2
 };
 
-// Enum that represent The button type for the Case Puzzle
+// Enum that represents the button type for the Case Puzzle
 UENUM(BlueprintType)
 enum class EBookMarkPuzzleCategory : uint8
 {
@@ -29,7 +29,7 @@ enum class EBookMarkPuzzleCategory : uint8
 	Motive = 2
 };
 
-// Enum that represent the presence oa a bookmark
+// Enum that represents the presence of a bookmark
 UENUM(BlueprintType)
 enum class EBookmarkPresence : uint8
 {
@@ -166,6 +166,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	bool IsAlreadyNoted(UNotebookItemData* Data);
 	
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	EBookmarkPresence AddBookmark(UNotebookItemData* NewData);
