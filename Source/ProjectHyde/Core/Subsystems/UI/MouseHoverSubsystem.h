@@ -3,8 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TaskSyncManager.h"
-#include "Blueprint/GameViewportSubsystem.h"
 #include "MouseHoverSubsystem.generated.h"
 
 /**

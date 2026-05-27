@@ -4,8 +4,6 @@
 #include "MouseHoverSubsystem.h"
 #include "Components/Viewport.h"
 
-
-
 bool UMouseHoverSubsystem::IsMouseInsideWidget(UUserWidget* Widget)
 {
 	FVector2D Local = GetMousePositionInWidget(Widget);
