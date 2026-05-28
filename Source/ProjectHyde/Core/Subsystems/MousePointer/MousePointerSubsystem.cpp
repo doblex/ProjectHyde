@@ -59,10 +59,8 @@ void UMousePointerSubsystem::Deinitialize()
 
 void UMousePointerSubsystem::SetPointerState(EMousePointerState NewState)
 {
-	if (UTexture2D* Texture = GetTextureForState(NewState))
-	{
-		OnMouseIconChanged.Broadcast(Texture);
-	}
+	MouseState = NewState;
+	OnMouseIconChanged.Broadcast(MouseState);
 }
 
 

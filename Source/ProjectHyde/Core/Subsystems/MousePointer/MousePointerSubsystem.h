@@ -18,7 +18,7 @@ enum class EMousePointerState : uint8
 };
 
 // Dynamic delegate can be used from blueprints like WBP
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMouseIconChanged, UTexture2D*, NewIcon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMouseIconChanged, EMousePointerState, NewState);
 
 /**
  * 
@@ -29,6 +29,7 @@ class PROJECTHYDE_API UMousePointerSubsystem : public UGameInstanceSubsystem
 	GENERATED_BODY()
 	
 public:
+	EMousePointerState MouseState = EMousePointerState::Neutral;
 	UTexture2D* NeutralMousePointer;
 	UTexture2D* MovementMousePointer;
 	UTexture2D* ObservationMousePointer;
@@ -50,8 +51,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Mouse Pointer")
 	void SetPointerState(EMousePointerState NewState);
 
-private:
 	// Get the texture corresponding to the state
+	UFUNCTION(BlueprintCallable, Category = "Mouse Pointer")
 	UTexture2D* GetTextureForState(EMousePointerState State) const;
-	
 };
