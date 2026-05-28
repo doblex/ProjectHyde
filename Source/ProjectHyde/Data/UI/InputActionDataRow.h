@@ -22,7 +22,7 @@ struct PROJECTHYDE_API FInputActionDataRow : public FTableRowBase
 	TSoftObjectPtr<UInputAction> InputAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UTexture2D* DisplayImage;
+	UTexture2D* DisplayImage = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName DisplayName;
