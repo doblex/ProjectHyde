@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/StreamableManager.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "MousePointerSubsystem.generated.h"
 
@@ -28,14 +29,24 @@ class PROJECTHYDE_API UMousePointerSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 	
+private:
+	TSharedPtr<FStreamableHandle> PointerLoadHandle;
+
 public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mouse Pointer")
 	EMousePointerState MouseState = EMousePointerState::Neutral;
-	UTexture2D* NeutralMousePointer;
-	UTexture2D* MovementMousePointer;
-	UTexture2D* ObservationMousePointer;
-	UTexture2D* InteractMousePointer;
-	UTexture2D* ObjectMousePointer;
-	UTexture2D* ZoomMousePointer;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mouse Pointer")
+	UTexture2D* NeutralMousePointer = nullptr;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mouse Pointer")
+	UTexture2D* MovementMousePointer = nullptr;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mouse Pointer")
+	UTexture2D* ObservationMousePointer = nullptr;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mouse Pointer")
+	UTexture2D* InteractMousePointer = nullptr;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mouse Pointer")
+	UTexture2D* ObjectMousePointer = nullptr;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Mouse Pointer")
+	UTexture2D* ZoomMousePointer = nullptr;
 
 public:
 	// Begin USubsystem
