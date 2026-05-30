@@ -3,7 +3,6 @@
 
 #include "HintSubsystem.h"
 #include "ProjectHyde/Core/DevSettings/HintSubsystemSettings.h"
-#include "ProjectHyde/Data/Hint/FHintDialogueDataRow.h"
 #include "ProjectHyde/Dialogues/BaseClasses/BaseDialogue.h"
 #include "ProjectHyde/Interface/Hintable.h"
 
@@ -38,7 +37,13 @@ void UHintSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 		for (const FHintDialogueDataRow* Row : Rows)
 		{
-			HintsMap.Add(Row->Tag, Row->Dialogue);
+			HintsDataMap.Add(Row->Tag, Row->Data);
+			
+			if (Row->Data.HintType == Tutorial)
+			{
+				HintTriggerMap.Add(Row->Tag, false);
+			}
+			
 		}
 	}
 }
@@ -52,9 +57,30 @@ void UHintSubsystem::OnHintActivation(FGameplayTag EventSource)
 {
 	UE_LOG(LogTemp, Display, TEXT("Hint event activated: %s"),*EventSource.GetTagName().ToString());
 	
-	UBaseDialogue* Dialogue = *HintsMap.Find(EventSource);
+	FHintData Data = *HintsDataMap.Find(EventSource);
+
+	const bool bIsTutorial = Data.HintType == Tutorial;
+	
+	if (bIsTutorial)
+	{
+		bool bAlreadyTriggered = *HintTriggerMap.Find(EventSource);
+		if (bAlreadyTriggered)
+		{
+			UE_LOG(LogTemp,Display,TEXT("Tutorial already played"))
+			return;
+		} 
+	}
+	
+	UBaseDialogue* Dialogue = Data.Dialogue;
 	
 	if (!Dialogue) return;
 	
 	UE_LOG(LogTemp,Display,TEXT("Hint Dialogue found: %s"), *Dialogue->DialogueName.ToString())
+	
+	OnStartHintDialogue.Broadcast(Dialogue,false, Data.bIsInMenu);
+	
+	if (bIsTutorial)
+	{
+		HintTriggerMap[EventSource] = true;
+	}
 }
