@@ -3,6 +3,7 @@
 
 #include "HintSubsystem.h"
 #include "ProjectHyde/Core/DevSettings/HintSubsystemSettings.h"
+#include "ProjectHyde/Core/Subsystems/UI/WidgetReturnStackSubsystem.h"
 #include "ProjectHyde/Dialogues/BaseClasses/BaseDialogue.h"
 #include "ProjectHyde/Interface/Hintable.h"
 
@@ -21,6 +22,8 @@ void UHintSubsystem::RegisterObject(UObject* Obj)
 
 void UHintSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
+	Collection.InitializeDependency<UWidgetReturnStackSubsystem>();
+	
 	Super::Initialize(Collection);
 	
 	const UHintSubsystemSettings* Settings = GetDefault<UHintSubsystemSettings>();
@@ -37,15 +40,19 @@ void UHintSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 		for (const FHintDialogueDataRow* Row : Rows)
 		{
-			HintsDataMap.Add(Row->Tag, Row->Data);
+			HintsDataMap.Add(Row->Data.Tag, Row->Data);
 			
-			if (Row->Data.HintType == Tutorial)
+			if (Row->Data.bIsOneTime)
 			{
-				HintTriggerMap.Add(Row->Tag, false);
+				HintTriggerMap.Add(Row->Data.Tag, false);
 			}
 			
 		}
 	}
+	
+	WidgetReturnStack = GetLocalPlayer()->GetSubsystem<UWidgetReturnStackSubsystem>();
+	
+	WidgetReturnStack->OnEmptyStack.BindDynamic(this, &UHintSubsystem::OnWidgetStackEmpty);
 }
 
 void UHintSubsystem::Deinitialize()
@@ -53,34 +60,81 @@ void UHintSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
+void UHintSubsystem::PlayOverMenu(FHintData Data)
+{
+	UBaseDialogue* Dialogue = Data.Dialogue;
+	
+	if (!Dialogue) return;
+	
+	OnStartHintDialogue.Broadcast(Dialogue,false, Data.bIsInMenu);
+	
+	UE_LOG(LogTemp,Display,TEXT("Tutorial played"))
+}
+
+void UHintSubsystem::PlayAfterMenu(FHintData Data)
+{
+	UBaseDialogue* Dialogue = Data.Dialogue;
+	
+	if (!Dialogue) return;
+	
+	if (WidgetReturnStack->IsUIOpen())
+	{
+		OnStartHintDialogue.Broadcast(Dialogue,false, Data.bIsInMenu);
+		UE_LOG(LogTemp,Display,TEXT("Hint played"))
+	}
+	else
+	{
+		if (!HintQueue.Contains(Data))
+		{
+			HintQueue.Push(Data);
+			UE_LOG(LogTemp,Display,TEXT("Hint Stacked"))
+		}
+		else
+		{
+			UE_LOG(LogTemp,Display,TEXT("duplicated Hint"))
+		}
+	}
+}
+
 void UHintSubsystem::OnHintActivation(FGameplayTag EventSource)
 {
 	UE_LOG(LogTemp, Display, TEXT("Hint event activated: %s"),*EventSource.GetTagName().ToString());
-	
-	FHintData Data = *HintsDataMap.Find(EventSource);
 
-	const bool bIsTutorial = Data.HintType == Tutorial;
+	const FHintData Data = *HintsDataMap.Find(EventSource);
+
+	bool bAlreadyTriggered = *HintTriggerMap.Find(Data.Tag);
 	
-	if (bIsTutorial)
+	if (bAlreadyTriggered)
 	{
-		bool bAlreadyTriggered = *HintTriggerMap.Find(EventSource);
-		if (bAlreadyTriggered)
-		{
-			UE_LOG(LogTemp,Display,TEXT("Tutorial already played"))
-			return;
-		} 
+		UE_LOG(LogTemp,Display,TEXT("Hint already played"))
+		return;
+	} 
+	
+	switch (Data.HintType)
+	{
+		case OverMenu:
+			PlayOverMenu(Data);
+		break;
+		case AfterMenu:
+			PlayAfterMenu(Data);
+		break;
 	}
+	
+	if (HintTriggerMap.Contains(Data.Tag))
+	{
+		HintTriggerMap[Data.Tag] = true;
+	}
+}
+
+void UHintSubsystem::OnWidgetStackEmpty()
+{
+	if (HintQueue.IsEmpty()) return;
+
+	const FHintData Data = HintQueue.Pop();
 	
 	UBaseDialogue* Dialogue = Data.Dialogue;
 	
 	if (!Dialogue) return;
 	
-	UE_LOG(LogTemp,Display,TEXT("Hint Dialogue found: %s"), *Dialogue->DialogueName.ToString())
-	
 	OnStartHintDialogue.Broadcast(Dialogue,false, Data.bIsInMenu);
-	
-	if (bIsTutorial)
-	{
-		HintTriggerMap[EventSource] = true;
-	}
 }

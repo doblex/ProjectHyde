@@ -21,9 +21,12 @@ void UWidgetReturnStackSubsystem::Initialize(FSubsystemCollectionBase& Collectio
 
 void UWidgetReturnStackSubsystem::AddToStack(UUserWidget* WidgetToAdd)
 {
+	OpenedWidgets.Add(WidgetToAdd);
+	
 	if (WidgetToAdd->Implements<UWidgetBackAction>())
 	{
 		WidgetStack.Push(WidgetToAdd);
+		OpenedWidgets.Add(WidgetToAdd);
 		
 		if (bDebugLogs && GEngine)
 		{
@@ -39,6 +42,7 @@ void UWidgetReturnStackSubsystem::AddToStack(UUserWidget* WidgetToAdd)
 
 void UWidgetReturnStackSubsystem::RemoveFromStack(UUserWidget* WidgetToRemove)
 {
+	OpenedWidgets.Remove(WidgetToRemove);
 	WidgetStack.Remove(WidgetToRemove);
 	
 	if (bDebugLogs && GEngine)
@@ -49,6 +53,11 @@ void UWidgetReturnStackSubsystem::RemoveFromStack(UUserWidget* WidgetToRemove)
 			FColor::Green,
 			"Element Removed"
 			);
+	}
+	
+	if (WidgetStack.IsEmpty())
+	{
+		OnEmptyStack.ExecuteIfBound();
 	}
 }
 
@@ -61,6 +70,12 @@ void UWidgetReturnStackSubsystem::CloseLastElement()
 	if (IWidgetBackAction::Execute_CloseWidget(Widget))
 	{
 		WidgetStack.Pop();
+		OpenedWidgets.Remove(Widget);
+		
+		if (IsUIOpen())
+		{
+			OnEmptyStack.ExecuteIfBound();
+		}
 		
 		if (bDebugLogs && GEngine)
 		{
@@ -81,3 +96,10 @@ FString UWidgetReturnStackSubsystem::GetInfo()
 	text.Append("Stack Number:" + FString::FromInt(WidgetStack.Num()));
 	return text;
 }
+
+bool UWidgetReturnStackSubsystem::IsUIOpen()
+{
+	return OpenedWidgets.IsEmpty();
+}
+
+

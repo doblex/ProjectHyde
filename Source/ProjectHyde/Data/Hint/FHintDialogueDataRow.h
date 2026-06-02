@@ -10,8 +10,8 @@ class UBaseDialogue;
 UENUM()
 enum EHintType
 {
-	Hint,
-	Tutorial
+	OverMenu,
+	AfterMenu
 };
 
 USTRUCT(BlueprintType)
@@ -20,22 +20,30 @@ struct FHintData
 	GENERATED_BODY()
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayTag Tag;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBaseDialogue* Dialogue = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsInMenu = true;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TEnumAsByte<EHintType> HintType = Hint;
+	bool bIsOneTime = false;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TEnumAsByte<EHintType> HintType = OverMenu;
+	
+	FORCEINLINE bool operator==(FHintData const& Other) const
+	{
+		return Tag == Other.Tag;
+	}
 };
 
 USTRUCT(BlueprintType)
 struct PROJECTHYDE_API FHintDialogueDataRow : public FTableRowBase
 {
 	GENERATED_BODY()
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayTag Tag;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FHintData Data;

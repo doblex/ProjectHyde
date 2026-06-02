@@ -10,6 +10,7 @@
 #include "HintSubsystem.generated.h"
 
 
+class UWidgetReturnStackSubsystem;
 struct FHintData;
 class UBaseDialogue;
 class UHintable;
@@ -24,23 +25,38 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(
  * 
  */
 UCLASS()
-class PROJECTHYDE_API UHintSubsystem : public UGameInstanceSubsystem
+class PROJECTHYDE_API UHintSubsystem : public ULocalPlayerSubsystem
 {
 	GENERATED_BODY()
 	
+protected:
+	
+	UWidgetReturnStackSubsystem* WidgetReturnStack;
+	
+	TArray<FHintData> HintQueue;
 	TMap<FGameplayTag, FHintData> HintsDataMap;
 	TMap<FGameplayTag, bool> HintTriggerMap;
 	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
+
+	void PlayOverMenu(FHintData Data);
+	void PlayAfterMenu(FHintData Data);
 	
 public:
 	UPROPERTY(BLueprintAssignable)
 	FOnStartHintDialogue OnStartHintDialogue;
 	
 	UFUNCTION(BlueprintCallable)
+	void RegisterObject (UObject* Obj);
+	
+	UFUNCTION(BlueprintCallable)
 	void OnHintActivation (FGameplayTag EventSource);
 	
 	UFUNCTION(BlueprintCallable)
-	void RegisterObject (UObject* Obj);
+	void OnWidgetStackEmpty();
+
+
+	
+
 };

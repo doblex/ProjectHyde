@@ -9,6 +9,8 @@
 #include "Subsystems/LocalPlayerSubsystem.h"
 #include "WidgetReturnStackSubsystem.generated.h"
 
+DECLARE_DYNAMIC_DELEGATE(FOnEmptyStack);
+
 /**
  * 
  */
@@ -17,13 +19,16 @@ class PROJECTHYDE_API UWidgetReturnStackSubsystem : public ULocalPlayerSubsystem
 {
 	GENERATED_BODY()
 	
+	TArray<UUserWidget*> OpenedWidgets;
 	TArray<UUserWidget*> WidgetStack;
 	bool bDebugLogs = false;
 	
-	protected:
+protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	
 public:
+	FOnEmptyStack OnEmptyStack;
+	
 	UFUNCTION(BlueprintCallable, Meta=(DefaultToSelf="WidgetToAdd"))
 	void AddToStack(UUserWidget* WidgetToAdd);
 	
@@ -35,4 +40,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	FString GetInfo();
+	
+	UFUNCTION(BlueprintCallable)
+	bool IsUIOpen();
 };
