@@ -124,7 +124,7 @@ TArray<FBookmarkEntry> UCPP_NotebookComponent::GetPeopleBookmarksFromPlayer()
 	return Output;
 }
 
-// Returns all the bookmarks i nthe player's possession fo type "Not Person"
+// Returns all the bookmarks in the player's possession of type "Not Person"
 TArray<FBookmarkEntry> UCPP_NotebookComponent::GetOtherBookmarksFromPlayer()
 {
 	TArray<FBookmarkEntry> Output;
@@ -132,6 +132,16 @@ TArray<FBookmarkEntry> UCPP_NotebookComponent::GetOtherBookmarksFromPlayer()
 	{
 		if (Bookmark.StaticData->NotebookItemType != ENotebookItemType::Person) Output.Add(Bookmark);
 	}
+	return Output;
+}
+
+// Returns all the bookmarks in the player's possession
+TArray<FBookmarkEntry> UCPP_NotebookComponent::GetAllBookmarksFromPlayer()
+{
+	TArray<FBookmarkEntry> Output;
+
+	for (FBookmarkEntry Bookmark : UnlockedBookmarks)	Output.Add(Bookmark);
+
 	return Output;
 }
 
@@ -149,7 +159,7 @@ void UCPP_NotebookComponent::SetUserWeaponForIndex(int index, FBookmarkEntry New
 	PuzzleEntries[index].UserWeapon = NewUserWeapon.StaticData;
 }
 
-// Sets the User submitted culprit for puzzle at the given index
+// Sets the User submitted motive for puzzle at the given index
 void UCPP_NotebookComponent::SetUserMotiveForIndex(int index, FBookmarkEntry NewUserMotive)
 {
 	if (PuzzleEntries[index].bSolved) return;
@@ -160,11 +170,14 @@ void UCPP_NotebookComponent::SetUserMotiveForIndex(int index, FBookmarkEntry New
 bool UCPP_NotebookComponent::CheckNotebookSolution(int index)
 {
 	FNotebookPuzzleItem& Entry = PuzzleEntries[index];
+
+	// Create a set of the three puzzle entries to compare them with no ordering
+	TSet<FSoftObjectPath> CorrectSet = { FSoftObjectPath(Entry.CorrectCulprit), FSoftObjectPath(Entry.CorrectWeapon), FSoftObjectPath(Entry.CorrectMotive) };
+	TSet<FSoftObjectPath> UserSet = { FSoftObjectPath(Entry.UserCulprit), FSoftObjectPath(Entry.UserWeapon), FSoftObjectPath(Entry.UserMotive) };
+
 	if (
-		// Compare asset paths to determine correctness
-		FSoftObjectPath(Entry.CorrectCulprit) == FSoftObjectPath(Entry.UserCulprit)&&
-		FSoftObjectPath(Entry.CorrectWeapon) == FSoftObjectPath(Entry.UserWeapon) &&
-		FSoftObjectPath(Entry.CorrectMotive) == FSoftObjectPath(Entry.UserMotive)
+		// Compare sets to determine correctness
+		CorrectSet.Num() == UserSet.Num() && CorrectSet.Includes(UserSet)
 	){
 		Entry.bSolved = true;
 		return true;

@@ -182,13 +182,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	void UpdatePlayerNote(UNotebookItemData* ForData, FText NewNote);
 
-	// Ritorna un array che contiene tutti i bookmark di Persone scoperti dal giocatore
+	// (DEPRECATO) Ritorna un array che contiene tutti i bookmark di Persone scoperti dal giocatore
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	TArray<FBookmarkEntry> GetPeopleBookmarksFromPlayer();
 
-	// Ritorna un array che contiene tutti i bookmark di NON Persone scoperti dal giocatore
+	// (DEPRECATO) Ritorna un array che contiene tutti i bookmark di NON Persone scoperti dal giocatore
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	TArray<FBookmarkEntry> GetOtherBookmarksFromPlayer();
+
+	// Ritorna tutti i bookmark in possesso del giocatore
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	TArray<FBookmarkEntry> GetAllBookmarksFromPlayer();
 
 	// Setta il bookmark scelto dall'utente come Colpevole per il puzzle all'indice i dell'array PuzzleEntries
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
