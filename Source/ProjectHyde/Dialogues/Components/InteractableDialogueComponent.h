@@ -23,10 +23,6 @@ class PROJECTHYDE_API UInteractableDialogueComponent : public UBaseDialogueRunne
 public:
 	// Sets default values for this component's properties
 	UInteractableDialogueComponent();
-#if WITH_EDITOR
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& Event) override;
-#endif
-	virtual void PostLoad() override;
 	
 protected:
 	// Called when the game starts

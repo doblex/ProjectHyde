@@ -14,26 +14,26 @@ bool FInventoryCombinationDataRow::Equal(UInventoryItemData* Itm1, UInventoryIte
 	return bResult;
 }
 
-#if WITH_EDITOR
-EDataValidationResult FInventoryCombinationDataRow::IsDataValid(FDataValidationContext& Context) const
-{
-	EDataValidationResult ValResult = FTableRowBase::IsDataValid(Context);
-		
-	if (Item1.IsNull() || Item2.IsNull() || Result.IsNull())
-	{
-		const FText Error = FText::FromString("Items or result cannot be null");
-		Context.AddError(Error);
-		ValResult = EDataValidationResult::Invalid;
-	}
-	
-	if (Item1.Get() == Item2.Get() || Item2.Get() == Result.Get() || Item1.Get() == Result.Get())
-	{
-		const FText Error = FText::FromString("Items or result cannot be the same on a row");
-		Context.AddError(Error);
-		ValResult = EDataValidationResult::Invalid;
-	}
-	
-	return ValResult;
-}
-#endif
+// #if WITH_EDITOR
+// EDataValidationResult FInventoryCombinationDataRow::IsDataValid(FDataValidationContext& Context) const
+// {
+// 	EDataValidationResult ValResult = FTableRowBase::IsDataValid(Context);
+// 		
+// 	if (Item1.IsNull() || Item2.IsNull() || Result.IsNull())
+// 	{
+// 		const FText Error = FText::FromString("Items or result cannot be null");
+// 		Context.AddError(Error);
+// 		ValResult = EDataValidationResult::Invalid;
+// 	}
+// 	
+// 	if (Item1.Get() == Item2.Get() || Item2.Get() == Result.Get() || Item1.Get() == Result.Get())
+// 	{
+// 		const FText Error = FText::FromString("Items or result cannot be the same on a row");
+// 		Context.AddError(Error);
+// 		ValResult = EDataValidationResult::Invalid;
+// 	}
+// 	
+// 	return ValResult;
+// }
+// #endif
 

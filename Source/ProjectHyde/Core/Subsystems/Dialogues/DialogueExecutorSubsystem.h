@@ -12,7 +12,7 @@
  * 
  */
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnDialogueEnded, UBaseDialogue*, BaseDialogue);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnDialogueMakeSound, ELineEmotion, Emotion);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnDialogueMakeSound, FName, EmotionToGet , ELineEmotion, Emotion);
 
 UCLASS()
 class PROJECTHYDE_API UDialogueExecutorSubsystem : public UGameInstanceSubsystem
@@ -45,7 +45,7 @@ public:
 	UBaseLineNode* ContinueDialogue(int choice = 0);
 	
 	UFUNCTION(BlueprintCallable)
-	void MakeSound(ELineEmotion Emotion = ELineEmotion::Neutral);
+	void MakeSound(FName CharacterName, ELineEmotion Emotion = ELineEmotion::Neutral);
 	
 	int GetMaxDialoguesNumber();
 	

@@ -14,22 +14,7 @@ UInteractableDialogueComponent::UInteractableDialogueComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
-	
-	UCoreLibrary::SyncMap(InteractableDialogue);
 	RunnerType = ERunnerType::Interactable;
-}
-#if WITH_EDITOR
-void UInteractableDialogueComponent::PostEditChangeProperty(FPropertyChangedEvent& Event)
-{
-	Super::PostEditChangeProperty(Event);
-	UCoreLibrary::SyncMap(InteractableDialogue);
-}
-#endif
-
-void UInteractableDialogueComponent::PostLoad()
-{
-	Super::PostLoad();
-	UCoreLibrary::SyncMap(InteractableDialogue);
 }
 
 

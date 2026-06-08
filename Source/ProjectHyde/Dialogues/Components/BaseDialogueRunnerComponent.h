@@ -36,18 +36,9 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	
-#if WITH_EDITOR
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& Event) override;
-#endif
-	
-	virtual void PostLoad() override;
-	
 	UDialogueExecutorSubsystem* DialogueSub;
 	UCPP_EventFlagSubsystem* EventFlagSub;
 	UAudioComponent* AudioComponent;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Emotion")
-	TMap<ELineEmotion, USoundBase*> EmotionAudio;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	ERunnerType RunnerType;
@@ -61,7 +52,7 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	
 	UFUNCTION()
-	void OnDialogueMakeSound(ELineEmotion Emotion);
+	void OnDialogueMakeSound(FName CharacterName, ELineEmotion Emotion);
 	
 	UFUNCTION()
 	virtual void OnDialogueEnded(UBaseDialogue* BaseDialogue);

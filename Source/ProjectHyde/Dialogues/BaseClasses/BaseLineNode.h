@@ -34,6 +34,14 @@ enum class ELineEmotion : uint8
 	Conflicted,
 	Sarcastic,
 	Hopeful,
+	Surprised,
+	Grim,
+	Relieved,
+	Uncertain,
+	Scornful,
+	Pleased,
+	Embarrassed,
+	Firm,
 	MAX UMETA(Hidden)
 };
 

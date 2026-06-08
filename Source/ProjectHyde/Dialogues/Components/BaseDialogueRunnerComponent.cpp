@@ -5,6 +5,7 @@
 
 #include "Components/AudioComponent.h"
 #include "ProjectHyde/Core/CoreLibrary.h"
+#include "ProjectHyde/Core/Subsystems/Dialogues/DialogueEmotionSubsystem.h"
 
 
 // Sets default values for this component's properties
@@ -15,23 +16,7 @@ UBaseDialogueRunnerComponent::UBaseDialogueRunnerComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
-	
-	UCoreLibrary::SyncMap(EmotionAudio);
 }
-
-void UBaseDialogueRunnerComponent::PostLoad()
-{
-	Super::PostLoad();
-	UCoreLibrary::SyncMap(EmotionAudio);
-}
-
-#if WITH_EDITOR
-void UBaseDialogueRunnerComponent::PostEditChangeProperty(FPropertyChangedEvent& Event)
-{
-	Super::PostEditChangeProperty(Event);
-	UCoreLibrary::SyncMap(EmotionAudio);
-}
-#endif
 
 // Called when the game starts
 void UBaseDialogueRunnerComponent::BeginPlay()
@@ -55,16 +40,24 @@ void UBaseDialogueRunnerComponent::TickComponent(float DeltaTime, ELevelTick Tic
 	// ...
 }
 
-void UBaseDialogueRunnerComponent::OnDialogueMakeSound(ELineEmotion Emotion)
+void UBaseDialogueRunnerComponent::OnDialogueMakeSound(FName CharacterName, ELineEmotion Emotion)
 {
 	UE_LOG(LogTemp, Warning, TEXT("log Sound!!"));
 	
 	if (AudioComponent)
 	{
-		if (USoundBase* AudioClip = EmotionAudio.FindRef(Emotion))
+		UDialogueEmotionSubsystem* DialogueEmotionSubsystem 
+		= GetWorld()->GetGameInstance()->GetSubsystem<UDialogueEmotionSubsystem>();
+		
+		if (DialogueEmotionSubsystem)
 		{
-			AudioComponent->Sound = AudioClip ;
-			AudioComponent->Play();
+			USoundBase* AudioClip = nullptr;
+			
+			if (DialogueEmotionSubsystem->GetEmotionSound(CharacterName, Emotion, AudioClip))
+			{
+				AudioComponent->Sound = AudioClip;
+				AudioComponent->Play();
+			}
 		}
 	}
 }
