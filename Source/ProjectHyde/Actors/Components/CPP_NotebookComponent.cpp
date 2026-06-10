@@ -146,46 +146,61 @@ TArray<FBookmarkEntry> UCPP_NotebookComponent::GetAllBookmarksFromPlayer()
 }
 
 // Sets the User submitted culprit for puzzle at the given index
-void UCPP_NotebookComponent::SetUserCulpritForIndex(int index, FBookmarkEntry NewUserCulprit)
+void UCPP_NotebookComponent::SetUserCulprit(FBookmarkEntry NewUserCulprit)
 {
-	if (PuzzleEntries[index].bSolved) return;
-	PuzzleEntries[index].UserCulprit = NewUserCulprit.StaticData;
+	this->UserCulprit = NewUserCulprit.StaticData;
+}
+
+UNotebookItemData* UCPP_NotebookComponent::GetUserCulprit()
+{
+	return this->UserCulprit;
 }
 
 // Sets the User submitted weapon for puzzle at the given index
-void UCPP_NotebookComponent::SetUserWeaponForIndex(int index, FBookmarkEntry NewUserWeapon)
+void UCPP_NotebookComponent::SetUserWeapon(FBookmarkEntry NewUserWeapon)
 {
-	if (PuzzleEntries[index].bSolved) return;
-	PuzzleEntries[index].UserWeapon = NewUserWeapon.StaticData;
+	this->UserWeapon = NewUserWeapon.StaticData;
+}
+
+UNotebookItemData* UCPP_NotebookComponent::GetUserWeapon()
+{
+	return this->UserWeapon;
 }
 
 // Sets the User submitted motive for puzzle at the given index
-void UCPP_NotebookComponent::SetUserMotiveForIndex(int index, FBookmarkEntry NewUserMotive)
+void UCPP_NotebookComponent::SetUserMotive(FBookmarkEntry NewUserMotive)
 {
-	if (PuzzleEntries[index].bSolved) return;
-	PuzzleEntries[index].UserMotive = NewUserMotive.StaticData;
+	this->UserMotive = NewUserMotive.StaticData;
+}
+
+UNotebookItemData* UCPP_NotebookComponent::GetUserMotive()
+{
+	return this->UserMotive;
 }
 
 // Returns true if the currently submitted User solution matches the correct solution of puzzle at the given index
-bool UCPP_NotebookComponent::CheckNotebookSolution(int index)
+bool UCPP_NotebookComponent::CheckNotebookSolution(FString& SolvedPuzzleName)
 {
-	FNotebookPuzzleItem& Entry = PuzzleEntries[index];
-
 	// Create a set of the three puzzle entries to compare them with no ordering
-	TSet<FSoftObjectPath> CorrectSet = { FSoftObjectPath(Entry.CorrectCulprit), FSoftObjectPath(Entry.CorrectWeapon), FSoftObjectPath(Entry.CorrectMotive) };
-	TSet<FSoftObjectPath> UserSet = { FSoftObjectPath(Entry.UserCulprit), FSoftObjectPath(Entry.UserWeapon), FSoftObjectPath(Entry.UserMotive) };
+	TSet<FSoftObjectPath> UserSet = { FSoftObjectPath(this->UserCulprit), FSoftObjectPath(this->UserWeapon), FSoftObjectPath(this->UserMotive) };
 
-	if (
-		// Compare sets to determine correctness
-		CorrectSet.Num() == UserSet.Num() && CorrectSet.Includes(UserSet)
-	){
-		Entry.bSolved = true;
-		return true;
-	}
-	else
+	for (FNotebookPuzzleItem PuzzleEntry : PuzzleEntries)
 	{
-		return false;
+		TSet<FSoftObjectPath> CorrectSet = { FSoftObjectPath(PuzzleEntry.CorrectCulprit), FSoftObjectPath(PuzzleEntry.CorrectWeapon), FSoftObjectPath(PuzzleEntry.CorrectMotive) };
+
+		// Compare sets to determine correctness
+		if (CorrectSet.Num() == UserSet.Num() && CorrectSet.Includes(UserSet) && PuzzleEntry.bSolved == false)
+		{
+			PuzzleEntry.bSolved = true;
+			SolvedPuzzleName = PuzzleEntry.PuzzleName;
+			return true;
+		}
+		else
+		{
+			continue;
+		}
 	}
+	return false;
 }
 
 void UCPP_NotebookComponent::SaveNotebookComponentData(FActorSaveData* SaveGameData)
@@ -200,15 +215,12 @@ void UCPP_NotebookComponent::SaveNotebookComponentData(FActorSaveData* SaveGameD
 	}
 	Writer << PuzzleNumber;
 	for (FNotebookPuzzleItem PuzzleEntry : PuzzleEntries) {
+		Writer << PuzzleEntry.PuzzleName;
 		Writer << PuzzleEntry.bSolved;
 
 		Writer << PuzzleEntry.CorrectCulprit;
 		Writer << PuzzleEntry.CorrectWeapon;
 		Writer << PuzzleEntry.CorrectMotive;
-
-		Writer << PuzzleEntry.UserCulprit;
-		Writer << PuzzleEntry.UserWeapon;
-		Writer << PuzzleEntry.UserMotive;
 	}
 }
 
@@ -228,15 +240,12 @@ void UCPP_NotebookComponent::LoadNotebookComponentData(FActorSaveData* SaveGameD
 	Reader << PuzzleNumber;
 	for (int i = 0; i < PuzzleNumber; i++) {
 		FNotebookPuzzleItem LoadedEntry;
+		Reader << LoadedEntry.PuzzleName;
 		Reader << LoadedEntry.bSolved;
 				  
 		Reader << LoadedEntry.CorrectCulprit;
 		Reader << LoadedEntry.CorrectWeapon;
 		Reader << LoadedEntry.CorrectMotive;
-				  
-		Reader << LoadedEntry.UserCulprit;
-		Reader << LoadedEntry.UserWeapon;
-		Reader << LoadedEntry.UserMotive;
 	}
 }
 
