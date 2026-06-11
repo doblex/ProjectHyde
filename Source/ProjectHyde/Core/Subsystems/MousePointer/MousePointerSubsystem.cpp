@@ -31,7 +31,7 @@ void UMousePointerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 		FStreamableManager& ManagedLoader = UAssetManager::GetStreamableManager();
 		// Sta roba è complicatissima odio le lambda in cpp
-		ManagedLoader.RequestAsyncLoad(
+		PointerLoadHandle = ManagedLoader.RequestAsyncLoad(
 			PathsToLoad,
 			FStreamableDelegate::CreateWeakLambda(this, [SoftPtrs, this]() mutable
 			{
@@ -44,6 +44,8 @@ void UMousePointerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 					this->ObjectMousePointer = SoftPtrs[4].Get();
 					this->ZoomMousePointer = SoftPtrs[5].Get();
 					UE_LOG(LogTemp, Display, TEXT("Loaded mouse icons!"));
+
+					this->PointerLoadHandle.Reset();
 				}
 			})
 		);
@@ -59,10 +61,8 @@ void UMousePointerSubsystem::Deinitialize()
 
 void UMousePointerSubsystem::SetPointerState(EMousePointerState NewState)
 {
-	if (UTexture2D* Texture = GetTextureForState(NewState))
-	{
-		OnMouseIconChanged.Broadcast(Texture);
-	}
+	MouseState = NewState;
+	OnMouseIconChanged.Broadcast(MouseState);
 }
 
 

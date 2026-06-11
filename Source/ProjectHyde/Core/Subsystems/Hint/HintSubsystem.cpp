@@ -34,6 +34,8 @@ void UHintSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 		
 		TArray<FHintDialogueDataRow*> Rows;
 		
+		if (!Settings->Hints) return;
+		
 		Settings->Hints.Get()->GetAllRows(ContextString, Rows);
 		
 		if (Rows.IsEmpty()) return;
@@ -98,6 +100,8 @@ void UHintSubsystem::PlayAfterMenu(FHintData Data)
 
 void UHintSubsystem::OnHintActivation(FGameplayTag EventSource)
 {
+	
+	
 	UE_LOG(LogTemp, Display, TEXT("Hint event activated: %s"),*EventSource.GetTagName().ToString());
 
 	const FHintData Data = *HintsDataMap.Find(EventSource);

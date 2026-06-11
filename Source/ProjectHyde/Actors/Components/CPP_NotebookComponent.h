@@ -96,7 +96,7 @@ struct FBookmarkEntry
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
 	FText PlayerNotes;
 
-	// The dialogue the player has seen from this Person if the bookmark is of Person Type.
+	// The dialogue the player has seen from this bookmark.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
 	TArray<FDialogueEntry> DialogueEntries;
 
@@ -112,6 +112,9 @@ struct FNotebookPuzzleItem
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	FString PuzzleName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
 	bool bSolved = false;
 
 	// The correct solutions to the puzzle
@@ -123,16 +126,6 @@ struct FNotebookPuzzleItem
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
 	UNotebookItemData* CorrectMotive = nullptr;
-
-	// The user inputted solutions
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
-	UNotebookItemData* UserCulprit = nullptr;
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
-	UNotebookItemData* UserWeapon = nullptr;
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
-	UNotebookItemData* UserMotive = nullptr;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -163,6 +156,16 @@ protected:
 
 	int PuzzleNumber = 0;
 
+	// The user inputted solution
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	UNotebookItemData* UserCulprit = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	UNotebookItemData* UserWeapon = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	UNotebookItemData* UserMotive = nullptr;
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -174,7 +177,7 @@ public:
 	EBookmarkPresence AddBookmark(UNotebookItemData* NewData);
 
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
-	UNotebookItemData* FindNotebookItemFor(FString PersonName);
+	UNotebookItemData* FindNotebookItemFor(FString BookmarkName);
 
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	void AddDialogueEntryToBookmark(UNotebookItemData* ForData, FDialogueEntry DialogueEntryToAdd);
@@ -182,29 +185,42 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	void UpdatePlayerNote(UNotebookItemData* ForData, FText NewNote);
 
-	// Ritorna un array che contiene tutti i bookmark di Persone scoperti dal giocatore
+	// (DEPRECATO) Ritorna un array che contiene tutti i bookmark di Persone scoperti dal giocatore
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	TArray<FBookmarkEntry> GetPeopleBookmarksFromPlayer();
 
-	// Ritorna un array che contiene tutti i bookmark di NON Persone scoperti dal giocatore
+	// (DEPRECATO) Ritorna un array che contiene tutti i bookmark di NON Persone scoperti dal giocatore
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	TArray<FBookmarkEntry> GetOtherBookmarksFromPlayer();
 
+	// Ritorna tutti i bookmark in possesso del giocatore
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	TArray<FBookmarkEntry> GetAllBookmarksFromPlayer();
+
 	// Setta il bookmark scelto dall'utente come Colpevole per il puzzle all'indice i dell'array PuzzleEntries
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
-	void SetUserCulpritForIndex(int index, FBookmarkEntry NewUserCulprit);
+	void SetUserCulprit(FBookmarkEntry NewUserCulprit);
+
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	UNotebookItemData* GetUserCulprit();
 
 	// Setta il bookmark scelto dall'utente come Arma per il puzzle all'indice i dell'array PuzzleEntries
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
-	void SetUserWeaponForIndex(int index, FBookmarkEntry NewUserWeapon);
+	void SetUserWeapon(FBookmarkEntry NewUserWeapon);
+
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	UNotebookItemData* GetUserWeapon();
 
 	// Setta il bookmark scelto dall'utente come Motivo per il puzzle all'indice i dell'array PuzzleEntries
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
-	void SetUserMotiveForIndex(int index, FBookmarkEntry NewUserMotive);
+	void SetUserMotive(FBookmarkEntry NewUserMotive);
+
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	UNotebookItemData* GetUserMotive();
 
 	// Controlla se la soluzione dell'utente salvata al momento corrisponde con quella corretta
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
-	bool CheckNotebookSolution(int index);
+	bool CheckNotebookSolution(FString& SolvedPuzzleName);
 
 	// Save helper for when player is saved
 	void SaveNotebookComponentData(FActorSaveData* SaveGameData);

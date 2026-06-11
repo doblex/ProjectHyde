@@ -6,6 +6,7 @@
 #include "Components/AudioComponent.h"
 #include "ProjectHyde/Core/CoreLibrary.h"
 #include "ProjectHyde/Core/Subsystems/Dialogues/DialogueEmotionSubsystem.h"
+#include "ProjectHyde/Interface/NotebookLoggable.h"
 
 
 // Sets default values for this component's properties
@@ -64,6 +65,25 @@ void UBaseDialogueRunnerComponent::OnDialogueMakeSound(FName CharacterName, ELin
 
 void UBaseDialogueRunnerComponent::OnDialogueEnded(UBaseDialogue* BaseDialogue)
 {
+	UCPP_NotebookComponent* Component = nullptr;
+	
+	UNotebookItemData* ItemData = INotebookLoggable::Execute_GetBookmarkData(GetOwner());
+	
+	if (UCoreLibrary::GetComponentFromPlayer<UCPP_NotebookComponent>(this, Component))
+	{
+		Component->AddDialogueEntryToBookmark(ItemData ,BaseDialogue->GetDialogueEntry());
+		
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				5.f,
+				FColor::Green,
+				TEXT("Dialogue entry Added")
+				);
+		}
+	}
+	
 	DialogueSub->OnDialogueMakeSound.Unbind();
 	OnDialogueFinished.ExecuteIfBound();
 }

@@ -101,28 +101,6 @@ void UPersonDialogueComponent::OnWelcomeDialogueEnded(UBaseDialogue* BaseDialogu
 
 void UPersonDialogueComponent::OnDialogueEnded(UBaseDialogue* BaseDialogue)
 {
-	 FDialogueEntry Entry = BaseDialogue->GetDialogueEntry();
-	
-	if (UWorld*  World = GetWorld())
-	{
-		UCPP_NotebookComponent* NotebookComponent = World->GetFirstPlayerController()->GetCharacter()->GetComponentByClass<UCPP_NotebookComponent>();
-		if (NotebookComponent != nullptr)
-		{
-			UNotebookItemData* ItemData = INotebookLoggable::Execute_GetBookmarkData(GetOwner());
-			NotebookComponent->AddDialogueEntryToBookmark(ItemData,Entry);
-			
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(
-					-1,
-					5.f,
-					FColor::Green,
-					TEXT("Dialogue entry Added")
-					);
-			}
-		}
-	}
-	
 	DialoguesPool.Remove(BaseDialogue);
 	Super::OnDialogueEnded(BaseDialogue);
 }

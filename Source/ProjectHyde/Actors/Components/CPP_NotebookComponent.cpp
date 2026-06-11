@@ -124,7 +124,7 @@ TArray<FBookmarkEntry> UCPP_NotebookComponent::GetPeopleBookmarksFromPlayer()
 	return Output;
 }
 
-// Returns all the bookmarks i nthe player's possession fo type "Not Person"
+// Returns all the bookmarks in the player's possession of type "Not Person"
 TArray<FBookmarkEntry> UCPP_NotebookComponent::GetOtherBookmarksFromPlayer()
 {
 	TArray<FBookmarkEntry> Output;
@@ -135,44 +135,72 @@ TArray<FBookmarkEntry> UCPP_NotebookComponent::GetOtherBookmarksFromPlayer()
 	return Output;
 }
 
-// Sets the User submitted culprit for puzzle at the given index
-void UCPP_NotebookComponent::SetUserCulpritForIndex(int index, FBookmarkEntry NewUserCulprit)
+// Returns all the bookmarks in the player's possession
+TArray<FBookmarkEntry> UCPP_NotebookComponent::GetAllBookmarksFromPlayer()
 {
-	if (PuzzleEntries[index].bSolved) return;
-	PuzzleEntries[index].UserCulprit = NewUserCulprit.StaticData;
+	TArray<FBookmarkEntry> Output;
+
+	for (FBookmarkEntry Bookmark : UnlockedBookmarks)	Output.Add(Bookmark);
+
+	return Output;
+}
+
+// Sets the User submitted culprit for puzzle at the given index
+void UCPP_NotebookComponent::SetUserCulprit(FBookmarkEntry NewUserCulprit)
+{
+	this->UserCulprit = NewUserCulprit.StaticData;
+}
+
+UNotebookItemData* UCPP_NotebookComponent::GetUserCulprit()
+{
+	return this->UserCulprit;
 }
 
 // Sets the User submitted weapon for puzzle at the given index
-void UCPP_NotebookComponent::SetUserWeaponForIndex(int index, FBookmarkEntry NewUserWeapon)
+void UCPP_NotebookComponent::SetUserWeapon(FBookmarkEntry NewUserWeapon)
 {
-	if (PuzzleEntries[index].bSolved) return;
-	PuzzleEntries[index].UserWeapon = NewUserWeapon.StaticData;
+	this->UserWeapon = NewUserWeapon.StaticData;
 }
 
-// Sets the User submitted culprit for puzzle at the given index
-void UCPP_NotebookComponent::SetUserMotiveForIndex(int index, FBookmarkEntry NewUserMotive)
+UNotebookItemData* UCPP_NotebookComponent::GetUserWeapon()
 {
-	if (PuzzleEntries[index].bSolved) return;
-	PuzzleEntries[index].UserMotive = NewUserMotive.StaticData;
+	return this->UserWeapon;
+}
+
+// Sets the User submitted motive for puzzle at the given index
+void UCPP_NotebookComponent::SetUserMotive(FBookmarkEntry NewUserMotive)
+{
+	this->UserMotive = NewUserMotive.StaticData;
+}
+
+UNotebookItemData* UCPP_NotebookComponent::GetUserMotive()
+{
+	return this->UserMotive;
 }
 
 // Returns true if the currently submitted User solution matches the correct solution of puzzle at the given index
-bool UCPP_NotebookComponent::CheckNotebookSolution(int index)
+bool UCPP_NotebookComponent::CheckNotebookSolution(FString& SolvedPuzzleName)
 {
-	FNotebookPuzzleItem& Entry = PuzzleEntries[index];
-	if (
-		// Compare asset paths to determine correctness
-		FSoftObjectPath(Entry.CorrectCulprit) == FSoftObjectPath(Entry.UserCulprit)&&
-		FSoftObjectPath(Entry.CorrectWeapon) == FSoftObjectPath(Entry.UserWeapon) &&
-		FSoftObjectPath(Entry.CorrectMotive) == FSoftObjectPath(Entry.UserMotive)
-	){
-		Entry.bSolved = true;
-		return true;
-	}
-	else
+	// Create a set of the three puzzle entries to compare them with no ordering
+	TSet<FSoftObjectPath> UserSet = { FSoftObjectPath(this->UserCulprit), FSoftObjectPath(this->UserWeapon), FSoftObjectPath(this->UserMotive) };
+
+	for (FNotebookPuzzleItem PuzzleEntry : PuzzleEntries)
 	{
-		return false;
+		TSet<FSoftObjectPath> CorrectSet = { FSoftObjectPath(PuzzleEntry.CorrectCulprit), FSoftObjectPath(PuzzleEntry.CorrectWeapon), FSoftObjectPath(PuzzleEntry.CorrectMotive) };
+
+		// Compare sets to determine correctness
+		if (CorrectSet.Num() == UserSet.Num() && CorrectSet.Includes(UserSet) && PuzzleEntry.bSolved == false)
+		{
+			PuzzleEntry.bSolved = true;
+			SolvedPuzzleName = PuzzleEntry.PuzzleName;
+			return true;
+		}
+		else
+		{
+			continue;
+		}
 	}
+	return false;
 }
 
 void UCPP_NotebookComponent::SaveNotebookComponentData(FActorSaveData* SaveGameData)
@@ -187,15 +215,12 @@ void UCPP_NotebookComponent::SaveNotebookComponentData(FActorSaveData* SaveGameD
 	}
 	Writer << PuzzleNumber;
 	for (FNotebookPuzzleItem PuzzleEntry : PuzzleEntries) {
+		Writer << PuzzleEntry.PuzzleName;
 		Writer << PuzzleEntry.bSolved;
 
 		Writer << PuzzleEntry.CorrectCulprit;
 		Writer << PuzzleEntry.CorrectWeapon;
 		Writer << PuzzleEntry.CorrectMotive;
-
-		Writer << PuzzleEntry.UserCulprit;
-		Writer << PuzzleEntry.UserWeapon;
-		Writer << PuzzleEntry.UserMotive;
 	}
 }
 
@@ -215,15 +240,12 @@ void UCPP_NotebookComponent::LoadNotebookComponentData(FActorSaveData* SaveGameD
 	Reader << PuzzleNumber;
 	for (int i = 0; i < PuzzleNumber; i++) {
 		FNotebookPuzzleItem LoadedEntry;
+		Reader << LoadedEntry.PuzzleName;
 		Reader << LoadedEntry.bSolved;
 				  
 		Reader << LoadedEntry.CorrectCulprit;
 		Reader << LoadedEntry.CorrectWeapon;
 		Reader << LoadedEntry.CorrectMotive;
-				  
-		Reader << LoadedEntry.UserCulprit;
-		Reader << LoadedEntry.UserWeapon;
-		Reader << LoadedEntry.UserMotive;
 	}
 }
 
