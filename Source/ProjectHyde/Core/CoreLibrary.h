@@ -3,12 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EnhancedInputSubsystems.h"
-#include "InputAction.h"
-#include "GameFramework/PlayerInput.h"
+#include "CPP_PlayerCharacter.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "CoreLibrary.generated.h"
-
 /**
  * 
  */
@@ -22,6 +19,32 @@ public:
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "Get App Version"), Category = "Game Config")
 	static FString GetAppVersion();
 	
+	template<typename TComponent>
+	static bool GetComponentFromPlayer(UObject* WorldContext  , TComponent*& OutComponent)
+	{
+		OutComponent = nullptr;
+		
+		if (!WorldContext) return false;
+
+		const UWorld* World = WorldContext->GetWorld();
+		
+		if (!World) return false;
+		
+		APlayerController* PC = World->GetFirstPlayerController();
+		
+		if (!PC) return false;
+		
+		ACharacter* Character = PC->GetCharacter();
+		
+		if (!Character) return false;
+		
+		UActorComponent* Component = Character->GetComponentByClass<TComponent>();
+		
+		if (!Component) return false;
+		
+		OutComponent = Cast<TComponent>(Component);;
+		return true;
+	}
 	
 	template<typename TEnum>
 static TEnum GetEnumFromString(const FString& String, TEnum DefaultValue)
