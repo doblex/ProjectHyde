@@ -36,7 +36,9 @@ void UHintSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 		
 		if (Settings->Hints.IsNull()) return;
 		
-		Settings->Hints.Get()->GetAllRows(ContextString, Rows);
+		UDataTable* DataTable = Settings->Hints.LoadSynchronous();
+		
+		DataTable->GetAllRows(ContextString, Rows);
 		
 		if (Rows.IsEmpty()) return;
 
@@ -104,13 +106,16 @@ void UHintSubsystem::OnHintActivation(FGameplayTag EventSource)
 
 	const FHintData Data = *HintsDataMap.Find(EventSource);
 
-	bool bAlreadyTriggered = *HintTriggerMap.Find(Data.Tag);
-	
-	if (bAlreadyTriggered)
+	if (HintTriggerMap.Contains(Data.Tag))
 	{
-		UE_LOG(LogTemp,Display,TEXT("Hint already played"))
-		return;
-	} 
+		bool bAlreadyTriggered = *HintTriggerMap.Find(Data.Tag);
+	
+		if (bAlreadyTriggered)
+		{
+			UE_LOG(LogTemp,Display,TEXT("Hint already played"))
+			return;
+		} 
+	}
 	
 	switch (Data.HintType)
 	{
