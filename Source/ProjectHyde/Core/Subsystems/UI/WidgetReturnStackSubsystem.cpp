@@ -64,28 +64,26 @@ void UWidgetReturnStackSubsystem::RemoveFromStack(UUserWidget* WidgetToRemove)
 void UWidgetReturnStackSubsystem::CloseLastElement()
 {
 	if (WidgetStack.IsEmpty()) return;
-	
-	UUserWidget* Widget = WidgetStack.Top();
-	
+
+	UUserWidget* Widget = WidgetStack.Pop();
+
 	if (IWidgetBackAction::Execute_CloseWidget(Widget))
 	{
-		WidgetStack.Pop();
 		OpenedWidgets.Remove(Widget);
-		
+
 		if (IsUIOpen())
 		{
 			OnEmptyStack.ExecuteIfBound();
 		}
-		
+
 		if (bDebugLogs && GEngine)
 		{
-			GEngine->AddOnScreenDebugMessage(
-				-1,
-				5.f,
-				FColor::Green,
-				"Element Popped" 
-				);
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, "Element Popped");
 		}
+	}
+	else
+	{
+		WidgetStack.Push(Widget);
 	}
 }
 
