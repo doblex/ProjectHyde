@@ -53,11 +53,16 @@ EBookmarkPresence UCPP_NotebookComponent::AddBookmark(UNotebookItemData* NewData
 
 	if (!bAlreadyExists)
 	{
-		// Caso bookmark nuovo (TODO Aggiungi UI)
+		// Caso bookmark nuovo
 		FBookmarkEntry NewEntry;
 		NewEntry.StaticData = NewData;
 		NewEntry.AssetPath = FSoftObjectPath(NewData);
 		NewEntry.PlayerNotes = FText::FromString(""); // start empty
+		if (TemporaryDialogueStore.Contains(NewData))
+		{
+			NewEntry.DialogueEntries = TemporaryDialogueStore[NewData].TempDialogueEntries; // load temporary saved dialogue
+			TemporaryDialogueStore.Remove(NewData);
+		}
 		UnlockedBookmarks.Add(NewEntry);
 		BookmarkNumber = UnlockedBookmarks.Num();
 		OnBookmarksReloaded.Broadcast();
@@ -65,7 +70,7 @@ EBookmarkPresence UCPP_NotebookComponent::AddBookmark(UNotebookItemData* NewData
 	}
 	else
 	{
-		// caso bookmark esistente (TODO Aggiungi UI)
+		// caso bookmark esistente
 		UE_LOGFMT(LogTemp, Display, "Bookmark already present in Notebook!");
 	}
 	
@@ -90,6 +95,7 @@ UNotebookItemData* UCPP_NotebookComponent::FindNotebookItemFor(FString PersonNam
 // Update dialogues for People bookmarks, call this when the player is done writing (Save note from UI)
 void UCPP_NotebookComponent::AddDialogueEntryToBookmark(UNotebookItemData* ForData, FDialogueEntry DialogueEntryToAdd)
 {
+	// Check if bookmark is unlocked
 	for (FBookmarkEntry& Entry : UnlockedBookmarks)
 	{
 		if (Entry.StaticData == ForData)
@@ -97,6 +103,15 @@ void UCPP_NotebookComponent::AddDialogueEntryToBookmark(UNotebookItemData* ForDa
 			Entry.DialogueEntries.Add(DialogueEntryToAdd);
 			return;
 		}
+	}
+	// Case bookmark not unlocked, add to TempDialogueStore
+	if (TemporaryDialogueStore.Contains(ForData))
+		TemporaryDialogueStore[ForData].TempDialogueEntries.Add(DialogueEntryToAdd);
+	else
+	{
+		FTempDialogues TempDialogues;
+		TempDialogues.TempDialogueEntries.Add(DialogueEntryToAdd);
+		TemporaryDialogueStore.Add(ForData, TempDialogues);
 	}
 }
 
@@ -178,7 +193,7 @@ UNotebookItemData* UCPP_NotebookComponent::GetUserMotive()
 	return this->UserMotive;
 }
 
-// Returns true if the currently submitted User solution matches the correct solution of puzzle at the given index
+// Returns true if the currently submitted User solution matches the correct solution of a puzzle
 bool UCPP_NotebookComponent::CheckNotebookSolution(FString& SolvedPuzzleName)
 {
 	// Create a set of the three puzzle entries to compare them with no ordering
@@ -193,6 +208,7 @@ bool UCPP_NotebookComponent::CheckNotebookSolution(FString& SolvedPuzzleName)
 		{
 			PuzzleEntry.bSolved = true;
 			SolvedPuzzleName = PuzzleEntry.PuzzleName;
+			OnPuzzleSolved.Broadcast(SolvedPuzzleName);
 			return true;
 		}
 		else

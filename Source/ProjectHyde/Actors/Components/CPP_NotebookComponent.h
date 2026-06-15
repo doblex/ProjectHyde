@@ -4,12 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameplayTagContainer.h"
+#include "NativeGameplayTags.h"
 #include "../../Data/NotebookItemData.h"
 #include "../../Save/HydeSaveGame.h"
 
 #include "CPP_NotebookComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBookmarkReload);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPuzzleSolved, FString, PuzzleName);
 
 // Enum that represents the query type for the Case Puzzle
 UENUM(BlueprintType)
@@ -128,6 +132,14 @@ struct FNotebookPuzzleItem
 	UNotebookItemData* CorrectMotive = nullptr;
 };
 
+USTRUCT(BlueprintType)
+struct FTempDialogues
+{
+	GENERATED_BODY()
+
+	TArray<FDialogueEntry> TempDialogueEntries;
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTHYDE_API UCPP_NotebookComponent : public UActorComponent
 {
@@ -140,6 +152,10 @@ public:
 	// Delegate for reloading Bookmarks
 	UPROPERTY(BlueprintAssignable, Category = "Notebook")
 	FOnBookmarkReload OnBookmarksReloaded;
+
+	// Delegate for solving Puzzles
+	UPROPERTY(BlueprintAssignable, Category = "Notebook")
+	FOnPuzzleSolved OnPuzzleSolved;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
 	TArray<FBookmarkEntry> UnlockedBookmarks;
@@ -147,6 +163,10 @@ public:
 	// Entries of Notebook puzzles
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
 	TArray<FNotebookPuzzleItem> PuzzleEntries;
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Notebook")
+	TMap<UNotebookItemData*, FTempDialogues> TemporaryDialogueStore;
 
 protected:
 	// Called when the game starts
@@ -197,28 +217,28 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	TArray<FBookmarkEntry> GetAllBookmarksFromPlayer();
 
-	// Setta il bookmark scelto dall'utente come Colpevole per il puzzle all'indice i dell'array PuzzleEntries
+	// Setta il bookmark scelto dall'utente come Colpevole
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	void SetUserCulprit(FBookmarkEntry NewUserCulprit);
 
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	UNotebookItemData* GetUserCulprit();
 
-	// Setta il bookmark scelto dall'utente come Arma per il puzzle all'indice i dell'array PuzzleEntries
+	// Setta il bookmark scelto dall'utente come Arma
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	void SetUserWeapon(FBookmarkEntry NewUserWeapon);
 
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	UNotebookItemData* GetUserWeapon();
 
-	// Setta il bookmark scelto dall'utente come Motivo per il puzzle all'indice i dell'array PuzzleEntries
+	// Setta il bookmark scelto dall'utente come Motivo
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	void SetUserMotive(FBookmarkEntry NewUserMotive);
 
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	UNotebookItemData* GetUserMotive();
 
-	// Controlla se la soluzione dell'utente salvata al momento corrisponde con quella corretta
+	// Controlla se la soluzione dell'utente salvata al momento corrisponde con una di quelle corrette
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	bool CheckNotebookSolution(FString& SolvedPuzzleName);
 
