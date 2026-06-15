@@ -24,6 +24,16 @@ void UDialogueExecutorSubsystem::Initialize(FSubsystemCollectionBase& Collection
 
 UBaseLineNode* UDialogueExecutorSubsystem::ShowDialogue(UBaseLineNode* NextLine)
 {
+	
+	if (!IsValid(NextLine))
+	{
+		OnDialogueEnded.ExecuteIfBound(CurrentDialogue);
+		OnDialogueEnded.Clear();
+		UE_LOG(LogTemp, Error, TEXT("ShowDialogue received invalid NextLine"));
+		return nullptr;
+	}
+	
+	
 	CurrentLineNode = NextLine;
 	
 	while (CurrentLineNode->IsCommand())
