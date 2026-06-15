@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "E:\epic games\UE_5.6\Engine\Plugins\Runtime\CommonUI\Source\CommonUI\Public\CommonUserWidget.h"
+#include "CommonUserWidget.h"
 #include "ProjectHyde/Interface/Hintable.h"
 #include "HintableCommonUserWidget.generated.h"
 /**
