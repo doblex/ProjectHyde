@@ -24,12 +24,17 @@ void UDialogueExecutorSubsystem::Initialize(FSubsystemCollectionBase& Collection
 
 UBaseLineNode* UDialogueExecutorSubsystem::ShowDialogue(UBaseLineNode* NextLine)
 {
-	
-	if (!IsValid(NextLine))
+	if (!NextLine)
 	{
 		OnDialogueEnded.ExecuteIfBound(CurrentDialogue);
 		OnDialogueEnded.Clear();
 		UE_LOG(LogTemp, Error, TEXT("ShowDialogue received invalid NextLine"));
+		
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Green,TEXT("NextLine is null"));
+		}
+		
 		return nullptr;
 	}
 	

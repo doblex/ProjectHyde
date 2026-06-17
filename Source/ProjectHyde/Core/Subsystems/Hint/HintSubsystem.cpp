@@ -2,6 +2,7 @@
 
 
 #include "HintSubsystem.h"
+
 #include "ProjectHyde/Core/DevSettings/HintSubsystemSettings.h"
 #include "ProjectHyde/Core/Subsystems/UI/WidgetReturnStackSubsystem.h"
 #include "ProjectHyde/Dialogues/BaseClasses/BaseDialogue.h"
@@ -22,9 +23,9 @@ void UHintSubsystem::RegisterObject(UObject* Obj)
 
 void UHintSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
-	Collection.InitializeDependency<UWidgetReturnStackSubsystem>();
-	
 	Super::Initialize(Collection);
+	
+	Collection.InitializeDependency<UWidgetReturnStackSubsystem>();
 	
 	const UHintSubsystemSettings* Settings = GetDefault<UHintSubsystemSettings>();
 	
@@ -54,7 +55,11 @@ void UHintSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 		}
 	}
 	
+	ensure(GetLocalPlayer());
+	
 	WidgetReturnStack = GetLocalPlayer()->GetSubsystem<UWidgetReturnStackSubsystem>();
+	
+	ensure(WidgetReturnStack);
 	
 	WidgetReturnStack->OnEmptyStack.BindDynamic(this, &UHintSubsystem::OnWidgetStackEmpty);
 }
@@ -66,7 +71,7 @@ void UHintSubsystem::Deinitialize()
 
 void UHintSubsystem::PlayOverMenu(FHintData Data)
 {
-	UBaseDialogue* Dialogue = Data.Dialogue;
+	UBaseDialogue* Dialogue = Data.Dialogue.LoadSynchronous();
 	
 	if (!Dialogue) return;
 	
@@ -77,7 +82,7 @@ void UHintSubsystem::PlayOverMenu(FHintData Data)
 
 void UHintSubsystem::PlayAfterMenu(FHintData Data)
 {
-	UBaseDialogue* Dialogue = Data.Dialogue;
+	UBaseDialogue* Dialogue = Data.Dialogue.LoadSynchronous();
 	
 	if (!Dialogue) return;
 	
@@ -103,7 +108,7 @@ void UHintSubsystem::PlayAfterMenu(FHintData Data)
 void UHintSubsystem::OnHintActivation(FGameplayTag EventSource)
 {
 	UE_LOG(LogTemp, Display, TEXT("Hint event activated: %s"),*EventSource.GetTagName().ToString());
-
+	
 	const FHintData Data = *HintsDataMap.Find(EventSource);
 
 	if (HintTriggerMap.Contains(Data.Tag))
@@ -139,7 +144,7 @@ void UHintSubsystem::OnWidgetStackEmpty()
 
 	const FHintData Data = HintQueue.Pop();
 	
-	UBaseDialogue* Dialogue = Data.Dialogue;
+	UBaseDialogue* Dialogue = Data.Dialogue.LoadSynchronous();
 	
 	if (!Dialogue) return;
 	

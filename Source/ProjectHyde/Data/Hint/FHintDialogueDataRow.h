@@ -23,7 +23,7 @@ struct FHintData
 	FGameplayTag Tag;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UBaseDialogue* Dialogue = nullptr;
+	TSoftObjectPtr<UBaseDialogue> Dialogue;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsInMenu = true;

@@ -11,9 +11,6 @@
  * 
  */
 
-class UBaseDialogue;
-
-
 UCLASS(Config = Game, DefaultConfig, meta = (DisplayName = "Hint Subsystem Settings"))
 class PROJECTHYDE_API UHintSubsystemSettings : public UDeveloperSettings
 {
