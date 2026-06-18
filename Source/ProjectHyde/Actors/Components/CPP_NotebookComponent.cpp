@@ -160,6 +160,21 @@ TArray<FBookmarkEntry> UCPP_NotebookComponent::GetAllBookmarksFromPlayer()
 	return Output;
 }
 
+TArray<FNotebookPuzzleItem> UCPP_NotebookComponent::GetAllSolvedPuzzles()
+{
+	TArray<FNotebookPuzzleItem> Result;
+	
+	for (FNotebookPuzzleItem PuzzleEntry : PuzzleEntries)
+	{
+		if (PuzzleEntry.bSolved)
+		{
+			Result.Add(PuzzleEntry);
+		}
+	}
+	
+	return Result;
+}
+
 // Sets the User submitted culprit for puzzle at the given index
 void UCPP_NotebookComponent::SetUserCulprit(FBookmarkEntry NewUserCulprit)
 {
@@ -199,7 +214,7 @@ bool UCPP_NotebookComponent::CheckNotebookSolution(FString& SolvedPuzzleName)
 	// Create a set of the three puzzle entries to compare them with no ordering
 	TSet<FSoftObjectPath> UserSet = { FSoftObjectPath(this->UserCulprit), FSoftObjectPath(this->UserWeapon), FSoftObjectPath(this->UserMotive) };
 
-	for (FNotebookPuzzleItem PuzzleEntry : PuzzleEntries)
+	for (FNotebookPuzzleItem& PuzzleEntry : PuzzleEntries)
 	{
 		TSet<FSoftObjectPath> CorrectSet = { FSoftObjectPath(PuzzleEntry.CorrectCulprit), FSoftObjectPath(PuzzleEntry.CorrectWeapon), FSoftObjectPath(PuzzleEntry.CorrectMotive) };
 

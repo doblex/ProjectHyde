@@ -217,6 +217,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	TArray<FBookmarkEntry> GetAllBookmarksFromPlayer();
 
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	TArray<FNotebookPuzzleItem> GetAllSolvedPuzzles();
+	
 	// Setta il bookmark scelto dall'utente come Colpevole
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	void SetUserCulprit(FBookmarkEntry NewUserCulprit);
