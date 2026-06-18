@@ -16,6 +16,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	FText Description = FText();
 	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	bool bHasText = false;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	FText Text = FText::GetEmpty();
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	UTexture2D* Icon = nullptr;
 	
