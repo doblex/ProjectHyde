@@ -19,7 +19,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	bool bHasText = false;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item", meta=(MultiLine="true"))
 	FText Text = FText::GetEmpty();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
