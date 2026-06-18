@@ -223,7 +223,7 @@ bool UCPP_NotebookComponent::CheckNotebookSolution(FString& SolvedPuzzleName)
 		{
 			PuzzleEntry.bSolved = true;
 			SolvedPuzzleName = PuzzleEntry.PuzzleName;
-			OnPuzzleSolved.Broadcast(SolvedPuzzleName);
+			OnPuzzleSolved.Broadcast(SolvedPuzzleName, PuzzleEntry.HintSystemTag);
 			return true;
 		}
 		else

@@ -13,7 +13,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBookmarkReload);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPuzzleSolved, FString, PuzzleName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPuzzleSolved, FString, PuzzleName, FGameplayTag, HintSysTag);
 
 // Enum that represents the query type for the Case Puzzle
 UENUM(BlueprintType)
@@ -117,6 +117,9 @@ struct FNotebookPuzzleItem
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
 	FString PuzzleName;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
+	FGameplayTag HintSystemTag;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
 	bool bSolved = false;
