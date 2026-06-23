@@ -23,10 +23,14 @@ class PROJECTHYDE_API UDialogueExecutorSubsystem : public UGameInstanceSubsystem
 	
 	int MaxDialoguesNumber = 0;
 	
-	UBaseDialogue* CurrentDialogue;
-	UBaseLineNode* CurrentLineNode;
-	
-	UObject* CurrentDialogueOwner;
+	UPROPERTY()
+	TObjectPtr<UBaseDialogue> CurrentDialogue;
+
+	UPROPERTY()
+	TObjectPtr<UBaseLineNode> CurrentLineNode;
+
+	UPROPERTY()
+	TObjectPtr<UObject> CurrentDialogueOwner;
 	
 protected:
 	UBaseLineNode* ShowDialogue(UBaseLineNode* NextLine);
