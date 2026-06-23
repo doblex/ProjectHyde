@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "GameplayTagContainer.h"
-#include "NativeGameplayTags.h"
 #include "../../Data/NotebookItemData.h"
 #include "../../Save/HydeSaveGame.h"
 
@@ -43,6 +42,18 @@ enum class EBookmarkPresence : uint8
 };
 
 USTRUCT(BlueprintType)
+struct FHintLine
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
+	FText HintText;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
+	bool bIsSolved;
+};
+
+USTRUCT(BlueprintType)
 struct FLineLog
 {
 	GENERATED_BODY()
@@ -75,7 +86,7 @@ struct FDialogueEntry
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
 	TArray<FLineLog> Lines;
-
+	
 	// custom serialization that I just found out about now oops
 	friend FArchive& operator<<(FArchive& Ar, FDialogueEntry& MyStruct)
 	{
@@ -133,6 +144,18 @@ struct FNotebookPuzzleItem
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
 	UNotebookItemData* CorrectMotive = nullptr;
+
+	bool Contains(UNotebookItemData* NotebookItemData) const
+	{
+		if (NotebookItemData == nullptr) return false;
+		
+		if (NotebookItemData == CorrectCulprit 
+			|| NotebookItemData == CorrectMotive 
+			|| NotebookItemData == CorrectWeapon) 
+			return true;
+		
+		return false;
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -222,6 +245,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	TArray<FNotebookPuzzleItem> GetAllSolvedPuzzles();
+	
+	UFUNCTION(BlueprintCallable, Category = "Notebook")
+	TArray<FHintLine> GetAllHintFound();
 	
 	// Setta il bookmark scelto dall'utente come Colpevole
 	UFUNCTION(BlueprintCallable, Category = "Notebook")

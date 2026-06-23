@@ -175,6 +175,30 @@ TArray<FNotebookPuzzleItem> UCPP_NotebookComponent::GetAllSolvedPuzzles()
 	return Result;
 }
 
+TArray<FHintLine> UCPP_NotebookComponent::GetAllHintFound()
+{
+	TArray<FHintLine> Hints;
+	
+	for (FBookmarkEntry Bookmark : UnlockedBookmarks)
+	{
+		if (Bookmark.StaticData->bHasHint)
+		{
+			bool bIsSolved = false;
+			for (FNotebookPuzzleItem& PuzzleEntry : PuzzleEntries)
+			{
+				if (PuzzleEntry.Contains(Bookmark.StaticData))
+				{
+					bIsSolved = PuzzleEntry.bSolved;
+				}
+			}
+			
+			Hints.Add(FHintLine(Bookmark.StaticData->HintText, bIsSolved));
+		}
+	}
+
+	return Hints;
+}
+
 // Sets the User submitted culprit for puzzle at the given index
 void UCPP_NotebookComponent::SetUserCulprit(FBookmarkEntry NewUserCulprit)
 {

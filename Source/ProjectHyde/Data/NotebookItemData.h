@@ -32,5 +32,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
 	TSoftObjectPtr<UTexture2D> Thumbnail;
 	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
+	bool bHasHint;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
+	FText HintText;
 	
 };
