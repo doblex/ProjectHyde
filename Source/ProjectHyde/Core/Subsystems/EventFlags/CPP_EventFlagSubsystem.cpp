@@ -61,6 +61,7 @@ bool UCPP_EventFlagSubsystem::SetEventFlag(FGameplayTag Flag, bool bValue)
 	if (Flag.MatchesTag(EventFlags)) 
 	{
 		EventFlagMap.Add(Flag, bValue);
+		OnEventFlagChanged.Broadcast();
 		return true;
 	}
 

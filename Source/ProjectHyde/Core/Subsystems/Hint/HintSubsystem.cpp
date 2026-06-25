@@ -150,3 +150,11 @@ void UHintSubsystem::OnWidgetStackEmpty()
 	
 	OnStartHintDialogue.Broadcast(Dialogue,false, Data.bIsInMenu);
 }
+
+void UHintSubsystem::ResetHint()
+{
+	for (auto& Element : HintTriggerMap)
+	{
+		Element.Value = false;
+	}
+}

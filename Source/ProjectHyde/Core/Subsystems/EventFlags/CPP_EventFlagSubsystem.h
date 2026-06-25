@@ -12,6 +12,9 @@
 DECLARE_LOG_CATEGORY_EXTERN(EventFlagSubsystem, Log, All);
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(EventFlags);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEventFlagChanged);
+
+
 /**
  * 
  */
@@ -30,8 +33,10 @@ private:
 
 public:
 	TMap<FGameplayTag, bool> EventFlagMap;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnEventFlagChanged OnEventFlagChanged;
 
-public:
 	// Begin USubsystem
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;

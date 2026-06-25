@@ -39,6 +39,7 @@ protected:
 	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
+	
 
 	void PlayOverMenu(FHintData Data);
 	void PlayAfterMenu(FHintData Data);
@@ -56,7 +57,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnWidgetStackEmpty();
 
-
+	UFUNCTION(BlueprintCallable)
+	void ResetHint();
 	
 
 };
