@@ -246,8 +246,7 @@ bool UCPP_NotebookComponent::CheckNotebookSolution(FString& SolvedPuzzleName)
 		if (CorrectSet.Num() == UserSet.Num() && CorrectSet.Includes(UserSet) && PuzzleEntry.bSolved == false)
 		{
 			PuzzleEntry.bSolved = true;
-			SolvedPuzzleName = PuzzleEntry.PuzzleName;
-			OnPuzzleSolved.Broadcast(SolvedPuzzleName, PuzzleEntry.HintSystemTag);
+			OnPuzzleSolved.Broadcast(PuzzleEntry.PuzzleName, PuzzleEntry.HintSystemTag);
 			return true;
 		}
 		else
