@@ -19,8 +19,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	bool bHasText = false;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item", meta=(MultiLine="true"))
-	FText Text = FText::GetEmpty();
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	UTexture2D* Text = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	UTexture2D* Icon = nullptr;
