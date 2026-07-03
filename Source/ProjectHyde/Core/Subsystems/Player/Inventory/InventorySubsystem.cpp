@@ -16,7 +16,7 @@ void UInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	{
 		InventorySlotNumber = Settings->InventorySlotNumber;
 		HotBarSlotNumber = Settings->HotBarSlotNumber;
-		ItemCombinationTable = Settings->ItemCombinationTable.Get();
+		ItemCombinationTable = Settings->ItemCombinationTable.LoadSynchronous();
 	}
 	
 	InventoryItemData.SetNum(InventorySlotNumber);
@@ -96,6 +96,10 @@ bool UInventorySubsystem::TryCombineItems(int FirstItemIndex, int SecondItemInde
 	UInventoryItemData* Firstitem = InventoryItemData[FirstItemIndex];
 	UInventoryItemData* Seconditem = InventoryItemData[SecondItemIndex];
 	
+	TSet<UInventoryItemData*> Items;
+	Items.Add(Firstitem);
+	Items.Add(Seconditem);
+	
 	const FString ContextString(TEXT("Context"));
 	TArray<FInventoryCombinationDataRow*> ItemCombinationDataRows; 
 	
@@ -103,11 +107,11 @@ bool UInventorySubsystem::TryCombineItems(int FirstItemIndex, int SecondItemInde
 
 	for (FInventoryCombinationDataRow* Row : ItemCombinationDataRows)
 	{
-		if (Row->Equal(Firstitem, Seconditem))
+		if (Row->Equal(Items))
 		{
 			InventoryItemData[FirstItemIndex] = nullptr;
-			InventoryItemData[SecondItemIndex] = Row->Result.Get();
-			OutItemCombined = Row->Result.Get();
+			InventoryItemData[SecondItemIndex] = Row->Result.LoadSynchronous();
+			OutItemCombined = Row->Result.LoadSynchronous();
 			return true;
 		}
 	}

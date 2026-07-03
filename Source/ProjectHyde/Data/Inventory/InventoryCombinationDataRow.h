@@ -24,7 +24,7 @@ struct PROJECTHYDE_API FInventoryCombinationDataRow : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSoftObjectPtr<UInventoryItemData> Result;
 	
-	bool Equal(UInventoryItemData* Itm1, UInventoryItemData* Itm2);
+	bool Equal(TSet<UInventoryItemData*> items);
 	
 // #if WITH_EDITOR
 // 	virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;

@@ -18,6 +18,7 @@ class PROJECTHYDE_API UInventorySubsystem : public ULocalPlayerSubsystem
 private:
 	TArray<UInventoryItemData*> InventoryItemData;
 	
+	UPROPERTY()
 	UDataTable* ItemCombinationTable;
 	
 	int InventorySlotNumber = 24;

@@ -5,11 +5,14 @@
 
 #include "Misc/DataValidation.h"
 
-bool FInventoryCombinationDataRow::Equal(UInventoryItemData* Itm1, UInventoryItemData* Itm2)
+bool FInventoryCombinationDataRow::Equal(TSet<UInventoryItemData*> items)
 {
-	bool bResult =
-		(Item1 == Itm1 && Item2 == Itm2) ||
-			(Item1 == Itm1 && Item2 == Itm1);
+	TSet<UInventoryItemData*> CombinationItem;
+	CombinationItem.Add(Item1.LoadSynchronous());
+	CombinationItem.Add(Item2.LoadSynchronous());
+	
+	
+	bool bResult = CombinationItem.Includes(items);
 	
 	return bResult;
 }
