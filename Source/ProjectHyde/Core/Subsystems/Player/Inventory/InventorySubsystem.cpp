@@ -12,14 +12,19 @@ void UInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	
 	const UPlayerSettings* Settings = GetDefault<UPlayerSettings>();
 	
-	if (Settings)
-	{
-		InventorySlotNumber = Settings->InventorySlotNumber;
-		HotBarSlotNumber = Settings->HotBarSlotNumber;
-		ItemCombinationTable = Settings->ItemCombinationTable.LoadSynchronous();
-	}
+	if (Settings == nullptr) return;
+
+	InventorySlotNumber = Settings->InventorySlotNumber;
+	HotBarSlotNumber = Settings->HotBarSlotNumber;
+	ItemCombinationTable = Settings->ItemCombinationTable.LoadSynchronous();
 	
 	InventoryItemData.SetNum(InventorySlotNumber);
+	
+	for (TSoftObjectPtr<UInventoryItemData> Item : Settings->DefaultItems)
+	{
+		UInventoryItemData* itemToAdd = Item.LoadSynchronous();
+		AddItemToInventory(itemToAdd);
+	}
 }
 
 void UInventorySubsystem::Deinitialize()

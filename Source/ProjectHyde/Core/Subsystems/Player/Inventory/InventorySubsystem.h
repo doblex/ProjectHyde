@@ -16,6 +16,7 @@ class PROJECTHYDE_API UInventorySubsystem : public ULocalPlayerSubsystem
 	GENERATED_BODY()
 	
 private:
+	UPROPERTY()
 	TArray<UInventoryItemData*> InventoryItemData;
 	
 	UPROPERTY()

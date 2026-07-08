@@ -9,11 +9,13 @@
 /**
  * 
  */
+class UInventoryItemData;
+
 UCLASS(Config = Game, DefaultConfig, meta = (DisplayName = "Player settings"))
 class PROJECTHYDE_API UPlayerSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
-	
+
 public:
 	UPROPERTY(Config, EditAnywhere, Category = "Inventory settings")
 	int InventorySlotNumber = 24;
@@ -23,4 +25,7 @@ public:
 	
 	UPROPERTY(Config, EditAnywhere, Category = "Inventory settings")
 	TSoftObjectPtr<UDataTable> ItemCombinationTable;
+	
+	UPROPERTY(Config, EditAnywhere, Category = "Inventory settings")
+	TArray<TSoftObjectPtr<UInventoryItemData>> DefaultItems;
 };
