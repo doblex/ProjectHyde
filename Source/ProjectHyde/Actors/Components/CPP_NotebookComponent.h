@@ -70,6 +70,13 @@ struct FLineLog
 		Ar << MyStruct.Line;
 		return Ar;
 	}
+
+	bool operator==(const FLineLog& compareTo) const
+	{
+		return
+			LineProtagonist.IsEqual(compareTo.LineProtagonist) &&
+			Line.EqualTo(compareTo.Line);
+	}
 };
 
 
@@ -94,6 +101,14 @@ struct FDialogueEntry
 		Ar << MyStruct.Description;
 		Ar << MyStruct.Lines;
 		return Ar;
+	}
+
+	bool operator==(const FDialogueEntry& compareTo) const
+	{
+		return
+			DialogueTitle == compareTo.DialogueTitle &&
+			Description.EqualTo(compareTo.Description) &&
+			Lines == compareTo.Lines;
 	}
 };
 

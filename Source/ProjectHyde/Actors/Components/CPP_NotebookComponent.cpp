@@ -100,13 +100,17 @@ void UCPP_NotebookComponent::AddDialogueEntryToBookmark(UNotebookItemData* ForDa
 	{
 		if (Entry.StaticData == ForData)
 		{
+			if (Entry.DialogueEntries.Contains(DialogueEntryToAdd)) return;
 			Entry.DialogueEntries.Add(DialogueEntryToAdd);
 			return;
 		}
 	}
 	// Case bookmark not unlocked, add to TempDialogueStore
 	if (TemporaryDialogueStore.Contains(ForData))
+	{
+		if (TemporaryDialogueStore[ForData].TempDialogueEntries.Contains(DialogueEntryToAdd)) return;
 		TemporaryDialogueStore[ForData].TempDialogueEntries.Add(DialogueEntryToAdd);
+	}
 	else
 	{
 		FTempDialogues TempDialogues;
