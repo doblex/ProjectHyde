@@ -123,3 +123,27 @@ bool UInventorySubsystem::TryCombineItems(int FirstItemIndex, int SecondItemInde
 	
 	return false;
 }
+
+void UInventorySubsystem::ResetInventory()
+{
+	for (int i = 0; i < InventorySlotNumber; ++i)
+	{
+		InventoryItemData[i] = nullptr;
+	}
+
+	const UPlayerSettings* Settings = GetDefault<UPlayerSettings>();
+
+	if (Settings == nullptr) return;
+
+	InventorySlotNumber = Settings->InventorySlotNumber;
+	HotBarSlotNumber = Settings->HotBarSlotNumber;
+	ItemCombinationTable = Settings->ItemCombinationTable.LoadSynchronous();
+
+	InventoryItemData.SetNum(InventorySlotNumber);
+
+	for (TSoftObjectPtr<UInventoryItemData> Item : Settings->DefaultItems)
+	{
+		UInventoryItemData* itemToAdd = Item.LoadSynchronous();
+		AddItemToInventory(itemToAdd);
+	}
+}

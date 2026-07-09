@@ -75,4 +75,7 @@ public:
 	/// @return Return true if succes, false otherwise
 	UFUNCTION(BlueprintCallable)
 	bool TryCombineItems(int FirstItemIndex, int SecondItemIndex, UInventoryItemData*& OutItemCombined);
+
+	UFUNCTION(BlueprintCallable)
+	void ResetInventory();
 };
