@@ -20,10 +20,6 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "Dialogue Subsystem")
 	int MaxDialoguesNumber = 3;
 	
-	/// The path to save the dialogue assets during import of .Yarn files
-	UPROPERTY(Config, EditAnywhere, Category = "Dialogue Import")
-	FDirectoryPath DialogueImportPath = FDirectoryPath("/Game/Dialogues/");
-	
 	UPROPERTY(Config, EditAnywhere, Category = "Dialogue Emotions")
 	TSoftObjectPtr<UDataTable> DialogueEmotionTable;
 };

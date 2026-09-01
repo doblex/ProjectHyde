@@ -5,10 +5,10 @@
 
 #include "Factories.h"
 #include "GameplayTagsManager.h"
-#include "ShaderPrintParameters.h"
 #include "AssetRegistry/AssetRegistryModule.h"
+#include "DevSettings/DialogueImporterSettings.h"
+#include "Internationalization/StringTableCore.h"
 #include "ProjectHyde/Core/CoreLibrary.h"
-#include "ProjectHyde/Core/DevSettings/DialogueSubsystemSettings.h"
 #include "ProjectHyde/Dialogues/BaseClasses/BaseDialogue.h"
 
 UDialogueFactory::UDialogueFactory()
@@ -51,12 +51,14 @@ UObject* UDialogueFactory::FactoryCreateFile(
 	
 	UBaseDialogue* FirstDialogue = nullptr;
 	
-	if (const UDialogueSubsystemSettings* DialogueSettings = GetDefault<UDialogueSubsystemSettings>())
+	DialogueImporterSettings = GetDefault<UDialogueImporterSettings>();
+	
+	if (DialogueImporterSettings)
 	{
-		if (!DialogueSettings->DialogueImportPath.Path.IsEmpty())
+		if (!DialogueImporterSettings->DialogueImportPath.Path.IsEmpty())
 		{
 			FString YarnFileName = FPaths::GetBaseFilename(Filename);
-			FString FixedFolder = DialogueSettings->DialogueImportPath.Path + YarnFileName;
+			FString FixedFolder = DialogueImporterSettings->DialogueImportPath.Path + YarnFileName;
 			FirstDialogue = SaveObjects(DialogueTemps, FixedFolder);
 		}
 		else
@@ -92,6 +94,16 @@ void UDialogueFactory::LinkDialogue(FDialogueTemp DialogueTemp, TMap<FName, UBas
 			}
 		}
 	}
+}
+
+void UDialogueFactory::AddToStringTable(FStringTableRef StringTableRef, TArray<FLineTemp> LinesToRegister)
+{
+	for (auto LineTemp : LinesToRegister)
+	{
+		FTextKey Key = FTextKey(*LineTemp.StringTableID.ToString());
+		StringTableRef->SetSourceString(Key, LineTemp.Text);
+	}
+
 }
 
 UValue* UDialogueFactory::CreateValue(UObject* Outer,FString ArgString)
@@ -130,6 +142,7 @@ TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 	bool bReadingBody = false;
 	bool bDialogueReading = false;
 	int BodyLinesNumber = 0;
+	int PureLineIndex = 0;
 	int DialoguesFound = 0;
 	
 	for (const FString& Line : Lines)
@@ -164,6 +177,7 @@ TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 		{
 			bReadingBody = true;
 			BodyLinesNumber = 0;
+			PureLineIndex = 0;
 		}
 		//fine testo
 		else if(Line.StartsWith(TEXT("==="))) 
@@ -236,6 +250,12 @@ TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 			else 
 			{
 				NewLine.Name = FName(*FString::Printf(TEXT("Line_%d"), CurrentDialogue.Lines.Num()));
+				NewLine.StringTableID = 
+					FName(*FString::Printf(
+						TEXT("%s_%d"),
+						*CurrentDialogue.InternalName.ToString(),
+						PureLineIndex
+						));
 				
 				FString Speaker, Text;
 				int32 ColonIndex, HashIndex;
@@ -285,6 +305,8 @@ TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 				}
 				
 				PreviousLine = NewLine;
+				
+				PureLineIndex++;
 			}
 		}
 		
@@ -298,8 +320,13 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 {
 	UE_LOG(LogEditorFactories, Display, TEXT("Yarn Import: Start Saving objects"));
 	
+	UStringTable* StringTableAsset = DialogueImporterSettings->DialogueStringTable.LoadSynchronous();
+	
+	bool bHasStringTablePath = IsValid(StringTableAsset);
+	
 	bool bFirst = true;
 	UBaseDialogue* FirstDialogue = nullptr;
+	TArray<FLineTemp> LinesToRegister;
 	for (auto DialogueTemp : DialogueTemps)
 	{
 		//saving Path
@@ -357,6 +384,7 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 		}
 		
 		TMap<FName, UBaseLineNode*> CreatedNodes;
+		
 		bool bFirstLine = true;
 		
 		for (const auto& Pair : DialogueTemp.Lines)
@@ -403,12 +431,23 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 				Node->LineProtagonistName = LineTemp.Protagonist;
 				Node->Line = FText::FromString(LineTemp.Text);
 				Node->LineEmotion = LineTemp.Emotion;
+				
+				LinesToRegister.Add(LineTemp);
 			}
-			
 			CreatedNodes.Add(Pair.Key, Node);
 		}
 
 		LinkDialogue(DialogueTemp, CreatedNodes);
+	}
+	
+	if (bHasStringTablePath && LinesToRegister.Num() > 0)
+	{
+		StringTableAsset->Modify();
+		
+		FStringTableRef StringTable = StringTableAsset->GetMutableStringTable();
+		
+		AddToStringTable(StringTable ,LinesToRegister);
+		StringTableAsset->MarkPackageDirty();
 	}
 	
 	int ImportNumber = DialogueTemps.Num();

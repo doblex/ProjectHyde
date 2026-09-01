@@ -89,7 +89,7 @@ bool UInventorySubsystem::TryCombineItems(int FirstItemIndex, int SecondItemInde
 		{
 			GEngine->AddOnScreenDebugMessage(
 				-1,
-				5.0f,
+				5.0f,   
 				FColor::Red,
 				"ItemCombinationTable is not valid"
 				);

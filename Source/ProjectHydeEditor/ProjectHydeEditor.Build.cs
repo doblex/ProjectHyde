@@ -11,7 +11,8 @@ public class ProjectHydeEditor : ModuleRules
             {
                 "Core",
                 "ProjectHyde",
-                "GameplayTags"
+                "GameplayTags",
+                "DeveloperSettings"
             }
         );
 

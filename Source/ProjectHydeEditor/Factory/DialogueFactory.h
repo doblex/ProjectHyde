@@ -6,12 +6,14 @@
 #include "Factories/Factory.h"
 #include "ProjectHyde/Dialogues/BaseClasses/BaseLineNode.h"
 #include "ProjectHyde/Dialogues/BaseClasses/Value.h"
+#include "Internationalization/StringTable.h"
 #include "DialogueFactory.generated.h"
 
 /**
  * 
  */
 
+class UDialogueImporterSettings;
 class UBaseDialogue;
 class UBaseLineNode;
 
@@ -19,6 +21,7 @@ struct FLineTemp
 {
 	//Line Params
 	FName Name;
+	FName StringTableID;
 	FName Protagonist;
 	FString Text;
 	TArray<FName> NextLines;
@@ -43,6 +46,10 @@ class PROJECTHYDEEDITOR_API UDialogueFactory : public UFactory
 {
 	GENERATED_BODY()
 	
+private:
+	const UDialogueImporterSettings* DialogueImporterSettings;
+	
+	
 public:
 	UDialogueFactory();
 	
@@ -64,6 +71,8 @@ private:
 	UValue* CreateValue(UObject* Outer,FString ArgString);
 	
 	void LinkDialogue(FDialogueTemp DialogueTemp, TMap<FName, UBaseLineNode*> CreatedNodes);
+
+	void AddToStringTable(FStringTableRef StringTableRef, TArray<FLineTemp> LinesToRegister);
 	
 	UBaseDialogue* SaveObjects(TArray<FDialogueTemp> DialogueTemps, FString FixedFolder);
 };
