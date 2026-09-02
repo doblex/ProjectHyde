@@ -320,6 +320,7 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 {
 	UE_LOG(LogEditorFactories, Display, TEXT("Yarn Import: Start Saving objects"));
 	
+	// carico la stringTable dallo WeakRef
 	UStringTable* StringTableAsset = DialogueImporterSettings->DialogueStringTable.LoadSynchronous();
 	
 	bool bHasStringTablePath = IsValid(StringTableAsset);
@@ -333,12 +334,13 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 		FString AssetName = DialogueTemp.InternalName.ToString();
 		FString PackageName = FixedFolder + TEXT("/") + AssetName;
 		
-		
+		//Creo o trovo il package del dialogo
 		UPackage* Package = CreatePackage(*PackageName);
 		Package->FullyLoad();
 		
 		UBaseDialogue* Dialogue = FindObject<UBaseDialogue>(Package, *AssetName);
 		
+		// se non esiste creo l'asset da zero
 		if (Dialogue == nullptr)
 		{
 			Dialogue = NewObject<UBaseDialogue>(
@@ -350,6 +352,7 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 		}
 		else
 		{
+			// se esiste resetto temporaneamente i suoi valori
 			Dialogue->Modify();
 			Dialogue->Description = "";
 			Dialogue->DialogueName = "";
@@ -362,10 +365,13 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 			});
 		}
 		
+		// notifico la creazione al sistema e setto i package sporchi così posso salvarli manualmente
 		FAssetRegistryModule::AssetCreated(Dialogue);
 		Dialogue->MarkPackageDirty();
 		Package->MarkPackageDirty();
 		
+		// siccome tecnicamente l'importazione ritorna solo un oggetto creato
+		// c'è la necessità di fare questo
 		if (bFirst)
 		{
 			bFirst = false;
@@ -374,6 +380,7 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 		
 		Dialogue->DialogueName = DialogueTemp.Name;
 
+		// riporto i tag validi
 		for (FName TagStr : DialogueTemp.Tags)
 		{
 			FGameplayTag Tag = UGameplayTagsManager::Get().RequestGameplayTag(TagStr, /*ErrorIfNotFound=*/false);
@@ -387,10 +394,12 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 		
 		bool bFirstLine = true;
 		
+		// ciclo ogni linea per ogni dialogo
 		for (const auto& Pair : DialogueTemp.Lines)
 		{
 			const FLineTemp& LineTemp = Pair.Value;
 			
+			// creo uno UObject che sarà figlio del dialogo corrente
 			UBaseLineNode* Node = NewObject<UBaseLineNode>(
 				Dialogue,
 				UBaseLineNode::StaticClass(),
@@ -398,12 +407,14 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 				RF_Public | RF_Transactional
 			);
 			
+			// se è il primo lo assegno come root al dialogo
 			if (bFirstLine)
 			{
 				Dialogue->RootLine = Node;
 				bFirstLine = false;
 			}
 			
+			// se è di tipo comando allora verrà processato come tale
 			if (LineTemp.bIsCommand)
 			{
 				
@@ -429,24 +440,44 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 			{
 				Node->Type = EDialogueLineType::Line;
 				Node->LineProtagonistName = LineTemp.Protagonist;
-				Node->Line = FText::FromString(LineTemp.Text);
+				
+				// se la stringTable è valida allora procedo a bindare le Line all'id precalcolato
+				if (bHasStringTablePath)
+				{
+					FTextKey Key = FTextKey(*LineTemp.StringTableID.ToString());
+					
+					Node->Line = FText::FromStringTable(
+						StringTableAsset->GetStringTableId(),
+						Key);
+				}
+				else
+				{
+					// altrimenti inserisco il testo
+					Node->Line = FText::FromString(LineTemp.Text);
+				}
+				
 				Node->LineEmotion = LineTemp.Emotion;
 				
 				LinesToRegister.Add(LineTemp);
 			}
 			CreatedNodes.Add(Pair.Key, Node);
 		}
-
+		// per ogniuno procedo poi a linkare le line tramite nome
 		LinkDialogue(DialogueTemp, CreatedNodes);
 	}
 	
+	// add or update new lines on the stringTable
 	if (bHasStringTablePath && LinesToRegister.Num() > 0)
 	{
+		// modifico per permettere il roolback
 		StringTableAsset->Modify();
 		
 		FStringTableRef StringTable = StringTableAsset->GetMutableStringTable();
 		
+		// aggiungo o aggiorno le linee di dialogo nella tabella
 		AddToStringTable(StringTable ,LinesToRegister);
+		
+		// marchio sporco per permettere il salvataggio
 		StringTableAsset->MarkPackageDirty();
 	}
 	
