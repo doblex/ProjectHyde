@@ -18,7 +18,7 @@ class PROJECTHYDE_API UBaseDialogue : public UDataAsset
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Line")
-	FName DialogueName;
+	FText DialogueName;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Line")
 	FString Description;

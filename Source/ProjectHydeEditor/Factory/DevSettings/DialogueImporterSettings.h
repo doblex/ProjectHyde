@@ -21,7 +21,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "Dialogue Import")
 	FDirectoryPath DialogueImportPath = FDirectoryPath("/Game/Dialogues/");
 	
-	UPROPERTY(Config, EditAnywhere, Category = "Dialogue Subsystem")
+	UPROPERTY(Config, EditAnywhere, Category = "Dialogue Import Subsystem")
 	TSoftObjectPtr<UStringTable> DialogueStringTable;
+	
+	UPROPERTY(Config, EditAnywhere, Category = "Dialogue Import Subsystem")
+	TSoftObjectPtr<UStringTable> DialogueTitlesStringTable;
 	
 };

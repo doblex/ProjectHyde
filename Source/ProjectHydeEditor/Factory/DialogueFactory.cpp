@@ -159,7 +159,7 @@ TArray<FDialogueTemp> UDialogueFactory::ParseFile(TArray<FString> Lines)
 		}
 		if(Line.StartsWith(TEXT("name:"))) 
 		{
-			CurrentDialogue.Name = FName(*Line.RightChop(5).TrimStart());
+			CurrentDialogue.Name = Line.RightChop(5).TrimStart();
 		}
 		if(Line.StartsWith(TEXT("tag:"))) 
 		{
@@ -323,7 +323,9 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 	// carico la stringTable dallo WeakRef
 	UStringTable* StringTableAsset = DialogueImporterSettings->DialogueStringTable.LoadSynchronous();
 	
-	bool bHasStringTablePath = IsValid(StringTableAsset);
+	UStringTable* titleStringTableAsset = DialogueImporterSettings->DialogueTitlesStringTable.LoadSynchronous();
+	
+	bool bHasStringTablePath = IsValid(StringTableAsset) && IsValid(titleStringTableAsset);
 	
 	bool bFirst = true;
 	UBaseDialogue* FirstDialogue = nullptr;
@@ -355,7 +357,7 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 			// se esiste resetto temporaneamente i suoi valori
 			Dialogue->Modify();
 			Dialogue->Description = "";
-			Dialogue->DialogueName = "";
+			Dialogue->DialogueName = FText::GetEmpty();
 			Dialogue->Requirements.Reset();
 			Dialogue->RootLine = nullptr;
 			
@@ -378,7 +380,7 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 			FirstDialogue = Dialogue;
 		}
 		
-		Dialogue->DialogueName = DialogueTemp.Name;
+		Dialogue->DialogueName = FText::FromString(DialogueTemp.Name);
 
 		// riporto i tag validi
 		for (FName TagStr : DialogueTemp.Tags)
@@ -467,18 +469,43 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 	}
 	
 	// add or update new lines on the stringTable
-	if (bHasStringTablePath && LinesToRegister.Num() > 0)
+	if (bHasStringTablePath)
 	{
-		// modifico per permettere il roolback
-		StringTableAsset->Modify();
+		if (DialogueTemps.Num() > 0)
+		{
+			// modifico per permettere il roolback
+			titleStringTableAsset->Modify();
 		
-		FStringTableRef StringTable = StringTableAsset->GetMutableStringTable();
+			FStringTableRef StringTable = titleStringTableAsset->GetMutableStringTable();
 		
-		// aggiungo o aggiorno le linee di dialogo nella tabella
-		AddToStringTable(StringTable ,LinesToRegister);
+			// aggiungo o aggiorno le linee di dialogo nella tabella
+			for (auto DialogueTemp : DialogueTemps)
+			{
+				if (!DialogueTemp.Name.IsEmpty())
+				{
+					FTextKey Key = FTextKey(*DialogueTemp.InternalName.ToString());
+					StringTable->SetSourceString(Key, DialogueTemp.Name);
+				}
+			}
 		
-		// marchio sporco per permettere il salvataggio
-		StringTableAsset->MarkPackageDirty();
+			// marchio sporco per permettere il salvataggio
+			titleStringTableAsset->MarkPackageDirty();
+		}
+		
+		
+		if (LinesToRegister.Num() > 0)
+		{
+			// modifico per permettere il roolback
+			StringTableAsset->Modify();
+		
+			FStringTableRef StringTable = StringTableAsset->GetMutableStringTable();
+		
+			// aggiungo o aggiorno le linee di dialogo nella tabella
+			AddToStringTable(StringTable ,LinesToRegister);
+		
+			// marchio sporco per permettere il salvataggio
+			StringTableAsset->MarkPackageDirty();
+		}
 	}
 	
 	int ImportNumber = DialogueTemps.Num();

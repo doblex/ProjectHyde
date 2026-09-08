@@ -37,7 +37,7 @@ struct FDialogueTemp
 {
 	TArray<FName> Tags;
 	FName InternalName;
-	FName Name;
+	FString Name;
 	TMap<FName, FLineTemp> Lines;
 };
 

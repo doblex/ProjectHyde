@@ -86,7 +86,7 @@ struct FDialogueEntry
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
-	FName DialogueTitle;
+	FText DialogueTitle;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "Notebook")
 	FText Description;
@@ -106,7 +106,7 @@ struct FDialogueEntry
 	bool operator==(const FDialogueEntry& compareTo) const
 	{
 		return
-			DialogueTitle == compareTo.DialogueTitle &&
+			DialogueTitle.EqualTo(compareTo.DialogueTitle) &&
 			Description.EqualTo(compareTo.Description) &&
 			Lines == compareTo.Lines;
 	}
