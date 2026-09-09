@@ -24,7 +24,7 @@ class PROJECTHYDE_API UNotebookItemData : public UPrimaryDataAsset
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
-	FString Title;
+	FText Title;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Notebook")
 	ENotebookItemType NotebookItemType;

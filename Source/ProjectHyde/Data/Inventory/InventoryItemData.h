@@ -35,6 +35,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	UNotebookItemData* NotebookDataAsset = nullptr;
 	
-	UFUNCTION(BlueprintCallable, Category = "Item")
+	UFUNCTION(BlueprintPure , BlueprintCallable, Category = "Item")
 	UTexture2D* GetTextForCurrentCulture();
 };

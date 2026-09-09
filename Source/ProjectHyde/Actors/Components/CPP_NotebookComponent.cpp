@@ -79,11 +79,11 @@ EBookmarkPresence UCPP_NotebookComponent::AddBookmark(UNotebookItemData* NewData
 
 // Trova la UNotebookItemData della persona interessata (Match del campo "Title" del DataAsset) 
 // Da chiamare per aggiungerci dialoghi con AddDialogueToBookmark
-UNotebookItemData* UCPP_NotebookComponent::FindNotebookItemFor(FString PersonName)
+UNotebookItemData* UCPP_NotebookComponent::FindNotebookItemFor(FText PersonName)
 {
 	for (FBookmarkEntry& Entry : UnlockedBookmarks)
 	{
-		if (Entry.StaticData->Title == PersonName)
+		if (Entry.StaticData->Title.CompareTo(PersonName))
 		{
 			return Entry.StaticData;
 		}

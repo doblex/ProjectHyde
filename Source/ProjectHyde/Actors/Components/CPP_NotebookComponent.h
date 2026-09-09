@@ -238,7 +238,7 @@ public:
 	EBookmarkPresence AddBookmark(UNotebookItemData* NewData);
 
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
-	UNotebookItemData* FindNotebookItemFor(FString BookmarkName);
+	UNotebookItemData* FindNotebookItemFor(FText BookmarkName);
 
 	UFUNCTION(BlueprintCallable, Category = "Notebook")
 	void AddDialogueEntryToBookmark(UNotebookItemData* ForData, FDialogueEntry DialogueEntryToAdd);
