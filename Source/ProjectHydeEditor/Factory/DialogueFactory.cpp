@@ -380,7 +380,18 @@ UBaseDialogue* UDialogueFactory::SaveObjects(TArray<FDialogueTemp> DialogueTemps
 			FirstDialogue = Dialogue;
 		}
 		
-		Dialogue->DialogueName = FText::FromString(DialogueTemp.Name);
+		if (bHasStringTablePath)
+		{
+			FTextKey Key = FTextKey(*DialogueTemp.InternalName.ToString());
+					
+			Dialogue->DialogueName = FText::FromStringTable(
+				titleStringTableAsset->GetStringTableId(),
+				Key);
+		}
+		else
+		{
+			Dialogue->DialogueName = FText::FromString(DialogueTemp.Name);
+		}
 
 		// riporto i tag validi
 		for (FName TagStr : DialogueTemp.Tags)
